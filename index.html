@@ -45,102 +45,75 @@
 
       /* Centered layout container */
       .container {
-        max-width: 1100px;
+        max-width: 1200px;
         margin: 0 auto;
-        padding: 0 1.5rem;
+        padding: 0 1.25rem;
       }
 
-      /* Header banner for dashboard context (compact for dense GM workflows). */
-      .dashboard-header {
-        padding: 1.6rem 0 1.2rem;
+      /* Minimal header with only app title, active module, and descriptor. */
+      .app-header {
+        padding: 1rem 0 0.8rem;
       }
 
       .header-frame {
-        background: linear-gradient(140deg, rgba(42, 34, 24, 0.95), rgba(31, 23, 16, 0.9));
-        border-radius: 18px;
-        padding: 1.4rem 1.8rem;
-        box-shadow: 0 18px 32px var(--shadow);
-        border: 2px solid var(--gold);
+        background: rgba(33, 25, 18, 0.95);
+        border-radius: 16px;
+        padding: 1rem 1.4rem;
+        box-shadow: 0 16px 26px var(--shadow);
+        border: 1px solid rgba(201, 162, 74, 0.55);
       }
 
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-      }
-
-      .sigil {
-        width: 56px;
-        height: 56px;
-        border-radius: 14px;
-        background: linear-gradient(160deg, var(--crimson), var(--crimson-dark));
-        display: grid;
-        place-items: center;
-        color: var(--gold-bright);
+      .header-title {
         font-family: var(--serif);
-        font-size: 1.4rem;
-        font-weight: 700;
-        letter-spacing: 1px;
-        box-shadow: 0 10px 18px var(--shadow);
-      }
-
-      .dashboard-header h1 {
-        font-family: var(--serif);
-        font-size: clamp(1.7rem, 2.4vw, 2.4rem);
-      }
-
-      .dashboard-header p {
-        margin-top: 0.4rem;
-        max-width: 640px;
+        font-size: clamp(1.2rem, 2vw, 1.5rem);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
         color: var(--ink-muted);
       }
 
-      /* Quick snapshot cards */
-      .snapshots {
-        display: grid;
-        gap: 0.8rem;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        margin-top: 1rem;
-      }
-
-      .snapshot-card {
-        background: rgba(38, 30, 22, 0.95);
-        border-radius: 14px;
-        padding: 0.9rem 1.1rem;
-        border: 1px solid rgba(201, 162, 74, 0.4);
-        box-shadow: 0 12px 20px var(--shadow);
-      }
-
-      .snapshot-card h3 {
+      .header-module {
         font-family: var(--serif);
-        color: var(--gold-bright);
-        margin-bottom: 0.4rem;
+        font-size: clamp(1.6rem, 2.4vw, 2.1rem);
+        margin-top: 0.2rem;
+      }
+
+      .header-description {
+        margin-top: 0.35rem;
+        max-width: 760px;
+        color: var(--ink-muted);
       }
 
       /* Dashboard main grid */
       .dashboard-main {
-        padding: 1.5rem 0 3.5rem;
+        padding: 1.1rem 0 2rem;
       }
 
       .dashboard-grid {
         display: grid;
-        gap: 2rem;
-        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+        gap: 1.5rem;
+        grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
       }
 
       /* Tool grid styles */
       .tool-grid {
         display: grid;
-        gap: 1.2rem;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+
+      /* Section title styling keeps headings compact. */
+      .section-title {
+        font-family: var(--serif);
+        margin-bottom: 0.6rem;
+        font-size: 1.2rem;
       }
 
       .tool-card {
         background: rgba(32, 25, 18, 0.92);
-        border-radius: 16px;
-        padding: 1.4rem;
-        border-left: 6px solid var(--crimson);
-        box-shadow: 0 12px 20px var(--shadow);
+        border-radius: 14px;
+        padding: 1rem 1.1rem;
+        border-left: 4px solid var(--crimson);
+        box-shadow: 0 10px 18px var(--shadow);
       }
 
       .tool-card--action {
@@ -149,7 +122,7 @@
         text-align: left;
         cursor: pointer;
         transition: transform 0.15s ease, box-shadow 0.2s ease;
-        padding: 1.4rem;
+        padding: 1rem 1.1rem;
         background: rgba(32, 25, 18, 0.92);
         color: inherit;
       }
@@ -199,7 +172,7 @@
       .side-panel {
         background: rgba(34, 26, 19, 0.94);
         border-radius: 18px;
-        padding: 1.6rem;
+        padding: 1.2rem;
         border: 1px dashed rgba(201, 162, 74, 0.6);
         box-shadow: 0 10px 18px var(--shadow);
       }
@@ -228,36 +201,24 @@
 
       /* Initiative tracker layout (compact header to emphasize workspace). */
       .initiative-module {
-        padding: 1.6rem 0 3rem;
+        padding: 1.1rem 0 2rem;
       }
 
-      .module-header {
-        background: rgba(33, 25, 18, 0.95);
-        border-radius: 16px;
-        padding: 1.1rem 1.4rem;
-        border: 2px solid var(--gold);
-        box-shadow: 0 16px 28px var(--shadow);
-      }
-
-      .module-header h2 {
-        font-family: var(--serif);
-        margin-bottom: 0.4rem;
-      }
-
+      /* Compact action row keeps navigation visible without expanding the header. */
       .module-actions {
-        margin-top: 0.7rem;
         display: flex;
         flex-wrap: wrap;
         gap: 0.8rem;
+        margin-bottom: 0.9rem;
       }
 
       .initiative-tracker {
-        margin: 1.4rem 0 0;
+        margin: 0.9rem 0 0;
         background: rgba(28, 22, 16, 0.92);
-        border-radius: 18px;
-        padding: 1.4rem;
-        border: 2px solid var(--gold);
-        box-shadow: 0 18px 28px var(--shadow);
+        border-radius: 16px;
+        padding: 1.1rem;
+        border: 1px solid rgba(201, 162, 74, 0.6);
+        box-shadow: 0 14px 22px var(--shadow);
       }
 
       .initiative-tracker h2 {
@@ -268,14 +229,14 @@
       .tracker-grid {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 1.5rem;
-        margin-top: 1.1rem;
+        gap: 1.1rem;
+        margin-top: 0.8rem;
       }
 
       .tracker-panel {
         background: rgba(36, 28, 20, 0.96);
-        border-radius: 16px;
-        padding: 1.2rem;
+        border-radius: 14px;
+        padding: 1rem;
         border: 1px solid rgba(201, 162, 74, 0.35);
       }
 
@@ -286,8 +247,8 @@
 
       .field-row {
         display: grid;
-        gap: 0.8rem;
-        grid-template-columns: minmax(0, 1fr) 140px 120px;
+        gap: 0.6rem;
+        grid-template-columns: minmax(0, 1fr) 130px 110px;
         align-items: end;
       }
 
@@ -307,7 +268,7 @@
       select,
       textarea {
         width: 100%;
-        padding: 0.55rem 0.65rem;
+        padding: 0.45rem 0.55rem;
         border-radius: 10px;
         border: 1px solid rgba(201, 162, 74, 0.45);
         background: rgba(20, 16, 12, 0.9);
@@ -356,7 +317,7 @@
 
       .participant-table th,
       .participant-table td {
-        padding: 0.6rem 0.5rem;
+        padding: 0.45rem 0.4rem;
         border-bottom: 1px solid rgba(201, 162, 74, 0.35);
         text-align: left;
         vertical-align: top;
@@ -513,9 +474,9 @@
       footer {
         background: var(--crimson-dark);
         color: var(--ink);
-        padding: 1.2rem 0;
+        padding: 0.6rem 0;
         text-align: center;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
       }
 
       @media (max-width: 920px) {
@@ -538,39 +499,14 @@
     </style>
   </head>
   <body>
-    <!-- Dashboard header with product identity and quick context -->
-    <header class="dashboard-header">
+    <!-- Minimal header shared across views for consistent context. -->
+    <header class="app-header">
       <div class="container header-frame">
-        <div class="brand">
-          <div class="sigil" aria-hidden="true">PF</div>
-          <div>
-            <p style="text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.75rem;">
-              Pathfinder Game Master Toolkit
-            </p>
-            <h1>GM Command Dashboard</h1>
-          </div>
-        </div>
-        <p>
-          Jump straight into session prep, encounter building, and table management with a unified
-          set of GM tools.
+        <p class="header-title">Pathfinder Game Master Toolkit</p>
+        <h1 class="header-module" id="active-module">GM Command Dashboard</h1>
+        <p class="header-description" id="module-description">
+          Plan encounters, manage prep, and jump into core GM tools from a focused dashboard.
         </p>
-        <div class="snapshots">
-          <div class="snapshot-card">
-            <h3>Tonight's Session</h3>
-            <p>Chapter 4: The Midnight Vault</p>
-            <p><strong>Players:</strong> 5 | <strong>Est. runtime:</strong> 3 hrs</p>
-          </div>
-          <div class="snapshot-card">
-            <h3>Prep Queue</h3>
-            <p>2 encounters, 3 NPCs, 1 travel montage</p>
-            <p><strong>Next:</strong> Finalize vault traps</p>
-          </div>
-          <div class="snapshot-card">
-            <h3>Campaign Health</h3>
-            <p>Story beats on track. 1 open quest thread.</p>
-            <p><strong>Reminder:</strong> Award milestone XP</p>
-          </div>
-        </div>
       </div>
     </header>
 
@@ -578,7 +514,7 @@
     <main class="dashboard-main" id="dashboard-view">
       <div class="container dashboard-grid">
         <section aria-label="GM tool dashboard">
-          <h2 style="font-family: var(--serif); margin-bottom: 1rem;">Core GM Tools</h2>
+          <h2 class="section-title">Core GM Tools</h2>
           <div class="tool-grid">
             <article class="tool-card">
               <h3>Encounter Builder</h3>
@@ -682,17 +618,11 @@
       aria-label="Initiative tracker module"
     >
       <div class="container">
-        <div class="module-header">
-          <h2>Initiative Tracker</h2>
-          <p class="helper-text">
-            Manage turn order, track conditions, and handle duration-based reminders in a focused
-            workspace.
-          </p>
-          <div class="module-actions">
-            <button id="initiative-back" class="ghost" type="button">
-              ← Back to Dashboard
-            </button>
-          </div>
+        <!-- Module actions stay in the body so the header stays minimal. -->
+        <div class="module-actions">
+          <button id="initiative-back" class="ghost" type="button">
+            ← Back to Dashboard
+          </button>
         </div>
 
         <section class="initiative-tracker" aria-label="Initiative tracker workspace">
@@ -938,11 +868,36 @@
       const expiryKeep = document.getElementById("expiry-keep");
       const expiryRemove = document.getElementById("expiry-remove");
 
+      // Header elements keep the app title concise while highlighting the active module.
+      const headerModule = document.getElementById("active-module");
+      const headerDescription = document.getElementById("module-description");
+
       // Module navigation elements keep the dashboard and tracker in separate views.
       const dashboardView = document.getElementById("dashboard-view");
       const initiativeModule = document.getElementById("initiative-module");
       const initiativeLaunch = document.getElementById("initiative-launch");
       const initiativeBack = document.getElementById("initiative-back");
+
+      // Single source of truth for header copy across dashboard and module views.
+      const headerCopy = {
+        dashboard: {
+          module: "GM Command Dashboard",
+          description: "Plan encounters, manage prep, and jump into core GM tools from a focused dashboard.",
+        },
+        initiative: {
+          module: "Initiative Tracker",
+          description: "Run turn order, condition tracking, and round pacing in a compact combat workspace.",
+        },
+      };
+
+      const updateHeader = (viewKey) => {
+        const copy = headerCopy[viewKey];
+        if (!copy) {
+          return;
+        }
+        headerModule.textContent = copy.module;
+        headerDescription.textContent = copy.description;
+      };
 
       // Utility helpers keep state changes predictable and documented.
       const generateId = () => `id-${Math.random().toString(16).slice(2, 10)}`;
@@ -961,12 +916,14 @@
       const openInitiativeModule = () => {
         dashboardView.classList.add("is-hidden");
         initiativeModule.classList.remove("is-hidden");
+        updateHeader("initiative");
         window.scrollTo({ top: 0, behavior: "smooth" });
       };
 
       const closeInitiativeModule = () => {
         initiativeModule.classList.add("is-hidden");
         dashboardView.classList.remove("is-hidden");
+        updateHeader("dashboard");
         window.scrollTo({ top: 0, behavior: "smooth" });
       };
 
@@ -1098,6 +1055,7 @@
       };
 
       // Initialize baseline UI.
+      updateHeader("dashboard");
       seedConditionPresets();
       updateEncounterControls();
       updateRoundDisplay();
