@@ -10,17 +10,20 @@
     <title>Pathfinder GM Toolkit</title>
     <style>
       :root {
-        /* Brand palette */
+        /* Brand palette tuned for Pathfinder dark mode styling. */
         --parchment: #f3e4c3;
-        --parchment-dark: #e5d2a6;
-        --ink: #2d1b12;
-        --crimson: #8c1b1b;
-        --crimson-dark: #5f0f0f;
+        --parchment-dark: #cdb78a;
+        --parchment-night: #2a2218;
+        --parchment-shadow: #1d170f;
+        --ink: #f5ead3;
+        --ink-muted: #c7b79a;
+        --crimson: #b02a2a;
+        --crimson-dark: #7a1414;
         --gold: #c9a24a;
         --gold-bright: #e8c877;
-        --shadow: rgba(38, 18, 12, 0.25);
-        --success: #2f7d32;
-        --warning: #b45f06;
+        --shadow: rgba(8, 6, 4, 0.55);
+        --success: #6bb36f;
+        --warning: #e3a042;
         /* Typography stack */
         --serif: "Georgia", "Times New Roman", serif;
         --sans: "Trebuchet MS", "Segoe UI", sans-serif;
@@ -36,7 +39,7 @@
       body {
         font-family: var(--sans);
         color: var(--ink);
-        background: radial-gradient(circle at top, #fff7e1 0%, var(--parchment) 55%, #e0c89a 100%);
+        background: radial-gradient(circle at top, #3a2f22 0%, var(--parchment-night) 55%, #140f0a 100%);
         line-height: 1.6;
       }
 
@@ -47,15 +50,15 @@
         padding: 0 1.5rem;
       }
 
-      /* Header banner for dashboard context */
+      /* Header banner for dashboard context (compact for dense GM workflows). */
       .dashboard-header {
-        padding: 3rem 0 2rem;
+        padding: 1.6rem 0 1.2rem;
       }
 
       .header-frame {
-        background: linear-gradient(120deg, rgba(255, 255, 255, 0.7), rgba(243, 228, 195, 0.9));
-        border-radius: 20px;
-        padding: 2rem 2.5rem;
+        background: linear-gradient(140deg, rgba(42, 34, 24, 0.95), rgba(31, 23, 16, 0.9));
+        border-radius: 18px;
+        padding: 1.4rem 1.8rem;
         box-shadow: 0 18px 32px var(--shadow);
         border: 2px solid var(--gold);
       }
@@ -83,33 +86,34 @@
 
       .dashboard-header h1 {
         font-family: var(--serif);
-        font-size: clamp(2rem, 3vw, 2.8rem);
+        font-size: clamp(1.7rem, 2.4vw, 2.4rem);
       }
 
       .dashboard-header p {
-        margin-top: 0.6rem;
+        margin-top: 0.4rem;
         max-width: 640px;
+        color: var(--ink-muted);
       }
 
       /* Quick snapshot cards */
       .snapshots {
         display: grid;
-        gap: 1rem;
+        gap: 0.8rem;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        margin-top: 1.5rem;
+        margin-top: 1rem;
       }
 
       .snapshot-card {
-        background: #fff9ed;
-        border-radius: 16px;
-        padding: 1.2rem 1.4rem;
-        border: 1px solid var(--parchment-dark);
+        background: rgba(38, 30, 22, 0.95);
+        border-radius: 14px;
+        padding: 0.9rem 1.1rem;
+        border: 1px solid rgba(201, 162, 74, 0.4);
         box-shadow: 0 12px 20px var(--shadow);
       }
 
       .snapshot-card h3 {
         font-family: var(--serif);
-        color: var(--crimson-dark);
+        color: var(--gold-bright);
         margin-bottom: 0.4rem;
       }
 
@@ -132,7 +136,7 @@
       }
 
       .tool-card {
-        background: rgba(255, 255, 255, 0.85);
+        background: rgba(32, 25, 18, 0.92);
         border-radius: 16px;
         padding: 1.4rem;
         border-left: 6px solid var(--crimson);
@@ -146,7 +150,7 @@
         cursor: pointer;
         transition: transform 0.15s ease, box-shadow 0.2s ease;
         padding: 1.4rem;
-        background: rgba(255, 255, 255, 0.85);
+        background: rgba(32, 25, 18, 0.92);
         color: inherit;
       }
 
@@ -160,7 +164,7 @@
       .tool-card h3 {
         margin-bottom: 0.5rem;
         font-family: var(--serif);
-        color: var(--crimson-dark);
+        color: var(--gold-bright);
       }
 
       .tool-card p {
@@ -177,7 +181,8 @@
       .tool-tag {
         padding: 0.2rem 0.6rem;
         border-radius: 999px;
-        background: var(--parchment-dark);
+        background: rgba(201, 162, 74, 0.2);
+        color: var(--ink-muted);
       }
 
       .tool-launch {
@@ -186,16 +191,16 @@
         align-items: center;
         gap: 0.4rem;
         background: transparent;
-        color: var(--crimson-dark);
-        border: 1px dashed var(--gold);
+        color: var(--gold-bright);
+        border: 1px dashed rgba(201, 162, 74, 0.7);
       }
 
       /* Side panels for notes and status */
       .side-panel {
-        background: #fffaf0;
+        background: rgba(34, 26, 19, 0.94);
         border-radius: 18px;
         padding: 1.6rem;
-        border: 1px dashed var(--gold);
+        border: 1px dashed rgba(201, 162, 74, 0.6);
         box-shadow: 0 10px 18px var(--shadow);
       }
 
@@ -215,21 +220,21 @@
       }
 
       .panel-item {
-        background: rgba(255, 255, 255, 0.8);
+        background: rgba(26, 20, 14, 0.9);
         border-radius: 12px;
         padding: 0.7rem 0.9rem;
         border-left: 4px solid var(--gold);
       }
 
-      /* Initiative tracker layout */
+      /* Initiative tracker layout (compact header to emphasize workspace). */
       .initiative-module {
-        padding: 2rem 0 3.5rem;
+        padding: 1.6rem 0 3rem;
       }
 
       .module-header {
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 18px;
-        padding: 1.6rem 1.8rem;
+        background: rgba(33, 25, 18, 0.95);
+        border-radius: 16px;
+        padding: 1.1rem 1.4rem;
         border: 2px solid var(--gold);
         box-shadow: 0 16px 28px var(--shadow);
       }
@@ -240,17 +245,17 @@
       }
 
       .module-actions {
-        margin-top: 1rem;
+        margin-top: 0.7rem;
         display: flex;
         flex-wrap: wrap;
         gap: 0.8rem;
       }
 
       .initiative-tracker {
-        margin: 2rem 0 0;
-        background: rgba(255, 255, 255, 0.85);
-        border-radius: 20px;
-        padding: 1.8rem;
+        margin: 1.4rem 0 0;
+        background: rgba(28, 22, 16, 0.92);
+        border-radius: 18px;
+        padding: 1.4rem;
         border: 2px solid var(--gold);
         box-shadow: 0 18px 28px var(--shadow);
       }
@@ -264,14 +269,14 @@
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         gap: 1.5rem;
-        margin-top: 1.5rem;
+        margin-top: 1.1rem;
       }
 
       .tracker-panel {
-        background: #fffdf6;
+        background: rgba(36, 28, 20, 0.96);
         border-radius: 16px;
         padding: 1.2rem;
-        border: 1px solid var(--parchment-dark);
+        border: 1px solid rgba(201, 162, 74, 0.35);
       }
 
       .tracker-panel h3 {
@@ -304,8 +309,9 @@
         width: 100%;
         padding: 0.55rem 0.65rem;
         border-radius: 10px;
-        border: 1px solid var(--parchment-dark);
-        background: #fffef8;
+        border: 1px solid rgba(201, 162, 74, 0.45);
+        background: rgba(20, 16, 12, 0.9);
+        color: var(--ink);
       }
 
       button {
@@ -325,15 +331,15 @@
       }
 
       button.secondary {
-        background: #f0e2bf;
+        background: rgba(201, 162, 74, 0.18);
         color: var(--ink);
-        border: 1px solid var(--parchment-dark);
+        border: 1px solid rgba(201, 162, 74, 0.5);
       }
 
       button.ghost {
         background: transparent;
-        border: 1px dashed var(--gold);
-        color: var(--crimson-dark);
+        border: 1px dashed rgba(201, 162, 74, 0.7);
+        color: var(--gold-bright);
       }
 
       button:disabled {
@@ -351,7 +357,7 @@
       .participant-table th,
       .participant-table td {
         padding: 0.6rem 0.5rem;
-        border-bottom: 1px solid var(--parchment-dark);
+        border-bottom: 1px solid rgba(201, 162, 74, 0.35);
         text-align: left;
         vertical-align: top;
       }
@@ -361,7 +367,7 @@
       }
 
       .participant-row.active {
-        background: rgba(140, 27, 27, 0.12);
+        background: rgba(176, 42, 42, 0.2);
         border-left: 4px solid var(--crimson);
       }
 
@@ -373,8 +379,8 @@
       }
 
       .marker-chip {
-        background: #fff4dc;
-        border: 1px solid var(--gold);
+        background: rgba(201, 162, 74, 0.15);
+        border: 1px solid rgba(201, 162, 74, 0.45);
         padding: 0.25rem 0.45rem;
         border-radius: 999px;
         display: inline-flex;
@@ -400,22 +406,22 @@
       }
 
       .status-pill {
-        background: rgba(47, 125, 50, 0.12);
+        background: rgba(107, 179, 111, 0.2);
         color: var(--success);
         padding: 0.3rem 0.6rem;
         border-radius: 999px;
         font-size: 0.85rem;
-        border: 1px solid rgba(47, 125, 50, 0.3);
+        border: 1px solid rgba(107, 179, 111, 0.4);
       }
 
       .round-display {
         font-weight: 700;
-        color: var(--crimson-dark);
+        color: var(--gold-bright);
       }
 
       .helper-text {
         font-size: 0.85rem;
-        color: #5b4a3c;
+        color: var(--ink-muted);
       }
 
       .legend {
@@ -426,7 +432,7 @@
       }
 
       .legend span {
-        background: #f7ecd0;
+        background: rgba(201, 162, 74, 0.2);
         border-radius: 999px;
         padding: 0.2rem 0.6rem;
         font-size: 0.78rem;
@@ -449,7 +455,7 @@
       }
 
       .modal {
-        background: #fffdf6;
+        background: rgba(33, 25, 18, 0.98);
         border-radius: 18px;
         padding: 1.6rem;
         max-width: 720px;
@@ -486,12 +492,12 @@
         align-items: center;
         padding: 0.5rem 0.7rem;
         border-radius: 12px;
-        border: 1px solid var(--parchment-dark);
-        background: #fff;
+        border: 1px solid rgba(201, 162, 74, 0.4);
+        background: rgba(20, 16, 12, 0.9);
       }
 
       .notice {
-        background: #fff3d6;
+        background: rgba(227, 160, 66, 0.18);
         border-left: 4px solid var(--warning);
         padding: 0.6rem 0.8rem;
         border-radius: 10px;
@@ -506,8 +512,8 @@
       /* Footer for thematic close */
       footer {
         background: var(--crimson-dark);
-        color: #f9f2e0;
-        padding: 1.4rem 0;
+        color: var(--ink);
+        padding: 1.2rem 0;
         text-align: center;
         font-size: 0.95rem;
       }
