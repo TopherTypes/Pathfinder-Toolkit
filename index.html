@@ -1,2 +1,360 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!--
+      Pathfinder GM Toolkit - Landing Page
+      Purpose: Provide a themed, informative entry point for modular GM planning tools.
+    -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pathfinder GM Toolkit</title>
+    <!--
+      Styles are embedded for simplicity and portability.
+      Theme: Pathfinder-inspired parchment, crimson accents, and embossed gold details.
+    -->
+    <style>
+      :root {
+        /* Color palette */
+        --parchment: #f3e4c3;
+        --parchment-dark: #e5d2a6;
+        --ink: #2d1b12;
+        --crimson: #8c1b1b;
+        --crimson-dark: #5f0f0f;
+        --gold: #c9a24a;
+        --gold-bright: #e8c877;
+        --shadow: rgba(38, 18, 12, 0.25);
+        /* Typography */
+        --serif: "Georgia", "Times New Roman", serif;
+        --sans: "Trebuchet MS", "Segoe UI", sans-serif;
+      }
+
+      /* Global resets and base styling */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--sans);
+        color: var(--ink);
+        background: radial-gradient(circle at top, #fff7e1 0%, var(--parchment) 55%, #e0c89a 100%);
+        line-height: 1.6;
+      }
+
+      /* Layout container for consistent width */
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+      }
+
+      /* Hero section styling */
+      .hero {
+        padding: 4rem 0 3rem;
+        position: relative;
+      }
+
+      .hero::before {
+        /* Decorative border to mimic embossed fantasy frames */
+        content: "";
+        position: absolute;
+        inset: 1.5rem;
+        border: 2px solid var(--gold);
+        border-radius: 20px;
+        box-shadow: inset 0 0 0 3px rgba(232, 200, 119, 0.3);
+        pointer-events: none;
+      }
+
+      .hero-content {
+        background: linear-gradient(120deg, rgba(255, 255, 255, 0.6), rgba(243, 228, 195, 0.85));
+        border-radius: 18px;
+        padding: 2.5rem;
+        box-shadow: 0 20px 40px var(--shadow);
+        position: relative;
+        z-index: 1;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .sigil {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        background: linear-gradient(160deg, var(--crimson), var(--crimson-dark));
+        display: grid;
+        place-items: center;
+        color: var(--gold-bright);
+        font-family: var(--serif);
+        font-size: 1.6rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        box-shadow: 0 10px 18px var(--shadow);
+      }
+
+      .brand h1 {
+        font-family: var(--serif);
+        font-size: clamp(2.2rem, 3vw, 3rem);
+      }
+
+      .hero p {
+        max-width: 700px;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+      }
+
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .cta {
+        border: none;
+        padding: 0.9rem 1.8rem;
+        border-radius: 999px;
+        font-weight: 700;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .cta-primary {
+        background: linear-gradient(120deg, var(--crimson), var(--crimson-dark));
+        color: #fff;
+        box-shadow: 0 10px 16px rgba(95, 15, 15, 0.4);
+      }
+
+      .cta-secondary {
+        background: transparent;
+        color: var(--crimson-dark);
+        border: 2px solid var(--crimson);
+      }
+
+      .cta:hover {
+        transform: translateY(-2px);
+      }
+
+      /* Feature grid styling */
+      .features {
+        padding: 3rem 0 4rem;
+      }
+
+      .features h2,
+      .modules h2,
+      .overview h2 {
+        font-family: var(--serif);
+        font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+        margin-bottom: 1.5rem;
+      }
+
+      .feature-grid {
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }
+
+      .feature-card {
+        background: #fff9ed;
+        border: 1px solid var(--parchment-dark);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 12px 20px var(--shadow);
+      }
+
+      .feature-card h3 {
+        margin-bottom: 0.6rem;
+        font-family: var(--serif);
+        color: var(--crimson-dark);
+      }
+
+      /* Module showcase styling */
+      .modules {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(243, 228, 195, 0.9));
+        padding: 3.5rem 0;
+        border-top: 2px solid var(--gold);
+        border-bottom: 2px solid var(--gold);
+      }
+
+      .module-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.2rem;
+      }
+
+      .module-card {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 12px;
+        padding: 1.2rem;
+        border-left: 6px solid var(--crimson);
+        box-shadow: 0 10px 18px var(--shadow);
+      }
+
+      .module-card span {
+        font-weight: 700;
+        color: var(--crimson-dark);
+      }
+
+      /* Overview section */
+      .overview {
+        padding: 3rem 0 4rem;
+      }
+
+      .overview-grid {
+        display: grid;
+        gap: 2rem;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+
+      .overview-panel {
+        background: #fffaf0;
+        border-radius: 18px;
+        padding: 1.8rem;
+        border: 1px dashed var(--gold);
+      }
+
+      /* Footer styling */
+      footer {
+        background: var(--crimson-dark);
+        color: #f9f2e0;
+        padding: 1.5rem 0;
+        text-align: center;
+        font-size: 0.95rem;
+      }
+
+      @media (max-width: 720px) {
+        .hero::before {
+          inset: 0.8rem;
+        }
+
+        .hero-content {
+          padding: 2rem 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header and hero section introduce the toolkit and core value proposition -->
+    <header class="hero">
+      <div class="container hero-content">
+        <div class="brand">
+          <div class="sigil" aria-hidden="true">PF</div>
+          <div>
+            <p style="text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.75rem;">
+              Pathfinder Game Master Toolkit
+            </p>
+            <h1>Forge Legendary Adventures</h1>
+          </div>
+        </div>
+        <p>
+          Plan, track, and deliver unforgettable Pathfinder sessions with a modular toolkit built for
+          Game Masters. Build encounters, craft treasure, and organize your campaign in one enchanted
+          workflow.
+        </p>
+        <div class="cta-row">
+          <button class="cta cta-primary" type="button">Enter the Toolkit</button>
+          <button class="cta cta-secondary" type="button">View Roadmap</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Feature highlights explain the core benefits of the modular system -->
+    <section class="features">
+      <div class="container">
+        <h2>Designed for Prepared, Flexible GMs</h2>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <h3>Modular by Design</h3>
+            <p>Enable only the tools you need for tonight's session, from loot cards to encounter maps.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Campaign Continuity</h3>
+            <p>Track arcs, NPCs, and quest threads with a unified view of your world state.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Session-Ready Output</h3>
+            <p>Export printable cards, handouts, and summaries for effortless table flow.</p>
+          </article>
+          <article class="feature-card">
+            <h3>GM-Centric Workflow</h3>
+            <p>Plan in minutes, improvise with confidence, and never lose a critical detail.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Module list showcases the toolkit's upcoming components -->
+    <section class="modules">
+      <div class="container">
+        <h2>Upcoming Module Suite</h2>
+        <div class="module-list">
+          <div class="module-card">
+            <span>Magic Item Cards</span>
+            <p>Auto-generate bespoke treasure and relic handouts.</p>
+          </div>
+          <div class="module-card">
+            <span>Monster Stat Cards</span>
+            <p>Build and customize foes with quick-reference stat blocks.</p>
+          </div>
+          <div class="module-card">
+            <span>Encounter Map Maker</span>
+            <p>Sketch tactical battlefields with drag-and-drop terrain.</p>
+          </div>
+          <div class="module-card">
+            <span>Downtime Planner</span>
+            <p>Track kingdom turns, research projects, and crafting queues.</p>
+          </div>
+          <div class="module-card">
+            <span>Session Timeline</span>
+            <p>Organize initiative, travel pace, and scene transitions.</p>
+          </div>
+          <div class="module-card">
+            <span>NPC Vault</span>
+            <p>Collect notable allies, villains, and random encounter hooks.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Overview section highlights toolkit experience and future vision -->
+    <section class="overview">
+      <div class="container">
+        <h2>The Pathfinder Promise</h2>
+        <div class="overview-grid">
+          <div class="overview-panel">
+            <h3>Immersive Worldbuilding</h3>
+            <p>
+              The toolkit is inspired by Pathfinder's rich lore and tactical depth, ensuring every tool
+              feels at home in your campaign setting.
+            </p>
+          </div>
+          <div class="overview-panel">
+            <h3>Collaborative Future</h3>
+            <p>
+              Invite co-GMs, archive sessions, and create reusable templates so your table stays in sync.
+            </p>
+          </div>
+          <div class="overview-panel">
+            <h3>Always Expanding</h3>
+            <p>
+              New modules will arrive regularly, from kingdom management to planar travel support.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer provides a thematic closing note -->
+    <footer>
+      <div class="container">
+        <p>Gather your party. Sharpen your quill. The next chapter begins now.</p>
+      </div>
+    </footer>
+  </body>
 </html>
