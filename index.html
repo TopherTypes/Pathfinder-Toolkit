@@ -139,6 +139,24 @@
         box-shadow: 0 12px 20px var(--shadow);
       }
 
+      .tool-card--action {
+        width: 100%;
+        border: none;
+        text-align: left;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.2s ease;
+        padding: 1.4rem;
+        background: rgba(255, 255, 255, 0.85);
+        color: inherit;
+      }
+
+      .tool-card--action:hover,
+      .tool-card--action:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 26px var(--shadow);
+        outline: none;
+      }
+
       .tool-card h3 {
         margin-bottom: 0.5rem;
         font-family: var(--serif);
@@ -160,6 +178,16 @@
         padding: 0.2rem 0.6rem;
         border-radius: 999px;
         background: var(--parchment-dark);
+      }
+
+      .tool-launch {
+        margin-top: 0.8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: transparent;
+        color: var(--crimson-dark);
+        border: 1px dashed var(--gold);
       }
 
       /* Side panels for notes and status */
@@ -194,6 +222,30 @@
       }
 
       /* Initiative tracker layout */
+      .initiative-module {
+        padding: 2rem 0 3.5rem;
+      }
+
+      .module-header {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 18px;
+        padding: 1.6rem 1.8rem;
+        border: 2px solid var(--gold);
+        box-shadow: 0 16px 28px var(--shadow);
+      }
+
+      .module-header h2 {
+        font-family: var(--serif);
+        margin-bottom: 0.4rem;
+      }
+
+      .module-actions {
+        margin-top: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+      }
+
       .initiative-tracker {
         margin: 2rem 0 0;
         background: rgba(255, 255, 255, 0.85);
@@ -517,7 +569,7 @@
     </header>
 
     <!-- Main dashboard area with tool access and status panels -->
-    <main class="dashboard-main">
+    <main class="dashboard-main" id="dashboard-view">
       <div class="container dashboard-grid">
         <section aria-label="GM tool dashboard">
           <h2 style="font-family: var(--serif); margin-bottom: 1rem;">Core GM Tools</h2>
@@ -546,14 +598,20 @@
                 <span class="tool-tag">Handouts</span>
               </div>
             </article>
-            <article class="tool-card">
+            <button
+              class="tool-card tool-card--action"
+              type="button"
+              id="initiative-launch"
+              aria-label="Open Initiative Tracker module"
+            >
               <h3>Initiative Tracker</h3>
               <p>Track turn order, conditions, and persistent damage rounds.</p>
               <div class="tool-meta">
                 <span class="tool-tag">Combat</span>
                 <span class="tool-tag">Timing</span>
               </div>
-            </article>
+              <span class="tool-launch">Open Tracker →</span>
+            </button>
             <article class="tool-card">
               <h3>Session Notes</h3>
               <p>Capture scenes, rulings, and retcons with searchable tags.</p>
@@ -587,95 +645,6 @@
               </div>
             </article>
           </div>
-
-          <!-- Initiative tracker workspace -->
-          <section class="initiative-tracker" aria-label="Initiative tracker workspace">
-            <h2>Initiative Tracker</h2>
-            <p class="helper-text">
-              Set up your encounter roster, gather initiative rolls in a lightbox prompt, and manage
-              round-by-round conditions with automatic expiry reminders.
-            </p>
-            <div class="tracker-grid">
-              <div class="tracker-panel">
-                <h3>Encounter Setup</h3>
-                <form id="participant-form">
-                  <div class="field-row">
-                    <div>
-                      <label for="participant-name">Participant name</label>
-                      <input
-                        id="participant-name"
-                        name="participant-name"
-                        type="text"
-                        placeholder="e.g. Sir Garrick"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label for="participant-type">Type</label>
-                      <select id="participant-type" name="participant-type">
-                        <option value="Player">Player</option>
-                        <option value="Monster">Monster</option>
-                      </select>
-                    </div>
-                    <div>
-                      <button type="submit">Add</button>
-                    </div>
-                  </div>
-                </form>
-                <div class="initiative-controls">
-                  <button id="start-encounter" class="secondary" disabled>Start Encounter</button>
-                  <span id="encounter-status" class="status-pill is-hidden">Encounter Active</span>
-                </div>
-                <p class="notice">
-                  Tip: Use the “Start Encounter” button to open the initiative lightbox and capture
-                  rolls for everyone in the roster.
-                </p>
-                <div class="legend">
-                  <span>Highlight = current turn</span>
-                  <span>Prompt = marker ready to expire</span>
-                </div>
-              </div>
-              <div class="tracker-panel">
-                <h3>Round Controls</h3>
-                <p>
-                  <span class="round-display">Round:</span>
-                  <span id="round-count">1</span>
-                </p>
-                <p>
-                  <strong>Current:</strong>
-                  <span id="current-participant">Awaiting initiative...</span>
-                </p>
-                <div class="initiative-controls">
-                  <button id="previous-turn" class="ghost" disabled>Previous Turn</button>
-                  <button id="next-turn" disabled>Next Turn</button>
-                </div>
-                <p class="helper-text">
-                  Use “Next Turn” to advance. End-of-turn reminders will appear for expiring
-                  markers.
-                </p>
-              </div>
-            </div>
-
-            <div class="tracker-panel" style="margin-top: 1.5rem;">
-              <h3>Participants</h3>
-              <table class="participant-table" aria-label="Initiative order">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Initiative</th>
-                    <th>Markers</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="participant-body">
-                  <tr>
-                    <td colspan="5" class="helper-text">Add participants to begin building the encounter.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
         </section>
 
         <!-- Right column panels for spotlight info -->
@@ -699,6 +668,115 @@
         </aside>
       </div>
     </main>
+
+    <!-- Initiative tracker module (opens from the dashboard tool card) -->
+    <section
+      class="initiative-module is-hidden"
+      id="initiative-module"
+      aria-label="Initiative tracker module"
+    >
+      <div class="container">
+        <div class="module-header">
+          <h2>Initiative Tracker</h2>
+          <p class="helper-text">
+            Manage turn order, track conditions, and handle duration-based reminders in a focused
+            workspace.
+          </p>
+          <div class="module-actions">
+            <button id="initiative-back" class="ghost" type="button">
+              ← Back to Dashboard
+            </button>
+          </div>
+        </div>
+
+        <section class="initiative-tracker" aria-label="Initiative tracker workspace">
+          <p class="helper-text">
+            Set up your encounter roster, gather initiative rolls in a lightbox prompt, and manage
+            round-by-round conditions with automatic expiry reminders.
+          </p>
+          <div class="tracker-grid">
+            <div class="tracker-panel">
+              <h3>Encounter Setup</h3>
+              <form id="participant-form">
+                <div class="field-row">
+                  <div>
+                    <label for="participant-name">Participant name</label>
+                    <input
+                      id="participant-name"
+                      name="participant-name"
+                      type="text"
+                      placeholder="e.g. Sir Garrick"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label for="participant-type">Type</label>
+                    <select id="participant-type" name="participant-type">
+                      <option value="Player">Player</option>
+                      <option value="Monster">Monster</option>
+                    </select>
+                  </div>
+                  <div>
+                    <button type="submit">Add</button>
+                  </div>
+                </div>
+              </form>
+              <div class="initiative-controls">
+                <button id="start-encounter" class="secondary" disabled>Start Encounter</button>
+                <span id="encounter-status" class="status-pill is-hidden">Encounter Active</span>
+              </div>
+              <p class="notice">
+                Tip: Use the “Start Encounter” button to open the initiative lightbox and capture
+                rolls for everyone in the roster.
+              </p>
+              <div class="legend">
+                <span>Highlight = current turn</span>
+                <span>Prompt = marker ready to expire</span>
+              </div>
+            </div>
+            <div class="tracker-panel">
+              <h3>Round Controls</h3>
+              <p>
+                <span class="round-display">Round:</span>
+                <span id="round-count">1</span>
+              </p>
+              <p>
+                <strong>Current:</strong>
+                <span id="current-participant">Awaiting initiative...</span>
+              </p>
+              <div class="initiative-controls">
+                <button id="previous-turn" class="ghost" disabled>Previous Turn</button>
+                <button id="next-turn" disabled>Next Turn</button>
+              </div>
+              <p class="helper-text">
+                Use “Next Turn” to advance. End-of-turn reminders will appear for expiring
+                markers.
+              </p>
+            </div>
+          </div>
+
+          <div class="tracker-panel" style="margin-top: 1.5rem;">
+            <h3>Participants</h3>
+            <table class="participant-table" aria-label="Initiative order">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Initiative</th>
+                  <th>Markers</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="participant-body">
+                <tr>
+                  <td colspan="5" class="helper-text">Add participants to begin building the encounter.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </section>
 
     <!-- Initiative input lightbox -->
     <div id="initiative-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
@@ -854,6 +932,12 @@
       const expiryKeep = document.getElementById("expiry-keep");
       const expiryRemove = document.getElementById("expiry-remove");
 
+      // Module navigation elements keep the dashboard and tracker in separate views.
+      const dashboardView = document.getElementById("dashboard-view");
+      const initiativeModule = document.getElementById("initiative-module");
+      const initiativeLaunch = document.getElementById("initiative-launch");
+      const initiativeBack = document.getElementById("initiative-back");
+
       // Utility helpers keep state changes predictable and documented.
       const generateId = () => `id-${Math.random().toString(16).slice(2, 10)}`;
 
@@ -865,6 +949,19 @@
       const closeModal = (modal) => {
         modal.classList.remove("active");
         modal.setAttribute("aria-hidden", "true");
+      };
+
+      // Toggle module visibility to keep the initiative tracker off the dashboard.
+      const openInitiativeModule = () => {
+        dashboardView.classList.add("is-hidden");
+        initiativeModule.classList.remove("is-hidden");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+
+      const closeInitiativeModule = () => {
+        initiativeModule.classList.add("is-hidden");
+        dashboardView.classList.remove("is-hidden");
+        window.scrollTo({ top: 0, behavior: "smooth" });
       };
 
       const getCurrentParticipant = () => state.participants[state.turnIndex] || null;
@@ -998,6 +1095,10 @@
       seedConditionPresets();
       updateEncounterControls();
       updateRoundDisplay();
+
+      // Wire module navigation events for the initiative tracker entry point.
+      initiativeLaunch.addEventListener("click", openInitiativeModule);
+      initiativeBack.addEventListener("click", closeInitiativeModule);
 
       participantForm.addEventListener("submit", (event) => {
         event.preventDefault();
