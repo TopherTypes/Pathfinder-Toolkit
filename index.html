@@ -1143,10 +1143,13 @@
         }
 
         if (addMarkerId) {
+          // Default marker timing should follow the active turn, not the target, for GM speed.
+          const currentParticipant = getCurrentParticipant();
+          const defaultStartId = currentParticipant ? currentParticipant.id : addMarkerId;
           state.editingTargetId = addMarkerId;
           updateMarkerSelects();
           markerTarget.value = addMarkerId;
-          markerStart.value = addMarkerId;
+          markerStart.value = defaultStartId;
           markerCondition.value = "";
           markerLabel.value = "";
           markerDuration.value = "";
