@@ -252,6 +252,29 @@
         align-items: end;
       }
 
+      /* Encounter management rows resize for longer inputs and actions. */
+      .field-row--encounter {
+        grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 140px;
+      }
+
+      .field-row--encounter-actions {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      }
+
+      .encounter-manager {
+        background: rgba(20, 16, 12, 0.85);
+        border-radius: 12px;
+        border: 1px dashed rgba(201, 162, 74, 0.5);
+        padding: 0.8rem;
+        margin-bottom: 1rem;
+      }
+
+      .encounter-manager h4 {
+        font-family: var(--serif);
+        margin-bottom: 0.6rem;
+        color: var(--gold-bright);
+      }
+
       label {
         font-weight: 600;
       }
@@ -633,6 +656,34 @@
           <div class="tracker-grid">
             <div class="tracker-panel">
               <h3>Encounter Setup</h3>
+              <div class="encounter-manager">
+                <h4>Encounter Library</h4>
+                <div class="field-row field-row--encounter">
+                  <div>
+                    <label for="encounter-select">Stored encounters</label>
+                    <select id="encounter-select" name="encounter-select"></select>
+                  </div>
+                  <div>
+                    <label for="encounter-name">New encounter name</label>
+                    <input
+                      id="encounter-name"
+                      name="encounter-name"
+                      type="text"
+                      placeholder="e.g. Crimson Guard Ambush"
+                    />
+                  </div>
+                  <div>
+                    <button id="create-encounter" type="button">Create</button>
+                  </div>
+                </div>
+                <div class="field-row field-row--encounter-actions" style="margin-top: 0.7rem;">
+                  <button id="save-encounter" class="secondary" type="button">Save Encounter</button>
+                  <button id="delete-encounter" class="ghost" type="button">Delete Encounter</button>
+                </div>
+                <p class="helper-text" id="encounter-status-note">
+                  Build multiple encounters and save them to browser memory for quick swaps.
+                </p>
+              </div>
               <form id="participant-form">
                 <div class="field-row">
                   <div>
@@ -800,6 +851,9 @@
       // ------------------------------
       // Initiative Tracker Logic
       // ------------------------------
+      // Local storage schema keeps module data expandable for future tools.
+      const STORAGE_KEY = "pfToolkitMemory";
+      const STORAGE_VERSION = 1;
       const conditionPresets = [
         "Blinded",
         "Confused",
@@ -835,6 +889,7 @@
         promptQueue: [],
         pendingAdvance: false,
         editingTargetId: null,
+        activeEncounterId: null,
       };
 
       // Cache DOM nodes once for performance and clarity.
@@ -853,6 +908,13 @@
       const initiativeList = document.getElementById("initiative-list");
       const initiativeCancel = document.getElementById("initiative-cancel");
       const initiativeConfirm = document.getElementById("initiative-confirm");
+
+      const encounterSelect = document.getElementById("encounter-select");
+      const encounterNameInput = document.getElementById("encounter-name");
+      const createEncounterButton = document.getElementById("create-encounter");
+      const saveEncounterButton = document.getElementById("save-encounter");
+      const deleteEncounterButton = document.getElementById("delete-encounter");
+      const encounterStatusNote = document.getElementById("encounter-status-note");
 
       const markerModal = document.getElementById("marker-modal");
       const markerForm = document.getElementById("marker-form");
@@ -901,6 +963,80 @@
 
       // Utility helpers keep state changes predictable and documented.
       const generateId = () => `id-${Math.random().toString(16).slice(2, 10)}`;
+
+      const loadMemory = () => {
+        const raw = window.localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          return { version: STORAGE_VERSION, modules: { initiative: { encounters: [], activeEncounterId: null } } };
+        }
+        try {
+          const parsed = JSON.parse(raw);
+          return {
+            version: parsed.version ?? STORAGE_VERSION,
+            modules: {
+              initiative: {
+                encounters: parsed.modules?.initiative?.encounters ?? [],
+                activeEncounterId: parsed.modules?.initiative?.activeEncounterId ?? null,
+              },
+            },
+          };
+        } catch (error) {
+          console.warn("Failed to parse local storage memory, resetting.", error);
+          return { version: STORAGE_VERSION, modules: { initiative: { encounters: [], activeEncounterId: null } } };
+        }
+      };
+
+      const saveMemory = (memory) => {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(memory));
+      };
+
+      const getInitiativeMemory = () => loadMemory().modules.initiative;
+
+      const updateInitiativeMemory = (updater) => {
+        const memory = loadMemory();
+        const updated = updater(memory.modules.initiative);
+        memory.modules.initiative = updated;
+        saveMemory(memory);
+        return updated;
+      };
+
+      const hydrateStateFromEncounter = (encounter) => {
+        state.participants = encounter.participants ?? [];
+        state.encounterStarted = encounter.encounterStarted ?? false;
+        state.round = encounter.round ?? 1;
+        state.turnIndex = encounter.turnIndex ?? 0;
+        state.activeEncounterId = encounter.id ?? null;
+        state.promptQueue = [];
+        state.pendingAdvance = false;
+        state.editingTargetId = null;
+      };
+
+      const buildEncounterPayload = (overrides = {}) => ({
+        id: state.activeEncounterId ?? generateId(),
+        name: overrides.name ?? "Untitled Encounter",
+        participants: state.participants,
+        encounterStarted: state.encounterStarted,
+        round: state.round,
+        turnIndex: state.turnIndex,
+        updatedAt: new Date().toISOString(),
+      });
+
+      const persistActiveEncounter = () => {
+        if (!state.activeEncounterId) {
+          return;
+        }
+        updateInitiativeMemory((initiativeMemory) => {
+          const encounters = initiativeMemory.encounters.map((encounter) =>
+            encounter.id === state.activeEncounterId
+              ? { ...encounter, ...buildEncounterPayload({ name: encounter.name }) }
+              : encounter
+          );
+          return {
+            ...initiativeMemory,
+            encounters,
+          };
+        });
+      };
 
       const openModal = (modal) => {
         modal.classList.add("active");
@@ -970,6 +1106,46 @@
           .join("");
         markerTarget.innerHTML = options;
         markerStart.innerHTML = options;
+      };
+
+      const updateEncounterSelect = (initiativeMemory) => {
+        const encounters = initiativeMemory.encounters ?? [];
+        if (!encounters.length) {
+          encounterSelect.innerHTML = '<option value="">No saved encounters</option>';
+          encounterSelect.disabled = true;
+          deleteEncounterButton.disabled = true;
+          return;
+        }
+        encounterSelect.disabled = false;
+        deleteEncounterButton.disabled = false;
+        encounterSelect.innerHTML = encounters
+          .map((encounter) => `<option value="${encounter.id}">${encounter.name}</option>`)
+          .join("");
+        if (initiativeMemory.activeEncounterId) {
+          encounterSelect.value = initiativeMemory.activeEncounterId;
+        }
+      };
+
+      const updateEncounterStatusNote = (message, isWarning = false) => {
+        encounterStatusNote.textContent = message;
+        encounterStatusNote.style.color = isWarning ? "var(--warning)" : "var(--ink-muted)";
+      };
+
+      const loadEncounterLibrary = () => {
+        const initiativeMemory = getInitiativeMemory();
+        updateEncounterSelect(initiativeMemory);
+        if (initiativeMemory.activeEncounterId) {
+          const active = initiativeMemory.encounters.find(
+            (encounter) => encounter.id === initiativeMemory.activeEncounterId
+          );
+          if (active) {
+            hydrateStateFromEncounter(active);
+          }
+        }
+        renderParticipants();
+        updateEncounterControls();
+        updateRoundDisplay();
+        updateMarkerSelects();
       };
 
       const renderParticipants = () => {
@@ -1059,6 +1235,7 @@
       seedConditionPresets();
       updateEncounterControls();
       updateRoundDisplay();
+      loadEncounterLibrary();
 
       // Wire module navigation events for the initiative tracker entry point.
       initiativeLaunch.addEventListener("click", openInitiativeModule);
@@ -1082,6 +1259,7 @@
         renderParticipants();
         updateEncounterControls();
         updateMarkerSelects();
+        persistActiveEncounter();
       });
 
       startEncounterButton.addEventListener("click", () => {
@@ -1119,6 +1297,7 @@
         updateEncounterControls();
         updateRoundDisplay();
         updateMarkerSelects();
+        persistActiveEncounter();
       });
 
       participantBody.addEventListener("click", (event) => {
@@ -1139,6 +1318,7 @@
           updateEncounterControls();
           updateRoundDisplay();
           updateMarkerSelects();
+          persistActiveEncounter();
           return;
         }
 
@@ -1163,6 +1343,7 @@
             markers: participant.markers.filter((marker) => marker.id !== removeMarkerId),
           }));
           renderParticipants();
+          persistActiveEncounter();
         }
       });
 
@@ -1208,6 +1389,7 @@
 
         closeModal(markerModal);
         renderParticipants();
+        persistActiveEncounter();
       });
 
       const queuePrompt = (participant, marker, reason) => {
@@ -1243,6 +1425,7 @@
         }));
         renderParticipants();
         processPromptQueue();
+        persistActiveEncounter();
       });
 
       const checkForExpiryPrompts = () => {
@@ -1283,6 +1466,7 @@
         }
         renderParticipants();
         updateRoundDisplay();
+        persistActiveEncounter();
       };
 
       const completeTurnRewind = () => {
@@ -1297,6 +1481,7 @@
         }
         renderParticipants();
         updateRoundDisplay();
+        persistActiveEncounter();
       };
 
       nextTurnButton.addEventListener("click", () => {
@@ -1318,6 +1503,112 @@
           return;
         }
         completeTurnRewind();
+      });
+
+      // Encounter management handlers wire local storage for persistent switching.
+      createEncounterButton.addEventListener("click", () => {
+        const name = encounterNameInput.value.trim();
+        if (!name) {
+          updateEncounterStatusNote("Add a name before creating a new encounter.", true);
+          return;
+        }
+        const newEncounter = {
+          id: generateId(),
+          name,
+          participants: [],
+          encounterStarted: false,
+          round: 1,
+          turnIndex: 0,
+          updatedAt: new Date().toISOString(),
+        };
+        const initiativeMemory = updateInitiativeMemory((memory) => ({
+          ...memory,
+          encounters: [...memory.encounters, newEncounter],
+          activeEncounterId: newEncounter.id,
+        }));
+        hydrateStateFromEncounter(newEncounter);
+        encounterNameInput.value = "";
+        updateEncounterSelect(initiativeMemory);
+        updateEncounterControls();
+        updateRoundDisplay();
+        renderParticipants();
+        updateMarkerSelects();
+        updateEncounterStatusNote(`Created and opened "${newEncounter.name}".`);
+      });
+
+      saveEncounterButton.addEventListener("click", () => {
+        if (!state.activeEncounterId) {
+          updateEncounterStatusNote("Create or select an encounter before saving.", true);
+          return;
+        }
+        const initiativeMemory = updateInitiativeMemory((memory) => {
+          const encounters = memory.encounters.map((encounter) =>
+            encounter.id === state.activeEncounterId
+              ? { ...encounter, ...buildEncounterPayload({ name: encounter.name }) }
+              : encounter
+          );
+          return { ...memory, encounters };
+        });
+        updateEncounterSelect(initiativeMemory);
+        updateEncounterStatusNote("Encounter saved to local memory.");
+      });
+
+      deleteEncounterButton.addEventListener("click", () => {
+        if (!state.activeEncounterId) {
+          updateEncounterStatusNote("Select an encounter to remove.", true);
+          return;
+        }
+        const initiativeMemory = updateInitiativeMemory((memory) => {
+          const encounters = memory.encounters.filter(
+            (encounter) => encounter.id !== state.activeEncounterId
+          );
+          const nextActiveId = encounters[0]?.id ?? null;
+          return { ...memory, encounters, activeEncounterId: nextActiveId };
+        });
+        const nextActive = initiativeMemory.encounters.find(
+          (encounter) => encounter.id === initiativeMemory.activeEncounterId
+        );
+        if (nextActive) {
+          hydrateStateFromEncounter(nextActive);
+        } else {
+          hydrateStateFromEncounter({
+            id: null,
+            name: "",
+            participants: [],
+            encounterStarted: false,
+            round: 1,
+            turnIndex: 0,
+          });
+        }
+        updateEncounterSelect(initiativeMemory);
+        updateEncounterControls();
+        updateRoundDisplay();
+        renderParticipants();
+        updateMarkerSelects();
+        updateEncounterStatusNote("Encounter removed from local memory.");
+      });
+
+      encounterSelect.addEventListener("change", (event) => {
+        const selectedId = event.target.value;
+        if (!selectedId) {
+          return;
+        }
+        const initiativeMemory = updateInitiativeMemory((memory) => ({
+          ...memory,
+          activeEncounterId: selectedId,
+        }));
+        const selectedEncounter = initiativeMemory.encounters.find(
+          (encounter) => encounter.id === selectedId
+        );
+        if (!selectedEncounter) {
+          return;
+        }
+        hydrateStateFromEncounter(selectedEncounter);
+        updateEncounterControls();
+        updateRoundDisplay();
+        renderParticipants();
+        updateMarkerSelects();
+        updateEncounterStatusNote(`Loaded "${selectedEncounter.name}".`);
       });
     </script>
   </body>
