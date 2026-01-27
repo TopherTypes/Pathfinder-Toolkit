@@ -497,7 +497,19 @@
 
       /* Second line keeps type, CR, and add action grouped together. */
       .field-row--participant-meta {
-        grid-template-columns: minmax(0, 1fr) 180px 110px;
+        /* Use two columns so we can stack the type field on its own row when space is tight. */
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      /* Full-width select avoids the type field being squeezed or clipped in narrow drawers. */
+      .participant-type-field {
+        grid-column: 1 / -1;
+      }
+
+      /* Ensure the add button aligns with the bottom of the row controls. */
+      .participant-action {
+        align-self: end;
+        justify-self: end;
       }
 
       .encounter-manager {
@@ -979,7 +991,8 @@
                       </div>
                       <!-- Group participant type and CR on a separate line for clarity. -->
                       <div class="field-row field-row--participant-meta">
-                        <div>
+                        <!-- Full-width type field keeps the selector readable. -->
+                        <div class="participant-type-field">
                           <label for="participant-type">Type</label>
                           <select id="participant-type" name="participant-type">
                             <option value="Player">Player</option>
@@ -991,7 +1004,8 @@
                           <label for="participant-cr">CR (XP)</label>
                           <select id="participant-cr" name="participant-cr"></select>
                         </div>
-                        <div>
+                        <!-- Align add action to the bottom-right for quick scanning. -->
+                        <div class="participant-action">
                           <button type="submit">Add</button>
                         </div>
                       </div>
