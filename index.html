@@ -325,7 +325,7 @@
         overflow: hidden;
         width: var(--drawer-width-expanded);
         min-height: 100%;
-        transition: transform 0.35s ease;
+        transition: width 0.35s ease;
       }
 
       /* Drawer card gives a modal-like shell to connect library and setup content. */
@@ -335,6 +335,7 @@
         border: 1px solid rgba(201, 162, 74, 0.6);
         box-shadow: 0 18px 28px var(--shadow);
         overflow: hidden;
+        transition: transform 0.35s ease;
       }
 
       /* Drawer header keeps the label anchored to the container. */
@@ -405,8 +406,68 @@
         width: var(--drawer-width-expanded);
       }
 
+      /* Collapsed handle preserves a label and control when the drawer is hidden. */
+      .encounter-drawer__collapsed-handle {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.65rem;
+        width: var(--drawer-width-collapsed);
+        margin-left: auto;
+        background: linear-gradient(180deg, rgba(63, 44, 28, 0.95), rgba(32, 22, 14, 0.95));
+        border-left: 1px solid rgba(201, 162, 74, 0.45);
+        box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.35);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+
+      .encounter-drawer__collapsed-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.2rem;
+        height: 2.2rem;
+        border-radius: 12px;
+        background: rgba(201, 162, 74, 0.18);
+        border: 1px solid rgba(201, 162, 74, 0.6);
+        color: var(--gold-bright);
+        font-weight: 700;
+        transition: transform 0.3s ease, box-shadow 0.2s ease;
+      }
+
+      .encounter-drawer__collapsed-toggle:hover,
+      .encounter-drawer__collapsed-toggle:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 18px var(--shadow);
+        outline: none;
+      }
+
+      .encounter-drawer__collapsed-text {
+        font-family: var(--serif);
+        font-size: 0.85rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold-bright);
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+      }
+
+      /* Collapsed state shifts the card out of view while exposing the label. */
       .tracker-layout.is-collapsed .encounter-drawer {
+        width: var(--drawer-width-collapsed);
+      }
+
+      .tracker-layout.is-collapsed .encounter-drawer__card {
         transform: translateX(calc(-1 * (var(--drawer-width-expanded) - var(--drawer-width-collapsed))));
+      }
+
+      .tracker-layout.is-collapsed .encounter-drawer__collapsed-handle {
+        opacity: 1;
+        pointer-events: auto;
       }
 
       /* Main tracker panel stacks round controls and initiative list. */
@@ -938,6 +999,20 @@
                   </div>
                 </div>
               </div>
+              <!-- Collapsed handle preserves access to the drawer when the panel is hidden. -->
+              <div class="encounter-drawer__collapsed-handle" id="encounter-panel-collapsed-handle">
+                <button
+                  id="encounter-panel-toggle-collapsed"
+                  class="encounter-drawer__collapsed-toggle"
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="encounter-panel-content"
+                  aria-label="Expand Encounter Library"
+                >
+                  <span aria-hidden="true">▸</span>
+                </button>
+                <span class="encounter-drawer__collapsed-text">Encounters</span>
+              </div>
             </aside>
 
             <div class="tracker-main">
@@ -1207,6 +1282,8 @@
       const initiativeLaunch = document.getElementById("initiative-launch");
       const initiativeBack = document.getElementById("initiative-back");
       const encounterPanelToggle = document.getElementById("encounter-panel-toggle");
+      const encounterPanelToggleCollapsed = document.getElementById("encounter-panel-toggle-collapsed");
+      const encounterPanelCollapsedHandle = document.getElementById("encounter-panel-collapsed-handle");
       const trackerLayout = document.getElementById("tracker-layout");
       const encounterPanelContent = document.getElementById("encounter-panel-content");
 
@@ -1241,6 +1318,17 @@
           isVisible ? "Collapse Encounter Library" : "Expand Encounter Library"
         );
         encounterPanelToggle.title = isVisible ? "Collapse Encounter Library" : "Expand Encounter Library";
+        encounterPanelToggle.tabIndex = isVisible ? 0 : -1;
+        encounterPanelToggleCollapsed.setAttribute("aria-expanded", String(isVisible));
+        encounterPanelToggleCollapsed.setAttribute(
+          "aria-label",
+          isVisible ? "Collapse Encounter Library" : "Expand Encounter Library"
+        );
+        encounterPanelToggleCollapsed.title = isVisible
+          ? "Collapse Encounter Library"
+          : "Expand Encounter Library";
+        encounterPanelToggleCollapsed.tabIndex = isVisible ? -1 : 0;
+        encounterPanelCollapsedHandle.setAttribute("aria-hidden", String(isVisible));
       };
 
       // Utility helpers keep state changes predictable and documented.
@@ -1639,10 +1727,13 @@
       // Wire module navigation events for the initiative tracker entry point.
       initiativeLaunch.addEventListener("click", openInitiativeModule);
       initiativeBack.addEventListener("click", closeInitiativeModule);
-      encounterPanelToggle.addEventListener("click", () => {
+      // Shared toggle keeps both expanded and collapsed controls in sync.
+      const toggleEncounterPanel = () => {
         const isExpanded = encounterPanelToggle.getAttribute("aria-expanded") === "true";
         setEncounterPanelVisibility(!isExpanded);
-      });
+      };
+      encounterPanelToggle.addEventListener("click", toggleEncounterPanel);
+      encounterPanelToggleCollapsed.addEventListener("click", toggleEncounterPanel);
       participantType.addEventListener("change", updateParticipantCrVisibility);
 
       participantForm.addEventListener("submit", (event) => {
