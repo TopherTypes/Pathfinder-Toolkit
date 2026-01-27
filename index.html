@@ -228,7 +228,7 @@
 
       .tracker-grid {
         display: grid;
-        grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr) minmax(0, 1fr);
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.6fr);
         gap: 1.1rem;
         margin-top: 0.8rem;
       }
@@ -247,9 +247,9 @@
       }
 
       .encounter-entry {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.45rem;
         padding: 0.55rem 0.7rem;
         border-radius: 12px;
         background: rgba(20, 16, 12, 0.92);
@@ -261,30 +261,25 @@
         box-shadow: 0 0 0 1px rgba(232, 200, 119, 0.25);
       }
 
-      .encounter-load {
-        flex: 1;
-        text-align: left;
-        background: transparent;
-        border: none;
-        color: var(--ink);
-        padding: 0;
+      .encounter-entry-title {
         font-weight: 600;
-        cursor: pointer;
+        color: var(--ink);
       }
 
-      .encounter-load:hover,
-      .encounter-load:focus-visible {
-        color: var(--gold-bright);
-        outline: none;
+      .encounter-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
       }
 
-      .encounter-delete {
+      .encounter-action {
         background: transparent;
         border: 1px dashed rgba(201, 162, 74, 0.7);
         color: var(--gold-bright);
         padding: 0.35rem 0.55rem;
         border-radius: 10px;
         cursor: pointer;
+        font-size: 0.85rem;
       }
 
       .encounter-empty {
@@ -308,14 +303,18 @@
       .field-row {
         display: grid;
         gap: 0.6rem;
-        grid-template-columns: minmax(0, 1fr) 130px 110px;
+        grid-template-columns: minmax(0, 1fr) 140px 150px 110px;
         align-items: end;
       }
 
       /* Encounter management rows resize for longer inputs and actions. */
       .field-row--encounter-name {
-        grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr);
         align-items: center;
+      }
+
+      .field-row--participant {
+        grid-template-columns: minmax(0, 1fr) 140px 180px 110px;
       }
 
       .encounter-manager {
@@ -446,6 +445,18 @@
         align-items: center;
       }
 
+      .round-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .round-controls .initiative-controls {
+        margin-top: 0;
+      }
+
       .status-pill {
         background: rgba(107, 179, 111, 0.2);
         color: var(--success);
@@ -544,6 +555,19 @@
         border-radius: 10px;
         margin-top: 0.6rem;
         font-size: 0.88rem;
+      }
+
+      .tracker-footer {
+        display: grid;
+        gap: 0.8rem;
+        margin-top: 1rem;
+      }
+
+      .tracker-summary {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        font-weight: 600;
       }
 
       .is-hidden {
@@ -714,14 +738,15 @@
             <div class="tracker-panel encounter-library">
               <h3>Encounter Library</h3>
               <p class="helper-text">
-                Select a saved encounter to load it into the workspace, or delete older entries.
+                Create a new encounter or load a saved roster into the tracker.
               </p>
+              <button id="create-encounter" type="button">Create New Encounter</button>
               <ul id="encounter-list" class="encounter-list" aria-label="Saved encounters"></ul>
             </div>
             <div class="tracker-panel">
               <h3>Encounter Setup</h3>
               <div class="encounter-manager">
-                <h4>Encounter Details</h4>
+                <h4>Encounter Name</h4>
                 <div class="field-row field-row--encounter-name">
                   <div>
                     <label for="encounter-name">Encounter name</label>
@@ -732,17 +757,13 @@
                       placeholder="e.g. Crimson Guard Ambush"
                     />
                   </div>
-                  <div class="initiative-controls" style="justify-content: flex-start;">
-                    <button id="create-encounter" type="button">Create New</button>
-                    <button id="save-encounter" class="secondary" type="button">Save Encounter</button>
-                  </div>
                 </div>
                 <p class="helper-text" id="encounter-status-note">
                   Build multiple encounters and save them to browser memory for quick swaps.
                 </p>
               </div>
               <form id="participant-form">
-                <div class="field-row">
+                <div class="field-row field-row--participant">
                   <div>
                     <label for="participant-name">Participant name</label>
                     <input
@@ -757,8 +778,13 @@
                     <label for="participant-type">Type</label>
                     <select id="participant-type" name="participant-type">
                       <option value="Player">Player</option>
+                      <option value="NPC">NPC</option>
                       <option value="Monster">Monster</option>
                     </select>
+                  </div>
+                  <div id="participant-cr-field" class="is-hidden">
+                    <label for="participant-cr">CR (XP)</label>
+                    <select id="participant-cr" name="participant-cr"></select>
                   </div>
                   <div>
                     <button type="submit">Add</button>
@@ -766,11 +792,10 @@
                 </div>
               </form>
               <div class="initiative-controls">
-                <button id="start-encounter" class="secondary" disabled>Start Encounter</button>
-                <span id="encounter-status" class="status-pill is-hidden">Encounter Active</span>
+                <button id="save-encounter" class="secondary" type="button">Save / Update</button>
               </div>
               <p class="notice">
-                Tip: Use the “Start Encounter” button to open the initiative lightbox and capture
+                Tip: Use the “Begin Encounter” button in the tracker to open the initiative lightbox and capture
                 rolls for everyone in the roster.
               </p>
               <div class="legend">
@@ -778,29 +803,27 @@
                 <span>Prompt = marker ready to expire</span>
               </div>
             </div>
-            <div class="tracker-panel">
-              <h3>Round Controls</h3>
-              <p>
-                <span class="round-display">Round:</span>
-                <span id="round-count">1</span>
-              </p>
-              <p>
-                <strong>Current:</strong>
-                <span id="current-participant">Awaiting initiative...</span>
-              </p>
-              <div class="initiative-controls">
-                <button id="previous-turn" class="ghost" disabled>Previous Turn</button>
-                <button id="next-turn" disabled>Next Turn</button>
-              </div>
-              <p class="helper-text">
-                Use “Next Turn” to advance. End-of-turn reminders will appear for expiring
-                markers.
-              </p>
+          </div>
+
+          <div class="tracker-panel round-controls" style="margin-top: 1.5rem;">
+            <h3>Round Controls</h3>
+            <p>
+              <span class="round-display">Round:</span>
+              <span id="round-count">1</span>
+            </p>
+            <p>
+              <strong>Current:</strong>
+              <span id="current-participant">Awaiting initiative...</span>
+            </p>
+            <div class="initiative-controls">
+              <button id="previous-turn" class="ghost" disabled>Previous Turn</button>
+              <button id="next-turn" disabled>Next Turn</button>
+              <span id="encounter-status" class="status-pill is-hidden">Encounter Active</span>
             </div>
           </div>
 
           <div class="tracker-panel" style="margin-top: 1.5rem;">
-            <h3>Participants</h3>
+            <h3>Tracker</h3>
             <table class="participant-table" aria-label="Initiative order">
               <thead>
                 <tr>
@@ -809,14 +832,27 @@
                   <th>Initiative</th>
                   <th>Markers</th>
                   <th>Actions</th>
+                  <th>CR (XP)</th>
                 </tr>
               </thead>
               <tbody id="participant-body">
                 <tr>
-                  <td colspan="5" class="helper-text">Add participants to begin building the encounter.</td>
+                  <td colspan="6" class="helper-text">Add participants to begin building the encounter.</td>
                 </tr>
               </tbody>
             </table>
+            <div class="tracker-footer">
+              <div class="tracker-summary">
+                <span>Encounter CR: <span id="encounter-cr">—</span></span>
+                <span>Total XP: <span id="total-xp">0</span></span>
+                <span>XP per player: <span id="xp-per-player">0</span></span>
+              </div>
+              <div class="initiative-controls">
+                <button id="start-encounter" class="secondary" disabled>Begin Encounter</button>
+                <button id="reward-encounter" class="ghost" disabled>Mark Rewards Given</button>
+                <span id="reward-status" class="status-pill is-hidden">Rewards Granted</span>
+              </div>
+            </div>
           </div>
         </section>
       </div>
@@ -938,9 +974,39 @@
         "Unconscious",
       ];
 
+      // Challenge rating reference list powers monster XP and encounter summaries.
+      const challengeRatings = [
+        { value: "1/8", label: "1/8", xp: 50 },
+        { value: "1/6", label: "1/6", xp: 65 },
+        { value: "1/4", label: "1/4", xp: 100 },
+        { value: "1/3", label: "1/3", xp: 135 },
+        { value: "1/2", label: "1/2", xp: 200 },
+        { value: "1", label: "1", xp: 400 },
+        { value: "2", label: "2", xp: 600 },
+        { value: "3", label: "3", xp: 800 },
+        { value: "4", label: "4", xp: 1200 },
+        { value: "5", label: "5", xp: 1600 },
+        { value: "6", label: "6", xp: 2400 },
+        { value: "7", label: "7", xp: 3200 },
+        { value: "8", label: "8", xp: 4800 },
+        { value: "9", label: "9", xp: 6400 },
+        { value: "10", label: "10", xp: 9600 },
+        { value: "11", label: "11", xp: 12800 },
+        { value: "12", label: "12", xp: 19200 },
+        { value: "13", label: "13", xp: 25600 },
+        { value: "14", label: "14", xp: 38400 },
+        { value: "15", label: "15", xp: 51200 },
+        { value: "16", label: "16", xp: 76800 },
+        { value: "17", label: "17", xp: 102400 },
+        { value: "18", label: "18", xp: 153600 },
+        { value: "19", label: "19", xp: 204800 },
+        { value: "20", label: "20", xp: 307200 },
+      ];
+
       const state = {
         participants: [],
         encounterStarted: false,
+        rewardsGranted: false,
         round: 1,
         turnIndex: 0,
         promptQueue: [],
@@ -953,13 +1019,20 @@
       const participantForm = document.getElementById("participant-form");
       const participantName = document.getElementById("participant-name");
       const participantType = document.getElementById("participant-type");
+      const participantCrField = document.getElementById("participant-cr-field");
+      const participantCr = document.getElementById("participant-cr");
       const startEncounterButton = document.getElementById("start-encounter");
-      const encounterStatus = document.getElementById("encounter-status");
       const roundCount = document.getElementById("round-count");
       const currentParticipantLabel = document.getElementById("current-participant");
       const nextTurnButton = document.getElementById("next-turn");
       const previousTurnButton = document.getElementById("previous-turn");
       const participantBody = document.getElementById("participant-body");
+      const rewardEncounterButton = document.getElementById("reward-encounter");
+      const rewardStatus = document.getElementById("reward-status");
+      const encounterCrValue = document.getElementById("encounter-cr");
+      const totalXpValue = document.getElementById("total-xp");
+      const xpPerPlayerValue = document.getElementById("xp-per-player");
+      const encounterStatus = document.getElementById("encounter-status");
 
       const initiativeModal = document.getElementById("initiative-modal");
       const initiativeList = document.getElementById("initiative-list");
@@ -1020,6 +1093,47 @@
       // Utility helpers keep state changes predictable and documented.
       const generateId = () => `id-${Math.random().toString(16).slice(2, 10)}`;
 
+      const formatXp = (xp) => xp.toLocaleString();
+
+      const getChallengeRatingData = (challengeRating) =>
+        challengeRatings.find((rating) => rating.value === challengeRating) ?? null;
+
+      const getXpForChallengeRating = (challengeRating) => getChallengeRatingData(challengeRating)?.xp ?? 0;
+
+      const isMonsterType = (type) => type.toLowerCase() === "monster";
+
+      const isPlayerEquivalent = (type) => {
+        const normalized = type.toLowerCase();
+        return normalized === "player" || normalized === "npc";
+      };
+
+      // Encounter summary logic translates monster CRs into XP totals and a derived CR.
+      // NPCs are treated as player equivalents for XP splitting per encounter rules.
+      const getEncounterSummary = () => {
+        const totalXp = state.participants.reduce((sum, participant) => {
+          if (!isMonsterType(participant.type)) {
+            return sum;
+          }
+          return sum + getXpForChallengeRating(participant.challengeRating);
+        }, 0);
+        const playerCount = state.participants.filter((participant) =>
+          isPlayerEquivalent(participant.type)
+        ).length;
+        const xpPerPlayer = playerCount ? Math.floor(totalXp / playerCount) : 0;
+        const closestCr = challengeRatings.reduce((closest, rating) => {
+          if (!closest) {
+            return rating;
+          }
+          return Math.abs(rating.xp - totalXp) < Math.abs(closest.xp - totalXp) ? rating : closest;
+        }, null);
+        return {
+          totalXp,
+          xpPerPlayer,
+          encounterCr: totalXp ? closestCr?.label ?? "—" : "—",
+          playerCount,
+        };
+      };
+
       const loadMemory = () => {
         const raw = window.localStorage.getItem(STORAGE_KEY);
         if (!raw) {
@@ -1059,6 +1173,7 @@
       const hydrateStateFromEncounter = (encounter) => {
         state.participants = encounter.participants ?? [];
         state.encounterStarted = encounter.encounterStarted ?? false;
+        state.rewardsGranted = encounter.rewardsGranted ?? false;
         state.round = encounter.round ?? 1;
         state.turnIndex = encounter.turnIndex ?? 0;
         state.activeEncounterId = encounter.id ?? null;
@@ -1077,6 +1192,7 @@
         name: overrides.name ?? "Untitled Encounter",
         participants: state.participants,
         encounterStarted: state.encounterStarted,
+        rewardsGranted: state.rewardsGranted,
         round: state.round,
         turnIndex: state.turnIndex,
         updatedAt: new Date().toISOString(),
@@ -1148,9 +1264,11 @@
       const updateEncounterControls = () => {
         const hasParticipants = state.participants.length > 0;
         startEncounterButton.disabled = !hasParticipants;
+        rewardEncounterButton.disabled = !state.encounterStarted || !hasParticipants;
         nextTurnButton.disabled = !state.encounterStarted;
         previousTurnButton.disabled = !state.encounterStarted;
         encounterStatus.classList.toggle("is-hidden", !state.encounterStarted);
+        rewardStatus.classList.toggle("is-hidden", !state.rewardsGranted);
       };
 
       const updateRoundDisplay = () => {
@@ -1161,12 +1279,44 @@
           : "Awaiting initiative...";
       };
 
+      const updateEncounterSummary = () => {
+        const summary = getEncounterSummary();
+        encounterCrValue.textContent = summary.encounterCr;
+        totalXpValue.textContent = formatXp(summary.totalXp);
+        xpPerPlayerValue.textContent = formatXp(summary.xpPerPlayer);
+      };
+
       const updateMarkerSelects = () => {
         const options = state.participants
           .map((participant) => `<option value="${participant.id}">${participant.name}</option>`)
           .join("");
         markerTarget.innerHTML = options;
         markerStart.innerHTML = options;
+      };
+
+      const seedChallengeRatings = () => {
+        participantCr.innerHTML = challengeRatings
+          .map((rating) => `<option value="${rating.value}">CR ${rating.label} (${formatXp(rating.xp)} XP)</option>`)
+          .join("");
+      };
+
+      const updateParticipantCrVisibility = () => {
+        const showCr = isMonsterType(participantType.value);
+        participantCrField.classList.toggle("is-hidden", !showCr);
+        if (showCr && !participantCr.value) {
+          participantCr.value = challengeRatings[0]?.value ?? "";
+        }
+      };
+
+      const formatCrXp = (participant) => {
+        if (!isMonsterType(participant.type)) {
+          return "—";
+        }
+        if (!participant.challengeRating) {
+          return "CR —";
+        }
+        const xp = getXpForChallengeRating(participant.challengeRating);
+        return `CR ${participant.challengeRating} (${formatXp(xp)} XP)`;
       };
 
       // Render the encounter library list for quick selection and deletion.
@@ -1182,20 +1332,23 @@
             const displayName = encounter.name || "Untitled Encounter";
             return `
               <li class="encounter-entry ${isActive ? "is-active" : ""}">
-                <button
-                  type="button"
-                  class="encounter-load"
-                  data-encounter-load="${encounter.id}"
-                >
-                  ${displayName}
-                </button>
-                <button
-                  type="button"
-                  class="encounter-delete"
-                  data-encounter-delete="${encounter.id}"
-                >
-                  Delete
-                </button>
+                <div class="encounter-entry-title">${displayName}</div>
+                <div class="encounter-actions">
+                  <button
+                    type="button"
+                    class="encounter-action"
+                    data-encounter-view="${encounter.id}"
+                  >
+                    View
+                  </button>
+                  <button
+                    type="button"
+                    class="encounter-action"
+                    data-encounter-defeat="${encounter.id}"
+                  >
+                    Defeat
+                  </button>
+                </div>
               </li>
             `;
           })
@@ -1227,12 +1380,14 @@
         updateEncounterControls();
         updateRoundDisplay();
         updateMarkerSelects();
+        updateParticipantCrVisibility();
       };
 
       const renderParticipants = () => {
         if (!state.participants.length) {
           participantBody.innerHTML =
-            '<tr><td colspan="5" class="helper-text">Add participants to begin building the encounter.</td></tr>';
+            '<tr><td colspan="6" class="helper-text">Add participants to begin building the encounter.</td></tr>';
+          updateEncounterSummary();
           return;
         }
 
@@ -1272,10 +1427,12 @@
                     </button>
                   </div>
                 </td>
+                <td>${formatCrXp(participant)}</td>
               </tr>
             `;
           })
           .join("");
+        updateEncounterSummary();
       };
 
       // Render the initiative lightbox list with inputs for each participant.
@@ -1311,9 +1468,15 @@
         ].join("");
       };
 
+      const seedChallengeRatingOptions = () => {
+        seedChallengeRatings();
+        updateParticipantCrVisibility();
+      };
+
       // Initialize baseline UI.
       updateHeader("dashboard");
       seedConditionPresets();
+      seedChallengeRatingOptions();
       updateEncounterControls();
       updateRoundDisplay();
       loadEncounterLibrary();
@@ -1321,6 +1484,7 @@
       // Wire module navigation events for the initiative tracker entry point.
       initiativeLaunch.addEventListener("click", openInitiativeModule);
       initiativeBack.addEventListener("click", closeInitiativeModule);
+      participantType.addEventListener("change", updateParticipantCrVisibility);
 
       participantForm.addEventListener("submit", (event) => {
         event.preventDefault();
@@ -1329,14 +1493,18 @@
         if (!name) {
           return;
         }
+        const challengeRating = isMonsterType(type) ? participantCr.value : null;
         state.participants.push({
           id: generateId(),
           name,
           type,
+          challengeRating,
           initiative: null,
           markers: [],
         });
+        state.rewardsGranted = false;
         participantName.value = "";
+        participantCr.value = challengeRatings[0]?.value ?? "";
         renderParticipants();
         updateEncounterControls();
         updateMarkerSelects();
@@ -1349,6 +1517,16 @@
         }
         renderInitiativeModal();
         openModal(initiativeModal);
+      });
+
+      rewardEncounterButton.addEventListener("click", () => {
+        if (!state.encounterStarted) {
+          return;
+        }
+        state.rewardsGranted = true;
+        updateEncounterControls();
+        updateEncounterStatusNote("Rewards marked as distributed.");
+        persistActiveEncounter();
       });
 
       initiativeCancel.addEventListener("click", () => {
@@ -1371,6 +1549,7 @@
           return a.name.localeCompare(b.name);
         });
         state.encounterStarted = true;
+        state.rewardsGranted = false;
         state.round = 1;
         state.turnIndex = 0;
         closeModal(initiativeModal);
@@ -1395,6 +1574,7 @@
           if (state.turnIndex >= state.participants.length) {
             state.turnIndex = Math.max(0, state.participants.length - 1);
           }
+          state.rewardsGranted = false;
           renderParticipants();
           updateEncounterControls();
           updateRoundDisplay();
@@ -1629,6 +1809,7 @@
             name: "",
             participants: [],
             encounterStarted: false,
+            rewardsGranted: false,
             round: 1,
             turnIndex: 0,
           });
@@ -1653,6 +1834,7 @@
           name,
           participants: [],
           encounterStarted: false,
+          rewardsGranted: false,
           round: 1,
           turnIndex: 0,
           updatedAt: new Date().toISOString(),
@@ -1699,14 +1881,14 @@
         if (!(target instanceof HTMLElement)) {
           return;
         }
-        const loadId = target.getAttribute("data-encounter-load");
-        if (loadId) {
-          loadEncounterById(loadId);
+        const viewId = target.getAttribute("data-encounter-view");
+        if (viewId) {
+          loadEncounterById(viewId);
           return;
         }
-        const deleteId = target.getAttribute("data-encounter-delete");
-        if (deleteId) {
-          deleteEncounterById(deleteId);
+        const defeatId = target.getAttribute("data-encounter-defeat");
+        if (defeatId) {
+          deleteEncounterById(defeatId);
         }
       });
     </script>
