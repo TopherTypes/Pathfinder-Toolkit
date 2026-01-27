@@ -228,11 +228,22 @@
         margin-bottom: 0.4rem;
       }
 
-      .tracker-grid {
+      /* Two-panel tracker layout: encounter tools on the left, tracker on the right. */
+      .tracker-layout {
         display: grid;
-        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.6fr);
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.1fr);
         gap: 1.1rem;
         margin-top: 0.8rem;
+        align-items: start;
+      }
+
+      /* When encounter tools are hidden, allow the tracker to span the full width. */
+      .tracker-layout.is-collapsed {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .tracker-layout.is-collapsed .encounter-side-panel {
+        display: none;
       }
 
       /* Encounter library sidebar gives the GM quick access to saved encounters. */
@@ -300,6 +311,20 @@
       .tracker-panel h3 {
         font-family: var(--serif);
         margin-bottom: 0.8rem;
+      }
+
+      /* Side panel keeps encounter setup and library grouped together. */
+      .encounter-side-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+      }
+
+      /* Main tracker panel stacks round controls and initiative list. */
+      .tracker-main {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
       }
 
       .field-row {
@@ -590,7 +615,7 @@
           grid-template-columns: 1fr;
         }
 
-        .tracker-grid {
+        .tracker-layout {
           grid-template-columns: 1fr;
         }
 
@@ -729,6 +754,16 @@
           <button id="initiative-back" class="ghost" type="button">
             ← Back to Dashboard
           </button>
+          <!-- Toggle to reveal or hide the encounter management side panel. -->
+          <button
+            id="encounter-panel-toggle"
+            class="ghost"
+            type="button"
+            aria-expanded="false"
+            aria-controls="encounter-side-panel"
+          >
+            Show Encounter Tools
+          </button>
         </div>
 
         <section class="initiative-tracker" aria-label="Initiative tracker workspace">
@@ -736,123 +771,131 @@
             Set up your encounter roster, gather initiative rolls in a lightbox prompt, and manage
             round-by-round conditions with automatic expiry reminders.
           </p>
-          <div class="tracker-grid">
-            <div class="tracker-panel encounter-library">
-              <h3>Encounter Library</h3>
-              <p class="helper-text">
-                Create a new encounter or load a saved roster into the tracker.
-              </p>
-              <button id="create-encounter" type="button">Create New Encounter</button>
-              <ul id="encounter-list" class="encounter-list" aria-label="Saved encounters"></ul>
-            </div>
-            <div class="tracker-panel">
-              <h3>Encounter Setup</h3>
-              <div class="encounter-manager">
-                <h4>Encounter Name</h4>
-                <div class="field-row field-row--encounter-name">
-                  <div>
-                    <label for="encounter-name">Encounter name</label>
-                    <input
-                      id="encounter-name"
-                      name="encounter-name"
-                      type="text"
-                      placeholder="e.g. Crimson Guard Ambush"
-                    />
-                  </div>
-                </div>
-                <p class="helper-text" id="encounter-status-note">
-                  Build multiple encounters and save them to browser memory for quick swaps.
+          <div class="tracker-layout is-collapsed" id="tracker-layout">
+            <aside
+              class="encounter-side-panel"
+              id="encounter-side-panel"
+              aria-label="Encounter setup and library"
+            >
+              <div class="tracker-panel encounter-library">
+                <h3>Encounter Library</h3>
+                <p class="helper-text">
+                  Create a new encounter or load a saved roster into the tracker.
                 </p>
+                <button id="create-encounter" type="button">Create New Encounter</button>
+                <ul id="encounter-list" class="encounter-list" aria-label="Saved encounters"></ul>
               </div>
-              <form id="participant-form">
-                <div class="field-row field-row--participant">
-                  <div>
-                    <label for="participant-name">Participant name</label>
-                    <input
-                      id="participant-name"
-                      name="participant-name"
-                      type="text"
-                      placeholder="e.g. Sir Garrick"
-                      required
-                    />
+              <div class="tracker-panel">
+                <h3>Encounter Setup</h3>
+                <div class="encounter-manager">
+                  <h4>Encounter Name</h4>
+                  <div class="field-row field-row--encounter-name">
+                    <div>
+                      <label for="encounter-name">Encounter name</label>
+                      <input
+                        id="encounter-name"
+                        name="encounter-name"
+                        type="text"
+                        placeholder="e.g. Crimson Guard Ambush"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label for="participant-type">Type</label>
-                    <select id="participant-type" name="participant-type">
-                      <option value="Player">Player</option>
-                      <option value="NPC">NPC</option>
-                      <option value="Monster">Monster</option>
-                    </select>
+                  <p class="helper-text" id="encounter-status-note">
+                    Build multiple encounters and save them to browser memory for quick swaps.
+                  </p>
+                </div>
+                <form id="participant-form">
+                  <div class="field-row field-row--participant">
+                    <div>
+                      <label for="participant-name">Participant name</label>
+                      <input
+                        id="participant-name"
+                        name="participant-name"
+                        type="text"
+                        placeholder="e.g. Sir Garrick"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label for="participant-type">Type</label>
+                      <select id="participant-type" name="participant-type">
+                        <option value="Player">Player</option>
+                        <option value="NPC">NPC</option>
+                        <option value="Monster">Monster</option>
+                      </select>
+                    </div>
+                    <div id="participant-cr-field" class="is-hidden">
+                      <label for="participant-cr">CR (XP)</label>
+                      <select id="participant-cr" name="participant-cr"></select>
+                    </div>
+                    <div>
+                      <button type="submit">Add</button>
+                    </div>
                   </div>
-                  <div id="participant-cr-field" class="is-hidden">
-                    <label for="participant-cr">CR (XP)</label>
-                    <select id="participant-cr" name="participant-cr"></select>
+                </form>
+                <div class="initiative-controls">
+                  <button id="save-encounter" class="secondary" type="button">Save / Update</button>
+                </div>
+                <p class="notice">
+                  Tip: Use the “Begin Encounter” button in the tracker to open the initiative lightbox and capture
+                  rolls for everyone in the roster.
+                </p>
+                <div class="legend">
+                  <span>Highlight = current turn</span>
+                  <span>Prompt = marker ready to expire</span>
+                </div>
+              </div>
+            </aside>
+
+            <div class="tracker-main">
+              <div class="tracker-panel round-controls">
+                <h3>Round Controls</h3>
+                <p>
+                  <span class="round-display">Round:</span>
+                  <span id="round-count">1</span>
+                </p>
+                <p>
+                  <strong>Current:</strong>
+                  <span id="current-participant">Awaiting initiative...</span>
+                </p>
+                <div class="initiative-controls">
+                  <button id="previous-turn" class="ghost" disabled>Previous Turn</button>
+                  <button id="next-turn" disabled>Next Turn</button>
+                  <span id="encounter-status" class="status-pill is-hidden">Encounter Active</span>
+                </div>
+              </div>
+
+              <div class="tracker-panel">
+                <h3>Tracker</h3>
+                <table class="participant-table" aria-label="Initiative order">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Initiative</th>
+                      <th>Markers</th>
+                      <th>Actions</th>
+                      <th>CR (XP)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="participant-body">
+                    <tr>
+                      <td colspan="6" class="helper-text">Add participants to begin building the encounter.</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="tracker-footer">
+                  <div class="tracker-summary">
+                    <span>Encounter CR: <span id="encounter-cr">—</span></span>
+                    <span>Total XP: <span id="total-xp">0</span></span>
+                    <span>XP per player: <span id="xp-per-player">0</span></span>
                   </div>
-                  <div>
-                    <button type="submit">Add</button>
+                  <div class="initiative-controls">
+                    <button id="start-encounter" class="secondary" disabled>Begin Encounter</button>
+                    <button id="reward-encounter" class="ghost" disabled>Mark Rewards Given</button>
+                    <span id="reward-status" class="status-pill is-hidden">Rewards Granted</span>
                   </div>
                 </div>
-              </form>
-              <div class="initiative-controls">
-                <button id="save-encounter" class="secondary" type="button">Save / Update</button>
-              </div>
-              <p class="notice">
-                Tip: Use the “Begin Encounter” button in the tracker to open the initiative lightbox and capture
-                rolls for everyone in the roster.
-              </p>
-              <div class="legend">
-                <span>Highlight = current turn</span>
-                <span>Prompt = marker ready to expire</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="tracker-panel round-controls" style="margin-top: 1.5rem;">
-            <h3>Round Controls</h3>
-            <p>
-              <span class="round-display">Round:</span>
-              <span id="round-count">1</span>
-            </p>
-            <p>
-              <strong>Current:</strong>
-              <span id="current-participant">Awaiting initiative...</span>
-            </p>
-            <div class="initiative-controls">
-              <button id="previous-turn" class="ghost" disabled>Previous Turn</button>
-              <button id="next-turn" disabled>Next Turn</button>
-              <span id="encounter-status" class="status-pill is-hidden">Encounter Active</span>
-            </div>
-          </div>
-
-          <div class="tracker-panel" style="margin-top: 1.5rem;">
-            <h3>Tracker</h3>
-            <table class="participant-table" aria-label="Initiative order">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Type</th>
-                  <th>Initiative</th>
-                  <th>Markers</th>
-                  <th>Actions</th>
-                  <th>CR (XP)</th>
-                </tr>
-              </thead>
-              <tbody id="participant-body">
-                <tr>
-                  <td colspan="6" class="helper-text">Add participants to begin building the encounter.</td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="tracker-footer">
-              <div class="tracker-summary">
-                <span>Encounter CR: <span id="encounter-cr">—</span></span>
-                <span>Total XP: <span id="total-xp">0</span></span>
-                <span>XP per player: <span id="xp-per-player">0</span></span>
-              </div>
-              <div class="initiative-controls">
-                <button id="start-encounter" class="secondary" disabled>Begin Encounter</button>
-                <button id="reward-encounter" class="ghost" disabled>Mark Rewards Given</button>
-                <span id="reward-status" class="status-pill is-hidden">Rewards Granted</span>
               </div>
             </div>
           </div>
@@ -1070,6 +1113,9 @@
       const initiativeModule = document.getElementById("initiative-module");
       const initiativeLaunch = document.getElementById("initiative-launch");
       const initiativeBack = document.getElementById("initiative-back");
+      const encounterPanelToggle = document.getElementById("encounter-panel-toggle");
+      const trackerLayout = document.getElementById("tracker-layout");
+      const encounterSidePanel = document.getElementById("encounter-side-panel");
 
       // Single source of truth for header copy across dashboard and module views.
       const headerCopy = {
@@ -1090,6 +1136,14 @@
         }
         headerModule.textContent = copy.module;
         headerDescription.textContent = copy.description;
+      };
+
+      // Control visibility and accessibility state for the encounter side panel.
+      const setEncounterPanelVisibility = (isVisible) => {
+        trackerLayout.classList.toggle("is-collapsed", !isVisible);
+        encounterPanelToggle.setAttribute("aria-expanded", String(isVisible));
+        encounterSidePanel.setAttribute("aria-hidden", String(!isVisible));
+        encounterPanelToggle.textContent = isVisible ? "Hide Encounter Tools" : "Show Encounter Tools";
       };
 
       // Utility helpers keep state changes predictable and documented.
@@ -1477,6 +1531,8 @@
 
       // Initialize baseline UI.
       updateHeader("dashboard");
+      // Keep encounter tools collapsed until the GM expands them.
+      setEncounterPanelVisibility(false);
       seedConditionPresets();
       seedChallengeRatingOptions();
       updateEncounterControls();
@@ -1486,6 +1542,10 @@
       // Wire module navigation events for the initiative tracker entry point.
       initiativeLaunch.addEventListener("click", openInitiativeModule);
       initiativeBack.addEventListener("click", closeInitiativeModule);
+      encounterPanelToggle.addEventListener("click", () => {
+        const isExpanded = encounterPanelToggle.getAttribute("aria-expanded") === "true";
+        setEncounterPanelVisibility(!isExpanded);
+      });
       participantType.addEventListener("change", updateParticipantCrVisibility);
 
       participantForm.addEventListener("submit", (event) => {
