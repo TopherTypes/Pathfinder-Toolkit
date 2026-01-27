@@ -228,9 +228,69 @@
 
       .tracker-grid {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr) minmax(0, 1fr);
         gap: 1.1rem;
         margin-top: 0.8rem;
+      }
+
+      /* Encounter library sidebar gives the GM quick access to saved encounters. */
+      .encounter-library {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+
+      .encounter-list {
+        list-style: none;
+        display: grid;
+        gap: 0.6rem;
+      }
+
+      .encounter-entry {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.55rem 0.7rem;
+        border-radius: 12px;
+        background: rgba(20, 16, 12, 0.92);
+        border: 1px solid rgba(201, 162, 74, 0.35);
+      }
+
+      .encounter-entry.is-active {
+        border-color: var(--gold-bright);
+        box-shadow: 0 0 0 1px rgba(232, 200, 119, 0.25);
+      }
+
+      .encounter-load {
+        flex: 1;
+        text-align: left;
+        background: transparent;
+        border: none;
+        color: var(--ink);
+        padding: 0;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .encounter-load:hover,
+      .encounter-load:focus-visible {
+        color: var(--gold-bright);
+        outline: none;
+      }
+
+      .encounter-delete {
+        background: transparent;
+        border: 1px dashed rgba(201, 162, 74, 0.7);
+        color: var(--gold-bright);
+        padding: 0.35rem 0.55rem;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+
+      .encounter-empty {
+        color: var(--ink-muted);
+        font-size: 0.88rem;
+        padding: 0.5rem 0;
       }
 
       .tracker-panel {
@@ -253,12 +313,9 @@
       }
 
       /* Encounter management rows resize for longer inputs and actions. */
-      .field-row--encounter {
-        grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 140px;
-      }
-
-      .field-row--encounter-actions {
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      .field-row--encounter-name {
+        grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+        align-items: center;
       }
 
       .encounter-manager {
@@ -654,17 +711,20 @@
             round-by-round conditions with automatic expiry reminders.
           </p>
           <div class="tracker-grid">
+            <div class="tracker-panel encounter-library">
+              <h3>Encounter Library</h3>
+              <p class="helper-text">
+                Select a saved encounter to load it into the workspace, or delete older entries.
+              </p>
+              <ul id="encounter-list" class="encounter-list" aria-label="Saved encounters"></ul>
+            </div>
             <div class="tracker-panel">
               <h3>Encounter Setup</h3>
               <div class="encounter-manager">
-                <h4>Encounter Library</h4>
-                <div class="field-row field-row--encounter">
+                <h4>Encounter Details</h4>
+                <div class="field-row field-row--encounter-name">
                   <div>
-                    <label for="encounter-select">Stored encounters</label>
-                    <select id="encounter-select" name="encounter-select"></select>
-                  </div>
-                  <div>
-                    <label for="encounter-name">New encounter name</label>
+                    <label for="encounter-name">Encounter name</label>
                     <input
                       id="encounter-name"
                       name="encounter-name"
@@ -672,13 +732,10 @@
                       placeholder="e.g. Crimson Guard Ambush"
                     />
                   </div>
-                  <div>
-                    <button id="create-encounter" type="button">Create</button>
+                  <div class="initiative-controls" style="justify-content: flex-start;">
+                    <button id="create-encounter" type="button">Create New</button>
+                    <button id="save-encounter" class="secondary" type="button">Save Encounter</button>
                   </div>
-                </div>
-                <div class="field-row field-row--encounter-actions" style="margin-top: 0.7rem;">
-                  <button id="save-encounter" class="secondary" type="button">Save Encounter</button>
-                  <button id="delete-encounter" class="ghost" type="button">Delete Encounter</button>
                 </div>
                 <p class="helper-text" id="encounter-status-note">
                   Build multiple encounters and save them to browser memory for quick swaps.
@@ -909,11 +966,10 @@
       const initiativeCancel = document.getElementById("initiative-cancel");
       const initiativeConfirm = document.getElementById("initiative-confirm");
 
-      const encounterSelect = document.getElementById("encounter-select");
+      const encounterList = document.getElementById("encounter-list");
       const encounterNameInput = document.getElementById("encounter-name");
       const createEncounterButton = document.getElementById("create-encounter");
       const saveEncounterButton = document.getElementById("save-encounter");
-      const deleteEncounterButton = document.getElementById("delete-encounter");
       const encounterStatusNote = document.getElementById("encounter-status-note");
 
       const markerModal = document.getElementById("marker-modal");
@@ -1009,6 +1065,11 @@
         state.promptQueue = [];
         state.pendingAdvance = false;
         state.editingTargetId = null;
+      };
+
+      // Keep the encounter name input aligned with the active encounter.
+      const updateEncounterNameField = (name = "") => {
+        encounterNameInput.value = name;
       };
 
       const buildEncounterPayload = (overrides = {}) => ({
@@ -1108,22 +1169,37 @@
         markerStart.innerHTML = options;
       };
 
-      const updateEncounterSelect = (initiativeMemory) => {
+      // Render the encounter library list for quick selection and deletion.
+      const renderEncounterLibrary = (initiativeMemory) => {
         const encounters = initiativeMemory.encounters ?? [];
         if (!encounters.length) {
-          encounterSelect.innerHTML = '<option value="">No saved encounters</option>';
-          encounterSelect.disabled = true;
-          deleteEncounterButton.disabled = true;
+          encounterList.innerHTML = '<li class="encounter-empty">No saved encounters yet.</li>';
           return;
         }
-        encounterSelect.disabled = false;
-        deleteEncounterButton.disabled = false;
-        encounterSelect.innerHTML = encounters
-          .map((encounter) => `<option value="${encounter.id}">${encounter.name}</option>`)
+        encounterList.innerHTML = encounters
+          .map((encounter) => {
+            const isActive = encounter.id === initiativeMemory.activeEncounterId;
+            const displayName = encounter.name || "Untitled Encounter";
+            return `
+              <li class="encounter-entry ${isActive ? "is-active" : ""}">
+                <button
+                  type="button"
+                  class="encounter-load"
+                  data-encounter-load="${encounter.id}"
+                >
+                  ${displayName}
+                </button>
+                <button
+                  type="button"
+                  class="encounter-delete"
+                  data-encounter-delete="${encounter.id}"
+                >
+                  Delete
+                </button>
+              </li>
+            `;
+          })
           .join("");
-        if (initiativeMemory.activeEncounterId) {
-          encounterSelect.value = initiativeMemory.activeEncounterId;
-        }
       };
 
       const updateEncounterStatusNote = (message, isWarning = false) => {
@@ -1133,14 +1209,19 @@
 
       const loadEncounterLibrary = () => {
         const initiativeMemory = getInitiativeMemory();
-        updateEncounterSelect(initiativeMemory);
+        renderEncounterLibrary(initiativeMemory);
         if (initiativeMemory.activeEncounterId) {
           const active = initiativeMemory.encounters.find(
             (encounter) => encounter.id === initiativeMemory.activeEncounterId
           );
           if (active) {
             hydrateStateFromEncounter(active);
+            updateEncounterNameField(active.name);
+          } else {
+            updateEncounterNameField("");
           }
+        } else {
+          updateEncounterNameField("");
         }
         renderParticipants();
         updateEncounterControls();
@@ -1506,6 +1587,61 @@
       });
 
       // Encounter management handlers wire local storage for persistent switching.
+      const loadEncounterById = (selectedId) => {
+        if (!selectedId) {
+          return;
+        }
+        const initiativeMemory = updateInitiativeMemory((memory) => ({
+          ...memory,
+          activeEncounterId: selectedId,
+        }));
+        const selectedEncounter = initiativeMemory.encounters.find(
+          (encounter) => encounter.id === selectedId
+        );
+        if (!selectedEncounter) {
+          return;
+        }
+        hydrateStateFromEncounter(selectedEncounter);
+        updateEncounterNameField(selectedEncounter.name);
+        renderEncounterLibrary(initiativeMemory);
+        updateEncounterControls();
+        updateRoundDisplay();
+        renderParticipants();
+        updateMarkerSelects();
+        updateEncounterStatusNote(`Loaded "${selectedEncounter.name}".`);
+      };
+
+      const deleteEncounterById = (encounterId) => {
+        const initiativeMemory = updateInitiativeMemory((memory) => {
+          const encounters = memory.encounters.filter((encounter) => encounter.id !== encounterId);
+          const nextActiveId = encounters[0]?.id ?? null;
+          return { ...memory, encounters, activeEncounterId: nextActiveId };
+        });
+        const nextActive = initiativeMemory.encounters.find(
+          (encounter) => encounter.id === initiativeMemory.activeEncounterId
+        );
+        if (nextActive) {
+          hydrateStateFromEncounter(nextActive);
+          updateEncounterNameField(nextActive.name);
+        } else {
+          hydrateStateFromEncounter({
+            id: null,
+            name: "",
+            participants: [],
+            encounterStarted: false,
+            round: 1,
+            turnIndex: 0,
+          });
+          updateEncounterNameField("");
+        }
+        renderEncounterLibrary(initiativeMemory);
+        updateEncounterControls();
+        updateRoundDisplay();
+        renderParticipants();
+        updateMarkerSelects();
+        updateEncounterStatusNote("Encounter removed from local memory.");
+      };
+
       createEncounterButton.addEventListener("click", () => {
         const name = encounterNameInput.value.trim();
         if (!name) {
@@ -1527,8 +1663,8 @@
           activeEncounterId: newEncounter.id,
         }));
         hydrateStateFromEncounter(newEncounter);
-        encounterNameInput.value = "";
-        updateEncounterSelect(initiativeMemory);
+        updateEncounterNameField(newEncounter.name);
+        renderEncounterLibrary(initiativeMemory);
         updateEncounterControls();
         updateRoundDisplay();
         renderParticipants();
@@ -1541,74 +1677,37 @@
           updateEncounterStatusNote("Create or select an encounter before saving.", true);
           return;
         }
+        const name = encounterNameInput.value.trim();
+        if (!name) {
+          updateEncounterStatusNote("Add a name before saving the encounter.", true);
+          return;
+        }
         const initiativeMemory = updateInitiativeMemory((memory) => {
           const encounters = memory.encounters.map((encounter) =>
             encounter.id === state.activeEncounterId
-              ? { ...encounter, ...buildEncounterPayload({ name: encounter.name }) }
+              ? { ...encounter, ...buildEncounterPayload({ name }) }
               : encounter
           );
           return { ...memory, encounters };
         });
-        updateEncounterSelect(initiativeMemory);
+        renderEncounterLibrary(initiativeMemory);
         updateEncounterStatusNote("Encounter saved to local memory.");
       });
 
-      deleteEncounterButton.addEventListener("click", () => {
-        if (!state.activeEncounterId) {
-          updateEncounterStatusNote("Select an encounter to remove.", true);
+      encounterList.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) {
           return;
         }
-        const initiativeMemory = updateInitiativeMemory((memory) => {
-          const encounters = memory.encounters.filter(
-            (encounter) => encounter.id !== state.activeEncounterId
-          );
-          const nextActiveId = encounters[0]?.id ?? null;
-          return { ...memory, encounters, activeEncounterId: nextActiveId };
-        });
-        const nextActive = initiativeMemory.encounters.find(
-          (encounter) => encounter.id === initiativeMemory.activeEncounterId
-        );
-        if (nextActive) {
-          hydrateStateFromEncounter(nextActive);
-        } else {
-          hydrateStateFromEncounter({
-            id: null,
-            name: "",
-            participants: [],
-            encounterStarted: false,
-            round: 1,
-            turnIndex: 0,
-          });
-        }
-        updateEncounterSelect(initiativeMemory);
-        updateEncounterControls();
-        updateRoundDisplay();
-        renderParticipants();
-        updateMarkerSelects();
-        updateEncounterStatusNote("Encounter removed from local memory.");
-      });
-
-      encounterSelect.addEventListener("change", (event) => {
-        const selectedId = event.target.value;
-        if (!selectedId) {
+        const loadId = target.getAttribute("data-encounter-load");
+        if (loadId) {
+          loadEncounterById(loadId);
           return;
         }
-        const initiativeMemory = updateInitiativeMemory((memory) => ({
-          ...memory,
-          activeEncounterId: selectedId,
-        }));
-        const selectedEncounter = initiativeMemory.encounters.find(
-          (encounter) => encounter.id === selectedId
-        );
-        if (!selectedEncounter) {
-          return;
+        const deleteId = target.getAttribute("data-encounter-delete");
+        if (deleteId) {
+          deleteEncounterById(deleteId);
         }
-        hydrateStateFromEncounter(selectedEncounter);
-        updateEncounterControls();
-        updateRoundDisplay();
-        renderParticipants();
-        updateMarkerSelects();
-        updateEncounterStatusNote(`Loaded "${selectedEncounter.name}".`);
       });
     </script>
   </body>
