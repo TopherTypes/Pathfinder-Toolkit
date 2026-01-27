@@ -490,8 +490,14 @@
         align-items: center;
       }
 
-      .field-row--participant {
-        grid-template-columns: minmax(0, 1fr) 140px 180px 110px;
+      /* Participant setup splits name from type controls for clearer scanning. */
+      .field-row--participant-name {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      /* Second line keeps type, CR, and add action grouped together. */
+      .field-row--participant-meta {
+        grid-template-columns: minmax(0, 1fr) 180px 110px;
       }
 
       .encounter-manager {
@@ -958,7 +964,8 @@
                       </p>
                     </div>
                     <form id="participant-form">
-                      <div class="field-row field-row--participant">
+                      <!-- Keep participant name on its own line for quick identification. -->
+                      <div class="field-row field-row--participant-name">
                         <div>
                           <label for="participant-name">Participant name</label>
                           <input
@@ -969,6 +976,9 @@
                             required
                           />
                         </div>
+                      </div>
+                      <!-- Group participant type and CR on a separate line for clarity. -->
+                      <div class="field-row field-row--participant-meta">
                         <div>
                           <label for="participant-type">Type</label>
                           <select id="participant-type" name="participant-type">
