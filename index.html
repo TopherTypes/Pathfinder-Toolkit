@@ -495,11 +495,11 @@
       }
 
       .encounter-manager {
-        background: rgba(20, 16, 12, 0.85);
-        border-radius: 12px;
-        border: 1px dashed rgba(201, 162, 74, 0.5);
-        padding: 0.8rem;
-        margin-bottom: 1rem;
+        /* Keep the encounter name area clean and unboxed for clarity. */
+        background: transparent;
+        border: none;
+        padding: 0;
+        margin-bottom: 0.9rem;
       }
 
       .encounter-manager h5 {
@@ -940,6 +940,7 @@
                   <div class="tracker-panel">
                     <h4>Setup</h4>
                     <div class="encounter-manager">
+                      <!-- Encounter name stays visible without a boxed treatment. -->
                       <h5>Encounter Name</h5>
                       <div class="field-row field-row--encounter-name">
                         <div>
@@ -987,14 +988,6 @@
                     </form>
                     <div class="initiative-controls">
                       <button id="save-encounter" class="secondary" type="button">Save / Update</button>
-                    </div>
-                    <p class="notice">
-                      Tip: Use the “Begin Encounter” button in the tracker to open the initiative lightbox and capture
-                      rolls for everyone in the roster.
-                    </p>
-                    <div class="legend">
-                      <span>Highlight = current turn</span>
-                      <span>Prompt = marker ready to expire</span>
                     </div>
                   </div>
                 </div>
