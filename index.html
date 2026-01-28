@@ -206,12 +206,114 @@
         padding: 1.1rem 0 2rem;
       }
 
+      /* NPC vault module keeps the roster layout distinct from combat tools. */
+      .npc-module {
+        padding: 1.1rem 0 2.2rem;
+      }
+
       /* Compact action row keeps navigation visible without expanding the header. */
       .module-actions {
         display: flex;
         flex-wrap: wrap;
         gap: 0.8rem;
         margin-bottom: 0.9rem;
+      }
+
+      /* NPC vault layout balances roster list with an active detail panel. */
+      .npc-layout {
+        display: grid;
+        gap: 1.4rem;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+        align-items: start;
+      }
+
+      .npc-column {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+      }
+
+      .npc-form-grid {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+
+      .npc-form-grid textarea {
+        min-height: 90px;
+      }
+
+      .npc-form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-top: 0.8rem;
+      }
+
+      .npc-list {
+        list-style: none;
+        display: grid;
+        gap: 0.7rem;
+      }
+
+      .npc-card {
+        background: rgba(24, 18, 13, 0.92);
+        border-radius: 12px;
+        padding: 0.75rem 0.85rem;
+        border: 1px solid rgba(201, 162, 74, 0.45);
+        display: grid;
+        gap: 0.45rem;
+      }
+
+      .npc-card.is-active {
+        border-color: var(--gold-bright);
+        box-shadow: 0 0 0 1px rgba(232, 200, 119, 0.25);
+      }
+
+      .npc-card__title {
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      .npc-card__meta {
+        color: var(--ink-muted);
+        font-size: 0.85rem;
+      }
+
+      .npc-card__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+
+      .npc-card__actions button {
+        font-size: 0.85rem;
+      }
+
+      .npc-detail {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .npc-detail-item {
+        background: rgba(20, 16, 12, 0.88);
+        border-radius: 10px;
+        padding: 0.55rem 0.7rem;
+        border-left: 4px solid var(--gold);
+      }
+
+      .npc-detail-label {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-muted);
+      }
+
+      .npc-detail-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-top: 0.6rem;
       }
 
       .initiative-tracker {
@@ -787,6 +889,10 @@
           grid-template-columns: 1fr;
         }
 
+        .npc-layout {
+          grid-template-columns: 1fr;
+        }
+
         .field-row {
           grid-template-columns: 1fr;
         }
@@ -823,14 +929,20 @@
                 <span class="tool-tag">XP</span>
               </div>
             </article>
-            <article class="tool-card">
+            <button
+              class="tool-card tool-card--action"
+              type="button"
+              id="npc-launch"
+              aria-label="Open NPC Vault module"
+            >
               <h3>NPC Vault</h3>
               <p>Store allies and villains with roleplay prompts and stat notes.</p>
               <div class="tool-meta">
                 <span class="tool-tag">Social</span>
                 <span class="tool-tag">Lore</span>
               </div>
-            </article>
+              <span class="tool-launch">Open Vault →</span>
+            </button>
             <article class="tool-card">
               <h3>Treasure Generator</h3>
               <p>Roll loot tables and print item cards for quick handouts.</p>
@@ -1088,6 +1200,143 @@
       </div>
     </section>
 
+    <!-- NPC vault module (opens from the dashboard tool card) -->
+    <section class="npc-module is-hidden" id="npc-module" aria-label="NPC vault module">
+      <div class="container">
+        <!-- Module actions stay in the body so the header stays minimal. -->
+        <div class="module-actions">
+          <button id="npc-back" class="ghost" type="button">
+            ← Back to Dashboard
+          </button>
+        </div>
+
+        <section class="npc-vault" aria-label="NPC vault workspace">
+          <p class="helper-text">
+            Build NPC snapshots, capture roleplay notes, and keep relationship cues ready for play.
+          </p>
+          <div class="npc-layout">
+            <div class="npc-column">
+              <div class="tracker-panel npc-form-panel">
+                <h3>NPC Profile Builder</h3>
+                <form id="npc-form">
+                  <div class="npc-form-grid">
+                    <div>
+                      <label for="npc-name">Name</label>
+                      <input
+                        id="npc-name"
+                        name="npc-name"
+                        type="text"
+                        placeholder="e.g. Captain Vale"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label for="npc-role">Role</label>
+                      <input
+                        id="npc-role"
+                        name="npc-role"
+                        type="text"
+                        placeholder="e.g. Harbor Master"
+                      />
+                    </div>
+                    <div>
+                      <label for="npc-faction">Faction</label>
+                      <input
+                        id="npc-faction"
+                        name="npc-faction"
+                        type="text"
+                        placeholder="e.g. Crimson Fleet"
+                      />
+                    </div>
+                    <div>
+                      <label for="npc-location">Location</label>
+                      <input
+                        id="npc-location"
+                        name="npc-location"
+                        type="text"
+                        placeholder="e.g. Dockside"
+                      />
+                    </div>
+                    <div>
+                      <label for="npc-disposition">Disposition</label>
+                      <select id="npc-disposition" name="npc-disposition">
+                        <option value="Friendly">Friendly</option>
+                        <option value="Neutral">Neutral</option>
+                        <option value="Wary">Wary</option>
+                        <option value="Hostile">Hostile</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label for="npc-relationship">Relationship</label>
+                      <select id="npc-relationship" name="npc-relationship">
+                        <option value="Ally">Ally</option>
+                        <option value="Contact">Contact</option>
+                        <option value="Neutral" selected>Neutral</option>
+                        <option value="Rival">Rival</option>
+                        <option value="Enemy">Enemy</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label for="npc-tags">Tags (comma-separated)</label>
+                      <input
+                        id="npc-tags"
+                        name="npc-tags"
+                        type="text"
+                        placeholder="e.g. smuggler, swordmaster"
+                      />
+                    </div>
+                    <div>
+                      <label for="npc-hook">Story hook</label>
+                      <textarea
+                        id="npc-hook"
+                        name="npc-hook"
+                        placeholder="e.g. Wants the party to recover a lost logbook."
+                      ></textarea>
+                    </div>
+                    <div>
+                      <label for="npc-notes">Roleplay notes</label>
+                      <textarea
+                        id="npc-notes"
+                        name="npc-notes"
+                        placeholder="e.g. Speaks in clipped sentences, always taps a brass ring."
+                      ></textarea>
+                    </div>
+                  </div>
+                  <div class="npc-form-actions">
+                    <button id="npc-submit" type="submit">Add NPC</button>
+                    <button id="npc-reset" class="secondary" type="button">Reset Form</button>
+                  </div>
+                </form>
+                <p class="helper-text" id="npc-form-note">
+                  Use the roster list to revisit NPCs and update their relationship status.
+                </p>
+              </div>
+
+              <div class="tracker-panel npc-list-panel">
+                <h3>Roster</h3>
+                <ul id="npc-list" class="npc-list" aria-label="Saved NPCs"></ul>
+                <p class="helper-text" id="npc-empty-state">
+                  No NPCs saved yet. Add your first profile to begin a roster.
+                </p>
+              </div>
+            </div>
+
+            <aside class="tracker-panel npc-detail-panel" aria-label="Active NPC details">
+              <h3>Active NPC</h3>
+              <div id="npc-detail" class="npc-detail">
+                <p class="helper-text">Select an NPC to see their details here.</p>
+              </div>
+              <div class="npc-detail-actions">
+                <button class="secondary" type="button" data-npc-status="Ally">Promote to Ally</button>
+                <button class="ghost" type="button" data-npc-status="Contact">Mark as Contact</button>
+                <button type="button" data-npc-status="Rival">Flag as Rival</button>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </div>
+    </section>
+
     <!-- Initiative input lightbox -->
     <div id="initiative-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
       <div class="modal">
@@ -1172,11 +1421,11 @@
 
     <script>
       // ------------------------------
-      // Initiative Tracker Logic
+      // Toolkit Module Logic
       // ------------------------------
       // Local storage schema keeps module data expandable for future tools.
       const STORAGE_KEY = "pfToolkitMemory";
-      const STORAGE_VERSION = 1;
+      const STORAGE_VERSION = 2;
       const conditionPresets = [
         "Blinded",
         "Confused",
@@ -1245,6 +1494,13 @@
         activeEncounterId: null,
       };
 
+      // NPC vault state is isolated to keep roster workflows decoupled from combat state.
+      const npcState = {
+        roster: [],
+        activeNpcId: null,
+        editingNpcId: null,
+      };
+
       // Cache DOM nodes once for performance and clarity.
       const participantForm = document.getElementById("participant-form");
       const participantName = document.getElementById("participant-name");
@@ -1304,6 +1560,27 @@
       const trackerLayout = document.getElementById("tracker-layout");
       const encounterPanelContent = document.getElementById("encounter-panel-content");
 
+      // NPC vault elements control module navigation, form inputs, and list rendering.
+      const npcModule = document.getElementById("npc-module");
+      const npcLaunch = document.getElementById("npc-launch");
+      const npcBack = document.getElementById("npc-back");
+      const npcForm = document.getElementById("npc-form");
+      const npcName = document.getElementById("npc-name");
+      const npcRole = document.getElementById("npc-role");
+      const npcFaction = document.getElementById("npc-faction");
+      const npcLocation = document.getElementById("npc-location");
+      const npcDisposition = document.getElementById("npc-disposition");
+      const npcRelationship = document.getElementById("npc-relationship");
+      const npcTags = document.getElementById("npc-tags");
+      const npcHook = document.getElementById("npc-hook");
+      const npcNotes = document.getElementById("npc-notes");
+      const npcSubmit = document.getElementById("npc-submit");
+      const npcReset = document.getElementById("npc-reset");
+      const npcFormNote = document.getElementById("npc-form-note");
+      const npcList = document.getElementById("npc-list");
+      const npcEmptyState = document.getElementById("npc-empty-state");
+      const npcDetail = document.getElementById("npc-detail");
+
       // Single source of truth for header copy across dashboard and module views.
       const headerCopy = {
         dashboard: {
@@ -1313,6 +1590,10 @@
         initiative: {
           module: "Initiative Tracker",
           description: "Run turn order, condition tracking, and round pacing in a compact combat workspace.",
+        },
+        npc: {
+          module: "NPC Vault",
+          description: "Capture NPC profiles, relationship cues, and story hooks in a fast-access roster.",
         },
       };
 
@@ -1395,7 +1676,13 @@
       const loadMemory = () => {
         const raw = window.localStorage.getItem(STORAGE_KEY);
         if (!raw) {
-          return { version: STORAGE_VERSION, modules: { initiative: { encounters: [], activeEncounterId: null } } };
+          return {
+            version: STORAGE_VERSION,
+            modules: {
+              initiative: { encounters: [], activeEncounterId: null },
+              npc: { roster: [], activeNpcId: null },
+            },
+          };
         }
         try {
           const parsed = JSON.parse(raw);
@@ -1406,11 +1693,21 @@
                 encounters: parsed.modules?.initiative?.encounters ?? [],
                 activeEncounterId: parsed.modules?.initiative?.activeEncounterId ?? null,
               },
+              npc: {
+                roster: parsed.modules?.npc?.roster ?? [],
+                activeNpcId: parsed.modules?.npc?.activeNpcId ?? null,
+              },
             },
           };
         } catch (error) {
           console.warn("Failed to parse local storage memory, resetting.", error);
-          return { version: STORAGE_VERSION, modules: { initiative: { encounters: [], activeEncounterId: null } } };
+          return {
+            version: STORAGE_VERSION,
+            modules: {
+              initiative: { encounters: [], activeEncounterId: null },
+              npc: { roster: [], activeNpcId: null },
+            },
+          };
         }
       };
 
@@ -1420,10 +1717,20 @@
 
       const getInitiativeMemory = () => loadMemory().modules.initiative;
 
+      const getNpcMemory = () => loadMemory().modules.npc;
+
       const updateInitiativeMemory = (updater) => {
         const memory = loadMemory();
         const updated = updater(memory.modules.initiative);
         memory.modules.initiative = updated;
+        saveMemory(memory);
+        return updated;
+      };
+
+      const updateNpcMemory = (updater) => {
+        const memory = loadMemory();
+        const updated = updater(memory.modules.npc);
+        memory.modules.npc = updated;
         saveMemory(memory);
         return updated;
       };
@@ -1473,6 +1780,160 @@
         });
       };
 
+      // ------------------------------
+      // NPC Vault Helpers
+      // ------------------------------
+      // Normalize comma-separated tags into a clean array for display and filtering.
+      const parseNpcTags = (value) =>
+        value
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean);
+
+      // Provide a user-friendly label for display when data is missing.
+      const formatNpcField = (value, fallback = "—") => (value ? value : fallback);
+
+      const getNpcById = (npcId) => npcState.roster.find((npc) => npc.id === npcId) ?? null;
+
+      const setNpcFormNote = (message, isWarning = false) => {
+        npcFormNote.textContent = message;
+        npcFormNote.style.color = isWarning ? "var(--warning)" : "var(--ink-muted)";
+      };
+
+      const buildNpcPayload = (overrides = {}) => ({
+        id: overrides.id ?? generateId(),
+        name: overrides.name ?? npcName.value.trim(),
+        role: overrides.role ?? npcRole.value.trim(),
+        faction: overrides.faction ?? npcFaction.value.trim(),
+        location: overrides.location ?? npcLocation.value.trim(),
+        disposition: overrides.disposition ?? npcDisposition.value,
+        relationship: overrides.relationship ?? npcRelationship.value,
+        tags: overrides.tags ?? parseNpcTags(npcTags.value),
+        hook: overrides.hook ?? npcHook.value.trim(),
+        notes: overrides.notes ?? npcNotes.value.trim(),
+        updatedAt: overrides.updatedAt ?? new Date().toISOString(),
+      });
+
+      const resetNpcForm = (note = "Use the roster list to revisit NPCs and update their relationship status.") => {
+        npcForm.reset();
+        npcRelationship.value = "Neutral";
+        npcDisposition.value = "Neutral";
+        npcState.editingNpcId = null;
+        npcSubmit.textContent = "Add NPC";
+        setNpcFormNote(note);
+      };
+
+      const populateNpcForm = (npc) => {
+        npcName.value = npc.name;
+        npcRole.value = npc.role ?? "";
+        npcFaction.value = npc.faction ?? "";
+        npcLocation.value = npc.location ?? "";
+        npcDisposition.value = npc.disposition ?? "Neutral";
+        npcRelationship.value = npc.relationship ?? "Neutral";
+        npcTags.value = npc.tags?.join(", ") ?? "";
+        npcHook.value = npc.hook ?? "";
+        npcNotes.value = npc.notes ?? "";
+        npcState.editingNpcId = npc.id;
+        npcSubmit.textContent = "Update NPC";
+        setNpcFormNote(`Editing "${npc.name}". Submit to save updates.`);
+      };
+
+      const persistNpcRoster = () => {
+        updateNpcMemory((npcMemory) => ({
+          ...npcMemory,
+          roster: npcState.roster,
+          activeNpcId: npcState.activeNpcId,
+        }));
+      };
+
+      const renderNpcDetail = () => {
+        const activeNpc = getNpcById(npcState.activeNpcId);
+        if (!activeNpc) {
+          npcDetail.innerHTML = '<p class="helper-text">Select an NPC to see their details here.</p>';
+          return;
+        }
+        const tagsMarkup = activeNpc.tags?.length
+          ? activeNpc.tags.map((tag) => `<span class="tool-tag">${tag}</span>`).join("")
+          : '<span class="helper-text">No tags</span>';
+        npcDetail.innerHTML = `
+          <div class="npc-detail-item">
+            <div class="npc-detail-label">Name</div>
+            <div>${activeNpc.name}</div>
+          </div>
+          <div class="npc-detail-item">
+            <div class="npc-detail-label">Role & Faction</div>
+            <div>${formatNpcField(activeNpc.role)} · ${formatNpcField(activeNpc.faction)}</div>
+          </div>
+          <div class="npc-detail-item">
+            <div class="npc-detail-label">Location</div>
+            <div>${formatNpcField(activeNpc.location)}</div>
+          </div>
+          <div class="npc-detail-item">
+            <div class="npc-detail-label">Disposition</div>
+            <div>${formatNpcField(activeNpc.disposition)}</div>
+          </div>
+          <div class="npc-detail-item">
+            <div class="npc-detail-label">Relationship</div>
+            <div>${formatNpcField(activeNpc.relationship)}</div>
+          </div>
+          <div class="npc-detail-item">
+            <div class="npc-detail-label">Tags</div>
+            <div class="tool-meta">${tagsMarkup}</div>
+          </div>
+          <div class="npc-detail-item">
+            <div class="npc-detail-label">Story Hook</div>
+            <div>${formatNpcField(activeNpc.hook)}</div>
+          </div>
+          <div class="npc-detail-item">
+            <div class="npc-detail-label">Roleplay Notes</div>
+            <div>${formatNpcField(activeNpc.notes)}</div>
+          </div>
+        `;
+      };
+
+      const renderNpcList = () => {
+        if (!npcState.roster.length) {
+          npcList.innerHTML = "";
+          npcEmptyState.classList.remove("is-hidden");
+          renderNpcDetail();
+          return;
+        }
+        npcEmptyState.classList.add("is-hidden");
+        npcList.innerHTML = npcState.roster
+          .map((npc) => {
+            const isActive = npc.id === npcState.activeNpcId;
+            const tags = npc.tags?.length
+              ? npc.tags.map((tag) => `<span class="tool-tag">${tag}</span>`).join("")
+              : '<span class="tool-tag">Un-tagged</span>';
+            return `
+              <li class="npc-card ${isActive ? "is-active" : ""}">
+                <div class="npc-card__title">${npc.name}</div>
+                <div class="npc-card__meta">${formatNpcField(npc.role, "No role")} · ${formatNpcField(
+              npc.relationship,
+              "Neutral"
+            )}</div>
+                <div class="tool-meta">${tags}</div>
+                <div class="npc-card__actions">
+                  <button type="button" class="secondary" data-npc-view="${npc.id}">View</button>
+                  <button type="button" class="ghost" data-npc-edit="${npc.id}">Edit</button>
+                  <button type="button" data-npc-delete="${npc.id}">Archive</button>
+                </div>
+              </li>
+            `;
+          })
+          .join("");
+        renderNpcDetail();
+      };
+
+      const renderNpcModule = () => {
+        const npcMemory = getNpcMemory();
+        npcState.roster = npcMemory.roster ?? [];
+        npcState.activeNpcId = npcMemory.activeNpcId ?? npcState.roster[0]?.id ?? null;
+        npcState.editingNpcId = null;
+        resetNpcForm();
+        renderNpcList();
+      };
+
       const openModal = (modal) => {
         modal.classList.add("active");
         modal.setAttribute("aria-hidden", "false");
@@ -1483,8 +1944,14 @@
         modal.setAttribute("aria-hidden", "true");
       };
 
-      // Toggle module visibility to keep the initiative tracker off the dashboard.
+      // Toggle module visibility to keep focused tools off the dashboard view.
+      const hideModules = () => {
+        initiativeModule.classList.add("is-hidden");
+        npcModule.classList.add("is-hidden");
+      };
+
       const openInitiativeModule = () => {
+        hideModules();
         dashboardView.classList.add("is-hidden");
         initiativeModule.classList.remove("is-hidden");
         updateHeader("initiative");
@@ -1493,6 +1960,22 @@
 
       const closeInitiativeModule = () => {
         initiativeModule.classList.add("is-hidden");
+        dashboardView.classList.remove("is-hidden");
+        updateHeader("dashboard");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+
+      const openNpcModule = () => {
+        hideModules();
+        dashboardView.classList.add("is-hidden");
+        npcModule.classList.remove("is-hidden");
+        updateHeader("npc");
+        renderNpcModule();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+
+      const closeNpcModule = () => {
+        npcModule.classList.add("is-hidden");
         dashboardView.classList.remove("is-hidden");
         updateHeader("dashboard");
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1740,10 +2223,13 @@
       updateEncounterControls();
       updateRoundDisplay();
       loadEncounterLibrary();
+      renderNpcModule();
 
       // Wire module navigation events for the initiative tracker entry point.
       initiativeLaunch.addEventListener("click", openInitiativeModule);
       initiativeBack.addEventListener("click", closeInitiativeModule);
+      npcLaunch.addEventListener("click", openNpcModule);
+      npcBack.addEventListener("click", closeNpcModule);
       // Shared toggle keeps both expanded and collapsed controls in sync.
       const toggleEncounterPanel = () => {
         const isExpanded = encounterPanelToggle.getAttribute("aria-expanded") === "true";
@@ -1752,6 +2238,82 @@
       encounterPanelToggle.addEventListener("click", toggleEncounterPanel);
       encounterPanelToggleCollapsed.addEventListener("click", toggleEncounterPanel);
       participantType.addEventListener("change", updateParticipantCrVisibility);
+
+      // NPC vault form handler saves new NPCs or updates existing entries.
+      npcForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const name = npcName.value.trim();
+        if (!name) {
+          setNpcFormNote("NPC name is required before saving.", true);
+          return;
+        }
+        if (npcState.editingNpcId) {
+          npcState.roster = npcState.roster.map((npc) =>
+            npc.id === npcState.editingNpcId ? buildNpcPayload({ id: npc.id, name }) : npc
+          );
+          npcState.activeNpcId = npcState.editingNpcId;
+        } else {
+          npcState.roster = [...npcState.roster, buildNpcPayload({ name })];
+          npcState.activeNpcId = npcState.roster[npcState.roster.length - 1].id;
+        }
+        persistNpcRoster();
+        renderNpcList();
+        resetNpcForm(`Saved "${name}" to the NPC roster.`);
+      });
+
+      npcReset.addEventListener("click", () => {
+        resetNpcForm();
+      });
+
+      // NPC roster actions support view, edit, and archive behaviors.
+      npcList.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) {
+          return;
+        }
+        const viewId = target.getAttribute("data-npc-view");
+        const editId = target.getAttribute("data-npc-edit");
+        const deleteId = target.getAttribute("data-npc-delete");
+
+        if (viewId) {
+          npcState.activeNpcId = viewId;
+          persistNpcRoster();
+          renderNpcList();
+          return;
+        }
+        if (editId) {
+          const npc = getNpcById(editId);
+          if (npc) {
+            populateNpcForm(npc);
+          }
+          return;
+        }
+        if (deleteId) {
+          npcState.roster = npcState.roster.filter((npc) => npc.id !== deleteId);
+          if (npcState.activeNpcId === deleteId) {
+            npcState.activeNpcId = npcState.roster[0]?.id ?? null;
+          }
+          persistNpcRoster();
+          renderNpcList();
+        }
+      });
+
+      // NPC status buttons update the active NPC relationship quickly.
+      npcModule.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) {
+          return;
+        }
+        const status = target.getAttribute("data-npc-status");
+        if (!status || !npcState.activeNpcId) {
+          return;
+        }
+        npcState.roster = npcState.roster.map((npc) =>
+          npc.id === npcState.activeNpcId ? { ...npc, relationship: status } : npc
+        );
+        persistNpcRoster();
+        renderNpcList();
+      });
 
       participantForm.addEventListener("submit", (event) => {
         event.preventDefault();
