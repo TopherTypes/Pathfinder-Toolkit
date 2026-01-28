@@ -211,6 +211,70 @@
         padding: 1.1rem 0 2.2rem;
       }
 
+      /* Session notes module presents prep, live notes, and reflection in a calm workspace. */
+      .session-module {
+        padding: 1.1rem 0 2.2rem;
+      }
+
+      /* Two-column layout gives space to core notes with an unobtrusive sidebar. */
+      .session-layout {
+        display: grid;
+        gap: 1.4rem;
+        grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+        align-items: start;
+      }
+
+      /* Stack session content cards with consistent spacing. */
+      .session-column {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+      }
+
+      /* Session cards reuse the toolkit panel styling with subtle contrast. */
+      .session-card {
+        background: rgba(24, 18, 13, 0.92);
+        border-radius: 14px;
+        padding: 1rem 1.1rem;
+        border: 1px solid rgba(201, 162, 74, 0.45);
+        box-shadow: 0 12px 20px var(--shadow);
+      }
+
+      .session-card h3 {
+        font-family: var(--serif);
+        margin-bottom: 0.6rem;
+        color: var(--gold-bright);
+      }
+
+      /* Session grid keeps metadata fields aligned without overwhelming the layout. */
+      .session-grid {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
+
+      /* Shorter textareas avoid visual heaviness during live play. */
+      .session-textarea--short {
+        min-height: 90px;
+      }
+
+      .session-textarea--tall {
+        min-height: 140px;
+      }
+
+      /* Primary session action row holds save/reset and status messaging. */
+      .session-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+      }
+
+      .session-status {
+        font-size: 0.85rem;
+        color: var(--ink-muted);
+      }
+
       /* Compact action row keeps navigation visible without expanding the header. */
       .module-actions {
         display: flex;
@@ -893,6 +957,10 @@
           grid-template-columns: 1fr;
         }
 
+        .session-layout {
+          grid-template-columns: 1fr;
+        }
+
         .field-row {
           grid-template-columns: 1fr;
         }
@@ -965,14 +1033,20 @@
               </div>
               <span class="tool-launch">Open Tracker →</span>
             </button>
-            <article class="tool-card">
+            <button
+              class="tool-card tool-card--action"
+              type="button"
+              id="session-launch"
+              aria-label="Open Session Notes module"
+            >
               <h3>Session Notes</h3>
-              <p>Capture scenes, rulings, and retcons with searchable tags.</p>
+              <p>Capture prep, live beats, and post-session reflections without breaking flow.</p>
               <div class="tool-meta">
                 <span class="tool-tag">Narrative</span>
-                <span class="tool-tag">Archive</span>
+                <span class="tool-tag">Planning</span>
               </div>
-            </article>
+              <span class="tool-launch">Open Notes →</span>
+            </button>
             <article class="tool-card">
               <h3>Map Library</h3>
               <p>Browse maps, attach encounter markers, and export for VTTs.</p>
@@ -1337,6 +1411,253 @@
       </div>
     </section>
 
+    <!-- Session notes module (opens from the dashboard tool card) -->
+    <section class="session-module is-hidden" id="session-module" aria-label="Session notes module">
+      <div class="container">
+        <!-- Module actions stay in the body so the header stays minimal. -->
+        <div class="module-actions">
+          <button id="session-back" class="ghost" type="button">
+            ← Back to Dashboard
+          </button>
+        </div>
+
+        <section class="session-notes" aria-label="Session notes workspace">
+          <p class="helper-text">
+            Capture prep, live beats, and reflections without crowding the rest of the toolkit.
+          </p>
+          <form id="session-form">
+            <div class="session-layout">
+              <div class="session-column">
+                <div class="session-card">
+                  <h3>Session Overview</h3>
+                  <div class="session-grid">
+                    <div>
+                      <label for="session-title">Session title</label>
+                      <input
+                        id="session-title"
+                        name="session-title"
+                        type="text"
+                        placeholder="e.g. Echoes of the Emerald Vault"
+                      />
+                    </div>
+                    <div>
+                      <label for="session-number">Session #</label>
+                      <input
+                        id="session-number"
+                        name="session-number"
+                        type="number"
+                        min="1"
+                        placeholder="e.g. 12"
+                      />
+                    </div>
+                    <div>
+                      <label for="session-date">Date</label>
+                      <input id="session-date" name="session-date" type="date" />
+                    </div>
+                    <div>
+                      <label for="session-location">Party location</label>
+                      <input
+                        id="session-location"
+                        name="session-location"
+                        type="text"
+                        placeholder="e.g. Bright Harbor"
+                      />
+                    </div>
+                    <div>
+                      <label for="session-status">Session status</label>
+                      <select id="session-status" name="session-status">
+                        <option value="prep">Prep</option>
+                        <option value="live">In Play</option>
+                        <option value="reflection">Reflection</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label for="session-goal">Session goal</label>
+                      <input
+                        id="session-goal"
+                        name="session-goal"
+                        type="text"
+                        placeholder="e.g. Resolve the heist and confront the patron."
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="session-card">
+                  <h3>Prep (Before Session)</h3>
+                  <div class="session-grid">
+                    <div>
+                      <label for="session-prep-priorities">Prep priorities</label>
+                      <textarea
+                        id="session-prep-priorities"
+                        name="session-prep-priorities"
+                        class="session-textarea--short"
+                        placeholder="Key beats, rules to review, props to gather."
+                      ></textarea>
+                    </div>
+                    <div>
+                      <label for="session-prep-scenes">Planned scenes</label>
+                      <textarea
+                        id="session-prep-scenes"
+                        name="session-prep-scenes"
+                        class="session-textarea--short"
+                        placeholder="Scene outline, transitions, or set pieces."
+                      ></textarea>
+                    </div>
+                    <div>
+                      <label for="session-prep-npcs">NPCs & assets</label>
+                      <textarea
+                        id="session-prep-npcs"
+                        name="session-prep-npcs"
+                        class="session-textarea--short"
+                        placeholder="NPC beats, handouts, and reference notes."
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="session-card">
+                  <h3>Live Notes (During Session)</h3>
+                  <div class="session-grid">
+                    <div>
+                      <label for="session-live-log">Scene log</label>
+                      <textarea
+                        id="session-live-log"
+                        name="session-live-log"
+                        class="session-textarea--tall"
+                        placeholder="Key events, scene outcomes, and pacing notes."
+                      ></textarea>
+                    </div>
+                    <div>
+                      <label for="session-live-rulings">Rulings & changes</label>
+                      <textarea
+                        id="session-live-rulings"
+                        name="session-live-rulings"
+                        class="session-textarea--short"
+                        placeholder="House rulings, adjustments, or rules reminders."
+                      ></textarea>
+                    </div>
+                    <div>
+                      <label for="session-live-loot">Loot & rewards</label>
+                      <textarea
+                        id="session-live-loot"
+                        name="session-live-loot"
+                        class="session-textarea--short"
+                        placeholder="Treasure, boons, and quest rewards."
+                      ></textarea>
+                    </div>
+                    <div>
+                      <label for="session-live-moments">Player moments</label>
+                      <textarea
+                        id="session-live-moments"
+                        name="session-live-moments"
+                        class="session-textarea--short"
+                        placeholder="Spotlight moments, heroic beats, or quotes."
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="session-card">
+                  <h3>Reflection & Follow-Ups (After Session)</h3>
+                  <div class="session-grid">
+                    <div>
+                      <label for="session-reflection-outcomes">Outcomes</label>
+                      <textarea
+                        id="session-reflection-outcomes"
+                        name="session-reflection-outcomes"
+                        class="session-textarea--short"
+                        placeholder="What changed? What did the party accomplish?"
+                      ></textarea>
+                    </div>
+                    <div>
+                      <label for="session-reflection-loose-ends">Loose ends</label>
+                      <textarea
+                        id="session-reflection-loose-ends"
+                        name="session-reflection-loose-ends"
+                        class="session-textarea--short"
+                        placeholder="Unresolved threads or NPC follow-ups."
+                      ></textarea>
+                    </div>
+                    <div>
+                      <label for="session-reflection-next">Next session plan</label>
+                      <textarea
+                        id="session-reflection-next"
+                        name="session-reflection-next"
+                        class="session-textarea--short"
+                        placeholder="Prep to carry forward into the next session."
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="session-actions">
+                  <button id="session-save" type="submit">Save Notes</button>
+                  <button id="session-reset" class="secondary" type="button">Clear Notes</button>
+                  <span class="session-status" id="session-status-note">Not saved yet.</span>
+                </div>
+              </div>
+
+              <aside class="session-column session-sidebar" aria-label="Session quick prompts">
+                <div class="session-card">
+                  <h3>At-a-Glance Prompts</h3>
+                  <div class="session-grid">
+                    <div>
+                      <label for="session-pinned">Pinned reminders</label>
+                      <textarea
+                        id="session-pinned"
+                        name="session-pinned"
+                        class="session-textarea--short"
+                        placeholder="Reminder cues to keep on screen."
+                      ></textarea>
+                    </div>
+                    <div>
+                      <label for="session-spotlights">Player spotlights</label>
+                      <textarea
+                        id="session-spotlights"
+                        name="session-spotlights"
+                        class="session-textarea--short"
+                        placeholder="Who needs a spotlight beat or callback?"
+                      ></textarea>
+                    </div>
+                    <div>
+                      <label for="session-questions">Open questions</label>
+                      <textarea
+                        id="session-questions"
+                        name="session-questions"
+                        class="session-textarea--short"
+                        placeholder="Mysteries or decisions to answer soon."
+                      ></textarea>
+                    </div>
+                    <div>
+                      <label for="session-tags">Quick tags</label>
+                      <input
+                        id="session-tags"
+                        name="session-tags"
+                        type="text"
+                        placeholder="e.g. heist, docks, vault"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="session-card">
+                  <h3>Session Pulse</h3>
+                  <p class="helper-text">
+                    Keep a light status check without interrupting the session flow.
+                  </p>
+                  <p class="session-status" id="session-last-saved">Last saved: —</p>
+                  <div class="notice">
+                    Auto-save runs while you type to keep live notes safe.
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </form>
+        </section>
+      </div>
+    </section>
+
     <!-- Initiative input lightbox -->
     <div id="initiative-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
       <div class="modal">
@@ -1425,7 +1746,7 @@
       // ------------------------------
       // Local storage schema keeps module data expandable for future tools.
       const STORAGE_KEY = "pfToolkitMemory";
-      const STORAGE_VERSION = 2;
+      const STORAGE_VERSION = 3;
       const conditionPresets = [
         "Blinded",
         "Confused",
@@ -1482,6 +1803,31 @@
         { value: "20", label: "20", xp: 307200 },
       ];
 
+      // Session notes defaults keep the MVP structured without pre-filling content.
+      const defaultSessionNote = () => ({
+        title: "",
+        number: "",
+        date: "",
+        location: "",
+        status: "prep",
+        goal: "",
+        prepPriorities: "",
+        prepScenes: "",
+        prepNpcs: "",
+        liveLog: "",
+        liveRulings: "",
+        liveLoot: "",
+        liveMoments: "",
+        reflectionOutcomes: "",
+        reflectionLooseEnds: "",
+        reflectionNext: "",
+        pinned: "",
+        spotlights: "",
+        questions: "",
+        tags: "",
+        lastSaved: null,
+      });
+
       const state = {
         participants: [],
         encounterStarted: false,
@@ -1499,6 +1845,12 @@
         roster: [],
         activeNpcId: null,
         editingNpcId: null,
+      };
+
+      // Session notes state tracks the current working note plus auto-save timing.
+      const sessionState = {
+        note: defaultSessionNote(),
+        autoSaveTimer: null,
       };
 
       // Cache DOM nodes once for performance and clarity.
@@ -1581,6 +1933,36 @@
       const npcEmptyState = document.getElementById("npc-empty-state");
       const npcDetail = document.getElementById("npc-detail");
 
+      // Session notes elements wire the MVP note capture form.
+      const sessionModule = document.getElementById("session-module");
+      const sessionLaunch = document.getElementById("session-launch");
+      const sessionBack = document.getElementById("session-back");
+      const sessionForm = document.getElementById("session-form");
+      const sessionSave = document.getElementById("session-save");
+      const sessionReset = document.getElementById("session-reset");
+      const sessionStatusNote = document.getElementById("session-status-note");
+      const sessionLastSaved = document.getElementById("session-last-saved");
+      const sessionTitle = document.getElementById("session-title");
+      const sessionNumber = document.getElementById("session-number");
+      const sessionDate = document.getElementById("session-date");
+      const sessionLocation = document.getElementById("session-location");
+      const sessionStatus = document.getElementById("session-status");
+      const sessionGoal = document.getElementById("session-goal");
+      const sessionPrepPriorities = document.getElementById("session-prep-priorities");
+      const sessionPrepScenes = document.getElementById("session-prep-scenes");
+      const sessionPrepNpcs = document.getElementById("session-prep-npcs");
+      const sessionLiveLog = document.getElementById("session-live-log");
+      const sessionLiveRulings = document.getElementById("session-live-rulings");
+      const sessionLiveLoot = document.getElementById("session-live-loot");
+      const sessionLiveMoments = document.getElementById("session-live-moments");
+      const sessionReflectionOutcomes = document.getElementById("session-reflection-outcomes");
+      const sessionReflectionLooseEnds = document.getElementById("session-reflection-loose-ends");
+      const sessionReflectionNext = document.getElementById("session-reflection-next");
+      const sessionPinned = document.getElementById("session-pinned");
+      const sessionSpotlights = document.getElementById("session-spotlights");
+      const sessionQuestions = document.getElementById("session-questions");
+      const sessionTags = document.getElementById("session-tags");
+
       // Single source of truth for header copy across dashboard and module views.
       const headerCopy = {
         dashboard: {
@@ -1594,6 +1976,10 @@
         npc: {
           module: "NPC Vault",
           description: "Capture NPC profiles, relationship cues, and story hooks in a fast-access roster.",
+        },
+        session: {
+          module: "Session Notes",
+          description: "Prepare session beats, capture live updates, and log follow-ups in one workspace.",
         },
       };
 
@@ -1681,6 +2067,7 @@
             modules: {
               initiative: { encounters: [], activeEncounterId: null },
               npc: { roster: [], activeNpcId: null },
+              session: { note: defaultSessionNote() },
             },
           };
         }
@@ -1697,6 +2084,9 @@
                 roster: parsed.modules?.npc?.roster ?? [],
                 activeNpcId: parsed.modules?.npc?.activeNpcId ?? null,
               },
+              session: {
+                note: { ...defaultSessionNote(), ...(parsed.modules?.session?.note ?? {}) },
+              },
             },
           };
         } catch (error) {
@@ -1706,6 +2096,7 @@
             modules: {
               initiative: { encounters: [], activeEncounterId: null },
               npc: { roster: [], activeNpcId: null },
+              session: { note: defaultSessionNote() },
             },
           };
         }
@@ -1719,6 +2110,8 @@
 
       const getNpcMemory = () => loadMemory().modules.npc;
 
+      const getSessionMemory = () => loadMemory().modules.session;
+
       const updateInitiativeMemory = (updater) => {
         const memory = loadMemory();
         const updated = updater(memory.modules.initiative);
@@ -1731,6 +2124,14 @@
         const memory = loadMemory();
         const updated = updater(memory.modules.npc);
         memory.modules.npc = updated;
+        saveMemory(memory);
+        return updated;
+      };
+
+      const updateSessionMemory = (updater) => {
+        const memory = loadMemory();
+        const updated = updater(memory.modules.session);
+        memory.modules.session = updated;
         saveMemory(memory);
         return updated;
       };
@@ -1934,6 +2335,117 @@
         renderNpcList();
       };
 
+      // Format timestamps for human-friendly session status updates.
+      const formatSessionTimestamp = (timestamp) => {
+        if (!timestamp) {
+          return "—";
+        }
+        const date = new Date(timestamp);
+        if (Number.isNaN(date.getTime())) {
+          return "—";
+        }
+        return date.toLocaleString();
+      };
+
+      // Update the inline status message shown beneath session actions.
+      const updateSessionStatusNote = (message) => {
+        sessionStatusNote.textContent = message;
+      };
+
+      // Keep the last-saved label aligned with persisted data.
+      const updateSessionLastSaved = (timestamp) => {
+        sessionLastSaved.textContent = `Last saved: ${formatSessionTimestamp(timestamp)}`;
+      };
+
+      // Read the current session form values into a structured payload.
+      const getSessionFormData = () => ({
+        title: sessionTitle.value.trim(),
+        number: sessionNumber.value.trim(),
+        date: sessionDate.value,
+        location: sessionLocation.value.trim(),
+        status: sessionStatus.value,
+        goal: sessionGoal.value.trim(),
+        prepPriorities: sessionPrepPriorities.value.trim(),
+        prepScenes: sessionPrepScenes.value.trim(),
+        prepNpcs: sessionPrepNpcs.value.trim(),
+        liveLog: sessionLiveLog.value.trim(),
+        liveRulings: sessionLiveRulings.value.trim(),
+        liveLoot: sessionLiveLoot.value.trim(),
+        liveMoments: sessionLiveMoments.value.trim(),
+        reflectionOutcomes: sessionReflectionOutcomes.value.trim(),
+        reflectionLooseEnds: sessionReflectionLooseEnds.value.trim(),
+        reflectionNext: sessionReflectionNext.value.trim(),
+        pinned: sessionPinned.value.trim(),
+        spotlights: sessionSpotlights.value.trim(),
+        questions: sessionQuestions.value.trim(),
+        tags: sessionTags.value.trim(),
+      });
+
+      // Hydrate the session notes form with saved values.
+      const hydrateSessionForm = (note) => {
+        sessionTitle.value = note.title ?? "";
+        sessionNumber.value = note.number ?? "";
+        sessionDate.value = note.date ?? "";
+        sessionLocation.value = note.location ?? "";
+        sessionStatus.value = note.status ?? "prep";
+        sessionGoal.value = note.goal ?? "";
+        sessionPrepPriorities.value = note.prepPriorities ?? "";
+        sessionPrepScenes.value = note.prepScenes ?? "";
+        sessionPrepNpcs.value = note.prepNpcs ?? "";
+        sessionLiveLog.value = note.liveLog ?? "";
+        sessionLiveRulings.value = note.liveRulings ?? "";
+        sessionLiveLoot.value = note.liveLoot ?? "";
+        sessionLiveMoments.value = note.liveMoments ?? "";
+        sessionReflectionOutcomes.value = note.reflectionOutcomes ?? "";
+        sessionReflectionLooseEnds.value = note.reflectionLooseEnds ?? "";
+        sessionReflectionNext.value = note.reflectionNext ?? "";
+        sessionPinned.value = note.pinned ?? "";
+        sessionSpotlights.value = note.spotlights ?? "";
+        sessionQuestions.value = note.questions ?? "";
+        sessionTags.value = note.tags ?? "";
+        updateSessionLastSaved(note.lastSaved);
+      };
+
+      // Persist the session note to local storage with a timestamp.
+      const saveSessionNote = ({ announce = true } = {}) => {
+        const payload = {
+          ...defaultSessionNote(),
+          ...getSessionFormData(),
+          lastSaved: new Date().toISOString(),
+        };
+        sessionState.note = payload;
+        updateSessionMemory(() => ({ note: payload }));
+        updateSessionLastSaved(payload.lastSaved);
+        updateSessionStatusNote(announce ? "Session notes saved." : "Auto-saved.");
+      };
+
+      // Reset the session note to a clean slate while persisting the clear action.
+      const resetSessionNote = () => {
+        const cleared = { ...defaultSessionNote(), lastSaved: new Date().toISOString() };
+        sessionState.note = cleared;
+        updateSessionMemory(() => ({ note: cleared }));
+        hydrateSessionForm(cleared);
+        updateSessionStatusNote("Session notes cleared.");
+      };
+
+      // Queue an auto-save to keep the UI responsive and unobtrusive.
+      const queueSessionAutoSave = () => {
+        window.clearTimeout(sessionState.autoSaveTimer);
+        sessionState.autoSaveTimer = window.setTimeout(() => {
+          saveSessionNote({ announce: false });
+        }, 900);
+      };
+
+      // Load the saved session note when entering the module.
+      const renderSessionModule = () => {
+        const sessionMemory = getSessionMemory();
+        sessionState.note = { ...defaultSessionNote(), ...(sessionMemory.note ?? {}) };
+        hydrateSessionForm(sessionState.note);
+        updateSessionStatusNote(
+          sessionState.note.lastSaved ? "Session notes loaded." : "Not saved yet."
+        );
+      };
+
       const openModal = (modal) => {
         modal.classList.add("active");
         modal.setAttribute("aria-hidden", "false");
@@ -1948,6 +2460,7 @@
       const hideModules = () => {
         initiativeModule.classList.add("is-hidden");
         npcModule.classList.add("is-hidden");
+        sessionModule.classList.add("is-hidden");
       };
 
       const openInitiativeModule = () => {
@@ -1976,6 +2489,22 @@
 
       const closeNpcModule = () => {
         npcModule.classList.add("is-hidden");
+        dashboardView.classList.remove("is-hidden");
+        updateHeader("dashboard");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+
+      const openSessionModule = () => {
+        hideModules();
+        dashboardView.classList.add("is-hidden");
+        sessionModule.classList.remove("is-hidden");
+        updateHeader("session");
+        renderSessionModule();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+
+      const closeSessionModule = () => {
+        sessionModule.classList.add("is-hidden");
         dashboardView.classList.remove("is-hidden");
         updateHeader("dashboard");
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -2230,6 +2759,8 @@
       initiativeBack.addEventListener("click", closeInitiativeModule);
       npcLaunch.addEventListener("click", openNpcModule);
       npcBack.addEventListener("click", closeNpcModule);
+      sessionLaunch.addEventListener("click", openSessionModule);
+      sessionBack.addEventListener("click", closeSessionModule);
       // Shared toggle keeps both expanded and collapsed controls in sync.
       const toggleEncounterPanel = () => {
         const isExpanded = encounterPanelToggle.getAttribute("aria-expanded") === "true";
@@ -2259,6 +2790,22 @@
         persistNpcRoster();
         renderNpcList();
         resetNpcForm(`Saved "${name}" to the NPC roster.`);
+      });
+
+      // Session notes form handler captures manual saves and reset requests.
+      sessionForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        saveSessionNote({ announce: true });
+      });
+
+      sessionReset.addEventListener("click", () => {
+        resetSessionNote();
+      });
+
+      // Auto-save session notes as the GM types to avoid losing live session info.
+      sessionForm.querySelectorAll("input, select, textarea").forEach((input) => {
+        input.addEventListener("input", queueSessionAutoSave);
+        input.addEventListener("change", queueSessionAutoSave);
       });
 
       npcReset.addEventListener("click", () => {
