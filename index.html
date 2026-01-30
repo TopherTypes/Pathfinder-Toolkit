@@ -1331,6 +1331,56 @@
                         placeholder="e.g. Dockside"
                       />
                     </div>
+                    <!-- Core Pathfinder profile fields for lineage and role. -->
+                    <div>
+                      <label for="npc-ancestry">Ancestry</label>
+                      <input
+                        id="npc-ancestry"
+                        name="npc-ancestry"
+                        type="text"
+                        placeholder="e.g. Human"
+                      />
+                    </div>
+                    <div>
+                      <label for="npc-class">Class</label>
+                      <input
+                        id="npc-class"
+                        name="npc-class"
+                        type="text"
+                        placeholder="e.g. Fighter"
+                      />
+                    </div>
+                    <div>
+                      <label for="npc-level">Level</label>
+                      <input
+                        id="npc-level"
+                        name="npc-level"
+                        type="number"
+                        min="0"
+                        step="1"
+                        placeholder="e.g. 4"
+                      />
+                    </div>
+                    <div>
+                      <label for="npc-alignment">Alignment</label>
+                      <input
+                        id="npc-alignment"
+                        name="npc-alignment"
+                        type="text"
+                        placeholder="e.g. Lawful Neutral"
+                      />
+                    </div>
+                    <div>
+                      <label for="npc-size">Size</label>
+                      <select id="npc-size" name="npc-size">
+                        <option value="Tiny">Tiny</option>
+                        <option value="Small">Small</option>
+                        <option value="Medium" selected>Medium</option>
+                        <option value="Large">Large</option>
+                        <option value="Huge">Huge</option>
+                        <option value="Gargantuan">Gargantuan</option>
+                      </select>
+                    </div>
                     <div>
                       <label for="npc-disposition">Disposition</label>
                       <select id="npc-disposition" name="npc-disposition">
@@ -1359,12 +1409,152 @@
                         placeholder="e.g. smuggler, swordmaster"
                       />
                     </div>
+                    <!-- Mechanical baseline stats for quick reference. -->
+                    <div>
+                      <label for="npc-hp">Hit Points</label>
+                      <input
+                        id="npc-hp"
+                        name="npc-hp"
+                        type="number"
+                        min="0"
+                        step="1"
+                        placeholder="e.g. 44"
+                      />
+                    </div>
+                    <div>
+                      <label for="npc-ac">Armor Class</label>
+                      <input
+                        id="npc-ac"
+                        name="npc-ac"
+                        type="number"
+                        min="0"
+                        step="1"
+                        placeholder="e.g. 19"
+                      />
+                    </div>
+                    <div>
+                      <label for="npc-speed">Speed</label>
+                      <input
+                        id="npc-speed"
+                        name="npc-speed"
+                        type="text"
+                        placeholder="e.g. 25 ft."
+                      />
+                    </div>
+                    <div>
+                      <label for="npc-initiative">Initiative</label>
+                      <input
+                        id="npc-initiative"
+                        name="npc-initiative"
+                        type="number"
+                        step="1"
+                        placeholder="e.g. +7"
+                      />
+                    </div>
+                    <!-- Attribute block keeps the classic six stats grouped. -->
+                    <div>
+                      <label for="npc-str">STR</label>
+                      <input id="npc-str" name="npc-str" type="number" step="1" placeholder="e.g. 16" />
+                    </div>
+                    <div>
+                      <label for="npc-dex">DEX</label>
+                      <input id="npc-dex" name="npc-dex" type="number" step="1" placeholder="e.g. 14" />
+                    </div>
+                    <div>
+                      <label for="npc-con">CON</label>
+                      <input id="npc-con" name="npc-con" type="number" step="1" placeholder="e.g. 12" />
+                    </div>
+                    <div>
+                      <label for="npc-int">INT</label>
+                      <input id="npc-int" name="npc-int" type="number" step="1" placeholder="e.g. 10" />
+                    </div>
+                    <div>
+                      <label for="npc-wis">WIS</label>
+                      <input id="npc-wis" name="npc-wis" type="number" step="1" placeholder="e.g. 13" />
+                    </div>
+                    <div>
+                      <label for="npc-cha">CHA</label>
+                      <input id="npc-cha" name="npc-cha" type="number" step="1" placeholder="e.g. 8" />
+                    </div>
+                    <!-- Saving throw references keep defensive numbers handy. -->
+                    <div>
+                      <label for="npc-fortitude">Fortitude</label>
+                      <input
+                        id="npc-fortitude"
+                        name="npc-fortitude"
+                        type="number"
+                        step="1"
+                        placeholder="e.g. +9"
+                      />
+                    </div>
+                    <div>
+                      <label for="npc-reflex">Reflex</label>
+                      <input
+                        id="npc-reflex"
+                        name="npc-reflex"
+                        type="number"
+                        step="1"
+                        placeholder="e.g. +6"
+                      />
+                    </div>
+                    <div>
+                      <label for="npc-will">Will</label>
+                      <input
+                        id="npc-will"
+                        name="npc-will"
+                        type="number"
+                        step="1"
+                        placeholder="e.g. +5"
+                      />
+                    </div>
+                    <div>
+                      <label for="npc-senses">Senses</label>
+                      <input
+                        id="npc-senses"
+                        name="npc-senses"
+                        type="text"
+                        placeholder="e.g. darkvision 60 ft."
+                      />
+                    </div>
+                    <div>
+                      <label for="npc-languages">Languages</label>
+                      <input
+                        id="npc-languages"
+                        name="npc-languages"
+                        type="text"
+                        placeholder="e.g. Common, Dwarven"
+                      />
+                    </div>
                     <div>
                       <label for="npc-hook">Story hook</label>
                       <textarea
                         id="npc-hook"
                         name="npc-hook"
                         placeholder="e.g. Wants the party to recover a lost logbook."
+                      ></textarea>
+                    </div>
+                    <div>
+                      <label for="npc-skills">Skills & Proficiencies</label>
+                      <textarea
+                        id="npc-skills"
+                        name="npc-skills"
+                        placeholder="e.g. Athletics +8, Intimidation +7, Sailing lore +6."
+                      ></textarea>
+                    </div>
+                    <div>
+                      <label for="npc-equipment">Equipment</label>
+                      <textarea
+                        id="npc-equipment"
+                        name="npc-equipment"
+                        placeholder="e.g. Boarding axe, breastplate, signal whistle."
+                      ></textarea>
+                    </div>
+                    <div>
+                      <label for="npc-abilities">Special Abilities</label>
+                      <textarea
+                        id="npc-abilities"
+                        name="npc-abilities"
+                        placeholder="e.g. Harpoon Strike, Commanding Presence."
                       ></textarea>
                     </div>
                     <div>
@@ -1921,10 +2111,33 @@
       const npcRole = document.getElementById("npc-role");
       const npcFaction = document.getElementById("npc-faction");
       const npcLocation = document.getElementById("npc-location");
+      const npcAncestry = document.getElementById("npc-ancestry");
+      const npcClass = document.getElementById("npc-class");
+      const npcLevel = document.getElementById("npc-level");
+      const npcAlignment = document.getElementById("npc-alignment");
+      const npcSize = document.getElementById("npc-size");
       const npcDisposition = document.getElementById("npc-disposition");
       const npcRelationship = document.getElementById("npc-relationship");
       const npcTags = document.getElementById("npc-tags");
+      const npcHp = document.getElementById("npc-hp");
+      const npcAc = document.getElementById("npc-ac");
+      const npcSpeed = document.getElementById("npc-speed");
+      const npcInitiative = document.getElementById("npc-initiative");
+      const npcStrength = document.getElementById("npc-str");
+      const npcDexterity = document.getElementById("npc-dex");
+      const npcConstitution = document.getElementById("npc-con");
+      const npcIntelligence = document.getElementById("npc-int");
+      const npcWisdom = document.getElementById("npc-wis");
+      const npcCharisma = document.getElementById("npc-cha");
+      const npcFortitude = document.getElementById("npc-fortitude");
+      const npcReflex = document.getElementById("npc-reflex");
+      const npcWill = document.getElementById("npc-will");
+      const npcSenses = document.getElementById("npc-senses");
+      const npcLanguages = document.getElementById("npc-languages");
       const npcHook = document.getElementById("npc-hook");
+      const npcSkills = document.getElementById("npc-skills");
+      const npcEquipment = document.getElementById("npc-equipment");
+      const npcAbilities = document.getElementById("npc-abilities");
       const npcNotes = document.getElementById("npc-notes");
       const npcSubmit = document.getElementById("npc-submit");
       const npcReset = document.getElementById("npc-reset");
@@ -2191,8 +2404,43 @@
           .map((tag) => tag.trim())
           .filter(Boolean);
 
+      // Parse numeric fields safely so empty or invalid entries store as null.
+      const parseNpcNumberField = (value) => {
+        const parsed = Number.parseInt(value, 10);
+        return Number.isNaN(parsed) ? null : parsed;
+      };
+
       // Provide a user-friendly label for display when data is missing.
-      const formatNpcField = (value, fallback = "—") => (value ? value : fallback);
+      const formatNpcField = (value, fallback = "—") =>
+        value === null || value === undefined || value === "" ? fallback : value;
+
+      // Format the six core attributes into a compact display string.
+      const formatNpcAttributes = (attributes) => {
+        if (!attributes) {
+          return "—";
+        }
+        const formatted = [
+          `STR ${formatNpcField(attributes.strength)}`,
+          `DEX ${formatNpcField(attributes.dexterity)}`,
+          `CON ${formatNpcField(attributes.constitution)}`,
+          `INT ${formatNpcField(attributes.intelligence)}`,
+          `WIS ${formatNpcField(attributes.wisdom)}`,
+          `CHA ${formatNpcField(attributes.charisma)}`,
+        ];
+        return formatted.join(" · ");
+      };
+
+      // Format saving throws into a concise, readable block.
+      const formatNpcSaves = (saves) => {
+        if (!saves) {
+          return "—";
+        }
+        return [
+          `Fort ${formatNpcField(saves.fortitude)}`,
+          `Ref ${formatNpcField(saves.reflex)}`,
+          `Will ${formatNpcField(saves.will)}`,
+        ].join(" · ");
+      };
 
       const getNpcById = (npcId) => npcState.roster.find((npc) => npc.id === npcId) ?? null;
 
@@ -2207,18 +2455,47 @@
         role: overrides.role ?? npcRole.value.trim(),
         faction: overrides.faction ?? npcFaction.value.trim(),
         location: overrides.location ?? npcLocation.value.trim(),
+        ancestry: overrides.ancestry ?? npcAncestry.value.trim(),
+        className: overrides.className ?? npcClass.value.trim(),
+        level: overrides.level ?? parseNpcNumberField(npcLevel.value),
+        alignment: overrides.alignment ?? npcAlignment.value.trim(),
+        size: overrides.size ?? npcSize.value,
         disposition: overrides.disposition ?? npcDisposition.value,
         relationship: overrides.relationship ?? npcRelationship.value,
         tags: overrides.tags ?? parseNpcTags(npcTags.value),
+        hitPoints: overrides.hitPoints ?? parseNpcNumberField(npcHp.value),
+        armorClass: overrides.armorClass ?? parseNpcNumberField(npcAc.value),
+        speed: overrides.speed ?? npcSpeed.value.trim(),
+        initiative: overrides.initiative ?? parseNpcNumberField(npcInitiative.value),
+        attributes: overrides.attributes ?? {
+          strength: parseNpcNumberField(npcStrength.value),
+          dexterity: parseNpcNumberField(npcDexterity.value),
+          constitution: parseNpcNumberField(npcConstitution.value),
+          intelligence: parseNpcNumberField(npcIntelligence.value),
+          wisdom: parseNpcNumberField(npcWisdom.value),
+          charisma: parseNpcNumberField(npcCharisma.value),
+        },
+        saves: overrides.saves ?? {
+          fortitude: parseNpcNumberField(npcFortitude.value),
+          reflex: parseNpcNumberField(npcReflex.value),
+          will: parseNpcNumberField(npcWill.value),
+        },
+        senses: overrides.senses ?? npcSenses.value.trim(),
+        languages: overrides.languages ?? npcLanguages.value.trim(),
         hook: overrides.hook ?? npcHook.value.trim(),
+        skills: overrides.skills ?? npcSkills.value.trim(),
+        equipment: overrides.equipment ?? npcEquipment.value.trim(),
+        abilities: overrides.abilities ?? npcAbilities.value.trim(),
         notes: overrides.notes ?? npcNotes.value.trim(),
         updatedAt: overrides.updatedAt ?? new Date().toISOString(),
       });
 
       const resetNpcForm = (note = "Use the roster list to revisit NPCs and update their relationship status.") => {
         npcForm.reset();
+        // Restore select defaults that may not reset to desired gameplay-friendly values.
         npcRelationship.value = "Neutral";
         npcDisposition.value = "Neutral";
+        npcSize.value = "Medium";
         npcState.editingNpcId = null;
         npcSubmit.textContent = "Add NPC";
         setNpcFormNote(note);
@@ -2229,10 +2506,33 @@
         npcRole.value = npc.role ?? "";
         npcFaction.value = npc.faction ?? "";
         npcLocation.value = npc.location ?? "";
+        npcAncestry.value = npc.ancestry ?? "";
+        npcClass.value = npc.className ?? "";
+        npcLevel.value = npc.level ?? "";
+        npcAlignment.value = npc.alignment ?? "";
+        npcSize.value = npc.size ?? "Medium";
         npcDisposition.value = npc.disposition ?? "Neutral";
         npcRelationship.value = npc.relationship ?? "Neutral";
         npcTags.value = npc.tags?.join(", ") ?? "";
+        npcHp.value = npc.hitPoints ?? "";
+        npcAc.value = npc.armorClass ?? "";
+        npcSpeed.value = npc.speed ?? "";
+        npcInitiative.value = npc.initiative ?? "";
+        npcStrength.value = npc.attributes?.strength ?? "";
+        npcDexterity.value = npc.attributes?.dexterity ?? "";
+        npcConstitution.value = npc.attributes?.constitution ?? "";
+        npcIntelligence.value = npc.attributes?.intelligence ?? "";
+        npcWisdom.value = npc.attributes?.wisdom ?? "";
+        npcCharisma.value = npc.attributes?.charisma ?? "";
+        npcFortitude.value = npc.saves?.fortitude ?? "";
+        npcReflex.value = npc.saves?.reflex ?? "";
+        npcWill.value = npc.saves?.will ?? "";
+        npcSenses.value = npc.senses ?? "";
+        npcLanguages.value = npc.languages ?? "";
         npcHook.value = npc.hook ?? "";
+        npcSkills.value = npc.skills ?? "";
+        npcEquipment.value = npc.equipment ?? "";
+        npcAbilities.value = npc.abilities ?? "";
         npcNotes.value = npc.notes ?? "";
         npcState.editingNpcId = npc.id;
         npcSubmit.textContent = "Update NPC";
@@ -2270,6 +2570,17 @@
             <div>${formatNpcField(activeNpc.location)}</div>
           </div>
           <div class="npc-detail-item">
+            <div class="npc-detail-label">Ancestry · Class · Level</div>
+            <div>
+              ${formatNpcField(activeNpc.ancestry)} · ${formatNpcField(activeNpc.className)} ·
+              ${formatNpcField(activeNpc.level)}
+            </div>
+          </div>
+          <div class="npc-detail-item">
+            <div class="npc-detail-label">Alignment & Size</div>
+            <div>${formatNpcField(activeNpc.alignment)} · ${formatNpcField(activeNpc.size)}</div>
+          </div>
+          <div class="npc-detail-item">
             <div class="npc-detail-label">Disposition</div>
             <div>${formatNpcField(activeNpc.disposition)}</div>
           </div>
@@ -2278,12 +2589,43 @@
             <div>${formatNpcField(activeNpc.relationship)}</div>
           </div>
           <div class="npc-detail-item">
+            <div class="npc-detail-label">HP · AC · Speed · Initiative</div>
+            <div>
+              ${formatNpcField(activeNpc.hitPoints)} · ${formatNpcField(activeNpc.armorClass)} ·
+              ${formatNpcField(activeNpc.speed)} · ${formatNpcField(activeNpc.initiative)}
+            </div>
+          </div>
+          <div class="npc-detail-item">
+            <div class="npc-detail-label">Attributes</div>
+            <div>${formatNpcAttributes(activeNpc.attributes)}</div>
+          </div>
+          <div class="npc-detail-item">
+            <div class="npc-detail-label">Saving Throws</div>
+            <div>${formatNpcSaves(activeNpc.saves)}</div>
+          </div>
+          <div class="npc-detail-item">
+            <div class="npc-detail-label">Senses & Languages</div>
+            <div>${formatNpcField(activeNpc.senses)} · ${formatNpcField(activeNpc.languages)}</div>
+          </div>
+          <div class="npc-detail-item">
             <div class="npc-detail-label">Tags</div>
             <div class="tool-meta">${tagsMarkup}</div>
           </div>
           <div class="npc-detail-item">
             <div class="npc-detail-label">Story Hook</div>
             <div>${formatNpcField(activeNpc.hook)}</div>
+          </div>
+          <div class="npc-detail-item">
+            <div class="npc-detail-label">Skills & Proficiencies</div>
+            <div>${formatNpcField(activeNpc.skills)}</div>
+          </div>
+          <div class="npc-detail-item">
+            <div class="npc-detail-label">Equipment</div>
+            <div>${formatNpcField(activeNpc.equipment)}</div>
+          </div>
+          <div class="npc-detail-item">
+            <div class="npc-detail-label">Special Abilities</div>
+            <div>${formatNpcField(activeNpc.abilities)}</div>
           </div>
           <div class="npc-detail-item">
             <div class="npc-detail-label">Roleplay Notes</div>
