@@ -720,17 +720,21 @@
         height: 88mm;
         padding: 4mm;
         box-sizing: border-box;
-        border: 1px solid #2a2218;
+        border: 1px solid #3b2f21;
+        border-radius: 8px;
         display: flex;
         flex-direction: column;
         gap: 2mm;
         font-family: var(--sans);
         color: #14100c;
-        background: #f9f4e8;
+        background: linear-gradient(165deg, #fff7e8 0%, #f1e1c2 100%);
+        box-shadow: 0 3mm 5mm rgba(20, 14, 8, 0.25);
+        position: relative;
+        overflow: hidden;
       }
 
       .stat-card__header {
-        border-bottom: 1px solid #3b2f21;
+        border-bottom: 1px solid rgba(59, 47, 33, 0.7);
         padding-bottom: 1mm;
         display: grid;
         gap: 0.8mm;
@@ -753,6 +757,7 @@
         gap: 1mm;
         font-size: 8pt;
         line-height: 1.2;
+        text-wrap: pretty;
       }
 
       .stat-card__line--title {
@@ -760,6 +765,23 @@
         text-transform: uppercase;
         letter-spacing: 0.06em;
         margin-top: 0.6mm;
+      }
+
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4mm;
+        background: linear-gradient(90deg, #7a1414 0%, #c9a24a 100%);
+        opacity: 0.9;
+      }
+
+      .stat-card__header,
+      .stat-card__body {
+        position: relative;
+        z-index: 1;
       }
 
       .npc-progress {
@@ -4056,11 +4078,17 @@
 
       // Provide a simple statblock parser for quick creature entry.
       const parseCreatureStatblock = (text) => {
-        const lines = text
-          .split(/\r?\n/)
+        // Normalize lines while keeping section breaks intact for reliable parsing.
+        const normalizedText = text.replace(/\r/g, "").trim();
+        const lines = normalizedText
+          .split("\n")
           .map((line) => line.trim())
           .filter(Boolean);
         const parsed = {};
+        const sectionHeaders = ["Defense", "Offense", "Statistics", "Ecology", "Special Abilities"];
+        const sectionRegex = new RegExp(`^(${sectionHeaders.join("|")})$`, "i");
+
+        // Extract the creature name and level/CR from the first line when possible.
         if (lines.length) {
           const nameMatch = lines[0].match(/^(.*?)(?:\s+(?:CR|Level)\s*([\d/+.]+))?$/i);
           if (nameMatch) {
@@ -4071,48 +4099,96 @@
           }
         }
 
-        const findLine = (label) => lines.find((line) => new RegExp(`\\b${label}\\b`, "i").test(line));
-        const captureValue = (line, label) => {
-          if (!line) {
-            return "";
+        // Capture alignment, size, and type from the identity line (e.g., "CE Medium humanoid (dark folk)").
+        const alignmentPattern = /(LG|NG|CG|LN|N|CN|LE|NE|CE)/i;
+        const sizePattern = /(Fine|Diminutive|Tiny|Small|Medium|Large|Huge|Gargantuan|Colossal)/i;
+        const identityLine = lines.find(
+          (line) => alignmentPattern.test(line) && sizePattern.test(line)
+        );
+        if (identityLine) {
+          const identityMatch = identityLine.match(
+            /^(LG|NG|CG|LN|N|CN|LE|NE|CE)\s+(Fine|Diminutive|Tiny|Small|Medium|Large|Huge|Gargantuan|Colossal)\s+(.+)$/i
+          );
+          if (identityMatch) {
+            parsed.alignment = identityMatch[1];
+            parsed.size = identityMatch[2];
+            parsed.traits = identityMatch[3];
           }
-          const match = line.match(new RegExp(`${label}\\s*([^;]+)`, "i"));
-          return match ? match[1].trim() : "";
+        }
+
+        // Helper to capture labels with flexible terminators (useful for semicolons inside stat lines).
+        const captureLineValue = (label, pattern = "[^\\n]+") => {
+          const match = normalizedText.match(new RegExp(`(?:${label})\\s*(${pattern})`, "i"));
+          return match?.[1]?.trim() ?? "";
         };
 
-        const acLine = findLine("AC");
-        parsed.ac = captureValue(acLine, "AC");
-        parsed.fortitude = captureValue(acLine, "Fort");
-        parsed.reflex = captureValue(acLine, "Ref");
-        parsed.will = captureValue(acLine, "Will");
+        // Sections keep grouped content like spell-like abilities or special abilities together.
+        const getSectionLines = (header) => {
+          const startIndex = lines.findIndex((line) => line.toLowerCase() === header.toLowerCase());
+          if (startIndex === -1) {
+            return [];
+          }
+          const following = lines.slice(startIndex + 1);
+          const nextHeaderIndex = following.findIndex((line) => sectionRegex.test(line));
+          const endIndex = nextHeaderIndex === -1 ? lines.length : startIndex + 1 + nextHeaderIndex;
+          return lines.slice(startIndex + 1, endIndex);
+        };
 
-        const hpLine = findLine("HP");
-        parsed.hp = captureValue(hpLine, "HP");
+        parsed.ac = captureLineValue("AC");
+        parsed.hp = captureLineValue("hp");
+        parsed.fortitude = captureLineValue("Fort", "[^,;\\n]+");
+        parsed.reflex = captureLineValue("Ref", "[^,;\\n]+");
+        parsed.will = captureLineValue("Will", "[^,;\\n]+");
+        parsed.weaknesses = captureLineValue("Weaknesses", "[^;\\n]+");
+        parsed.resistances = captureLineValue("Resist(?:ances)?", "[^;\\n]+");
+        parsed.immunities = captureLineValue("Immune|Immunities", "[^;\\n]+");
 
-        const perceptionLine = findLine("Perception");
-        parsed.perception = captureValue(perceptionLine, "Perception");
-        parsed.senses = captureValue(perceptionLine, "Senses");
+        parsed.perception = captureLineValue("Perception", "[^;\\n]+");
+        parsed.senses = captureLineValue("Senses", "[^;\\n]+");
+        parsed.languages = captureLineValue("Languages");
+        parsed.speed = captureLineValue("Speed", "[^;\\n]+");
+        parsed.melee = captureLineValue("Melee", "[^\\n]+");
+        parsed.ranged = captureLineValue("Ranged", "[^\\n]+");
 
-        const languagesLine = findLine("Languages");
-        parsed.languages = captureValue(languagesLine, "Languages");
+        // Parse offense extras (spell-like abilities, special attacks, etc.) into the abilities field.
+        const offenseLines = getSectionLines("Offense");
+        const offenseExtras = offenseLines.filter(
+          (line) => !/^(Speed|Melee|Ranged)\b/i.test(line)
+        );
 
-        const defenseLine = findLine("Resistances");
-        parsed.resistances = captureValue(defenseLine, "Resistances");
-        parsed.weaknesses = captureValue(defenseLine, "Weaknesses");
-        parsed.immunities = captureValue(defenseLine, "Immunities");
+        // Parse statistics details into the skills field for quick lookup during play.
+        const statisticsLines = getSectionLines("Statistics");
+        const abilityScoresLine = statisticsLines.find((line) => /Str\s*\d+/i.test(line));
+        const baseAttackLine = statisticsLines.find((line) => /^Base Atk\b/i.test(line));
+        const featsLine = statisticsLines.find((line) => /^Feats\b/i.test(line));
+        const skillsLine = statisticsLines.find((line) => /^Skills\b/i.test(line));
+        const sqLine = statisticsLines.find((line) => /^SQ\b/i.test(line));
 
-        const speedLine = findLine("Speed");
-        parsed.speed = captureValue(speedLine, "Speed");
+        const skillsSummary = [abilityScoresLine, skillsLine].filter(Boolean);
 
-        parsed.melee = captureValue(findLine("Melee"), "Melee");
-        parsed.ranged = captureValue(findLine("Ranged"), "Ranged");
+        if (skillsSummary.length) {
+          parsed.skills = skillsSummary.join("\n");
+        }
 
-        const traitLine = findLine("Traits");
-        parsed.traits = captureValue(traitLine, "Traits");
+        // Capture special ability text blocks for combat-ready notes.
+        const specialAbilitiesLines = getSectionLines("Special Abilities");
+        const ecologyLines = getSectionLines("Ecology");
 
-        const abilitiesLine = lines.find((line) => /Str\s*[+\-]?\d+/i.test(line));
-        if (abilitiesLine) {
-          parsed.skills = `Ability Scores: ${abilitiesLine}`;
+        const abilitiesSummary = [...offenseExtras, ...specialAbilitiesLines].filter(Boolean);
+        if (abilitiesSummary.length) {
+          parsed.abilities = abilitiesSummary.join("\n");
+        }
+
+        const notesSummary = [
+          lines.find((line) => /^Source\b/i.test(line)),
+          lines.find((line) => /^XP\b/i.test(line)),
+          baseAttackLine,
+          featsLine,
+          sqLine,
+          ...ecologyLines,
+        ].filter(Boolean);
+        if (notesSummary.length) {
+          parsed.notes = notesSummary.join("\n");
         }
 
         return parsed;
@@ -4123,6 +4199,8 @@
         creatureName.value = parsed.name ?? creatureName.value;
         creatureLevel.value = parsed.level ?? creatureLevel.value;
         creatureTraits.value = parsed.traits ?? creatureTraits.value;
+        creatureAlignment.value = parsed.alignment ?? creatureAlignment.value;
+        creatureSize.value = parsed.size ?? creatureSize.value;
         creaturePerception.value = parsed.perception ?? creaturePerception.value;
         creatureSenses.value = parsed.senses ?? creatureSenses.value;
         creatureLanguages.value = parsed.languages ?? creatureLanguages.value;
@@ -4137,7 +4215,9 @@
         creatureSpeed.value = parsed.speed ?? creatureSpeed.value;
         creatureMelee.value = parsed.melee ?? creatureMelee.value;
         creatureRanged.value = parsed.ranged ?? creatureRanged.value;
+        creatureAbilities.value = parsed.abilities ?? creatureAbilities.value;
         creatureSkills.value = parsed.skills ?? creatureSkills.value;
+        creatureNotes.value = parsed.notes ?? creatureNotes.value;
       };
 
       // Wrap text at a rough character limit for card rendering.
@@ -4314,32 +4394,41 @@
               <title>Creature Stat Cards</title>
               <style>
                 @page {
-                  size: 63mm 88mm;
-                  margin: 0;
+                  size: letter;
+                  margin: 8mm;
                 }
                 * {
                   box-sizing: border-box;
                 }
                 body {
+                  /* Multi-card grid with cut-friendly spacing for printable sheets. */
                   margin: 0;
                   padding: 0;
                   display: grid;
-                  gap: 0;
+                  gap: 4mm;
+                  grid-template-columns: repeat(auto-fill, 63mm);
+                  justify-content: start;
+                  align-content: start;
                   font-family: "Trebuchet MS", "Segoe UI", sans-serif;
                 }
                 .stat-card {
                   width: 63mm;
                   height: 88mm;
                   padding: 4mm;
-                  border: 1px solid #2a2218;
+                  border: 1px solid #3b2f21;
+                  border-radius: 8px;
                   display: flex;
                   flex-direction: column;
                   gap: 2mm;
-                  background: #f9f4e8;
-                  page-break-after: always;
+                  background: linear-gradient(165deg, #fff7e8 0%, #f1e1c2 100%);
+                  box-shadow: 0 3mm 5mm rgba(20, 14, 8, 0.25);
+                  position: relative;
+                  overflow: hidden;
+                  break-inside: avoid;
+                  page-break-inside: avoid;
                 }
                 .stat-card__header {
-                  border-bottom: 1px solid #3b2f21;
+                  border-bottom: 1px solid rgba(59, 47, 33, 0.7);
                   padding-bottom: 1mm;
                   display: grid;
                   gap: 0.8mm;
@@ -4360,12 +4449,34 @@
                   font-size: 8pt;
                   line-height: 1.2;
                   color: #14100c;
+                  text-wrap: pretty;
                 }
                 .stat-card__line--title {
                   font-weight: 700;
                   text-transform: uppercase;
                   letter-spacing: 0.06em;
                   margin-top: 0.6mm;
+                }
+                .stat-card::before {
+                  content: "";
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 4mm;
+                  background: linear-gradient(90deg, #7a1414 0%, #c9a24a 100%);
+                  opacity: 0.9;
+                }
+                .stat-card__header,
+                .stat-card__body {
+                  position: relative;
+                  z-index: 1;
+                }
+                @media print {
+                  body {
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                  }
                 }
               </style>
             </head>
