@@ -297,13 +297,53 @@
         gap: 1.2rem;
       }
 
-      .npc-form-grid {
+      /* NPC form sections create a guided, grouped layout for faster data entry. */
+      .npc-form-sections {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .npc-form-section {
+        background: rgba(18, 14, 10, 0.82);
+        border-radius: 14px;
+        padding: 0.85rem;
+        border: 1px solid rgba(201, 162, 74, 0.35);
+        box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.25);
+      }
+
+      .npc-form-section__header {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        margin-bottom: 0.65rem;
+      }
+
+      .npc-form-section__title {
+        font-family: var(--serif);
+        color: var(--gold-bright);
+        font-size: 1rem;
+      }
+
+      .npc-form-section__hint {
+        color: var(--ink-muted);
+        font-size: 0.85rem;
+      }
+
+      .npc-section-grid {
         display: grid;
         gap: 0.75rem;
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       }
 
-      .npc-form-grid textarea {
+      .npc-section-grid--compact {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      }
+
+      .npc-section-grid--full {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .npc-section-grid textarea {
         min-height: 90px;
       }
 
@@ -1293,278 +1333,335 @@
               <div class="tracker-panel npc-form-panel">
                 <h3>NPC Profile Builder</h3>
                 <form id="npc-form">
-                  <div class="npc-form-grid">
-                    <div>
-                      <label for="npc-name">Name</label>
-                      <input
-                        id="npc-name"
-                        name="npc-name"
-                        type="text"
-                        placeholder="e.g. Captain Vale"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label for="npc-role">Role</label>
-                      <input
-                        id="npc-role"
-                        name="npc-role"
-                        type="text"
-                        placeholder="e.g. Harbor Master"
-                      />
-                    </div>
-                    <div>
-                      <label for="npc-faction">Faction</label>
-                      <input
-                        id="npc-faction"
-                        name="npc-faction"
-                        type="text"
-                        placeholder="e.g. Crimson Fleet"
-                      />
-                    </div>
-                    <div>
-                      <label for="npc-location">Location</label>
-                      <input
-                        id="npc-location"
-                        name="npc-location"
-                        type="text"
-                        placeholder="e.g. Dockside"
-                      />
-                    </div>
-                    <!-- Core Pathfinder profile fields for lineage and role. -->
-                    <div>
-                      <label for="npc-ancestry">Ancestry</label>
-                      <input
-                        id="npc-ancestry"
-                        name="npc-ancestry"
-                        type="text"
-                        placeholder="e.g. Human"
-                      />
-                    </div>
-                    <div>
-                      <label for="npc-class">Class</label>
-                      <input
-                        id="npc-class"
-                        name="npc-class"
-                        type="text"
-                        placeholder="e.g. Fighter"
-                      />
-                    </div>
-                    <div>
-                      <label for="npc-level">Level</label>
-                      <input
-                        id="npc-level"
-                        name="npc-level"
-                        type="number"
-                        min="0"
-                        step="1"
-                        placeholder="e.g. 4"
-                      />
-                    </div>
-                    <div>
-                      <label for="npc-alignment">Alignment</label>
-                      <input
-                        id="npc-alignment"
-                        name="npc-alignment"
-                        type="text"
-                        placeholder="e.g. Lawful Neutral"
-                      />
-                    </div>
-                    <div>
-                      <label for="npc-size">Size</label>
-                      <select id="npc-size" name="npc-size">
-                        <option value="Tiny">Tiny</option>
-                        <option value="Small">Small</option>
-                        <option value="Medium" selected>Medium</option>
-                        <option value="Large">Large</option>
-                        <option value="Huge">Huge</option>
-                        <option value="Gargantuan">Gargantuan</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label for="npc-disposition">Disposition</label>
-                      <select id="npc-disposition" name="npc-disposition">
-                        <option value="Friendly">Friendly</option>
-                        <option value="Neutral">Neutral</option>
-                        <option value="Wary">Wary</option>
-                        <option value="Hostile">Hostile</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label for="npc-relationship">Relationship</label>
-                      <select id="npc-relationship" name="npc-relationship">
-                        <option value="Ally">Ally</option>
-                        <option value="Contact">Contact</option>
-                        <option value="Neutral" selected>Neutral</option>
-                        <option value="Rival">Rival</option>
-                        <option value="Enemy">Enemy</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label for="npc-tags">Tags (comma-separated)</label>
-                      <input
-                        id="npc-tags"
-                        name="npc-tags"
-                        type="text"
-                        placeholder="e.g. smuggler, swordmaster"
-                      />
-                    </div>
-                    <!-- Mechanical baseline stats for quick reference. -->
-                    <div>
-                      <label for="npc-hp">Hit Points</label>
-                      <input
-                        id="npc-hp"
-                        name="npc-hp"
-                        type="number"
-                        min="0"
-                        step="1"
-                        placeholder="e.g. 44"
-                      />
-                    </div>
-                    <div>
-                      <label for="npc-ac">Armor Class</label>
-                      <input
-                        id="npc-ac"
-                        name="npc-ac"
-                        type="number"
-                        min="0"
-                        step="1"
-                        placeholder="e.g. 19"
-                      />
-                    </div>
-                    <div>
-                      <label for="npc-speed">Speed</label>
-                      <input
-                        id="npc-speed"
-                        name="npc-speed"
-                        type="text"
-                        placeholder="e.g. 25 ft."
-                      />
-                    </div>
-                    <div>
-                      <label for="npc-initiative">Initiative</label>
-                      <input
-                        id="npc-initiative"
-                        name="npc-initiative"
-                        type="number"
-                        step="1"
-                        placeholder="e.g. +7"
-                      />
-                    </div>
+                  <div class="npc-form-sections">
+                    <!-- Identity basics keep naming and quick descriptors close together. -->
+                    <section class="npc-form-section" aria-labelledby="npc-section-identity">
+                      <header class="npc-form-section__header">
+                        <h4 class="npc-form-section__title" id="npc-section-identity">Identity & Role</h4>
+                        <p class="npc-form-section__hint">Capture the quick reference details used during play.</p>
+                      </header>
+                      <div class="npc-section-grid">
+                        <div>
+                          <label for="npc-name">Name</label>
+                          <input
+                            id="npc-name"
+                            name="npc-name"
+                            type="text"
+                            placeholder="e.g. Captain Vale"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label for="npc-role">Role</label>
+                          <input
+                            id="npc-role"
+                            name="npc-role"
+                            type="text"
+                            placeholder="e.g. Harbor Master"
+                          />
+                        </div>
+                        <div>
+                          <label for="npc-faction">Faction</label>
+                          <input
+                            id="npc-faction"
+                            name="npc-faction"
+                            type="text"
+                            placeholder="e.g. Crimson Fleet"
+                          />
+                        </div>
+                        <div>
+                          <label for="npc-location">Location</label>
+                          <input
+                            id="npc-location"
+                            name="npc-location"
+                            type="text"
+                            placeholder="e.g. Dockside"
+                          />
+                        </div>
+                        <div>
+                          <label for="npc-tags">Tags (comma-separated)</label>
+                          <input
+                            id="npc-tags"
+                            name="npc-tags"
+                            type="text"
+                            placeholder="e.g. smuggler, swordmaster"
+                          />
+                        </div>
+                      </div>
+                    </section>
+
+                    <!-- Core lore and social tone keep alignment and relationship fields aligned. -->
+                    <section class="npc-form-section" aria-labelledby="npc-section-background">
+                      <header class="npc-form-section__header">
+                        <h4 class="npc-form-section__title" id="npc-section-background">Background & Demeanor</h4>
+                        <p class="npc-form-section__hint">Define lineage, role, and how the NPC engages the party.</p>
+                      </header>
+                      <div class="npc-section-grid">
+                        <div>
+                          <label for="npc-ancestry">Ancestry</label>
+                          <input
+                            id="npc-ancestry"
+                            name="npc-ancestry"
+                            type="text"
+                            placeholder="e.g. Human"
+                          />
+                        </div>
+                        <div>
+                          <label for="npc-class">Class</label>
+                          <input
+                            id="npc-class"
+                            name="npc-class"
+                            type="text"
+                            placeholder="e.g. Fighter"
+                          />
+                        </div>
+                        <div>
+                          <label for="npc-level">Level</label>
+                          <input
+                            id="npc-level"
+                            name="npc-level"
+                            type="number"
+                            min="0"
+                            step="1"
+                            placeholder="e.g. 4"
+                          />
+                        </div>
+                        <div>
+                          <label for="npc-alignment">Alignment</label>
+                          <input
+                            id="npc-alignment"
+                            name="npc-alignment"
+                            type="text"
+                            placeholder="e.g. Lawful Neutral"
+                          />
+                        </div>
+                        <div>
+                          <label for="npc-size">Size</label>
+                          <select id="npc-size" name="npc-size">
+                            <option value="Tiny">Tiny</option>
+                            <option value="Small">Small</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="Large">Large</option>
+                            <option value="Huge">Huge</option>
+                            <option value="Gargantuan">Gargantuan</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label for="npc-disposition">Disposition</label>
+                          <select id="npc-disposition" name="npc-disposition">
+                            <option value="Friendly">Friendly</option>
+                            <option value="Neutral">Neutral</option>
+                            <option value="Wary">Wary</option>
+                            <option value="Hostile">Hostile</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label for="npc-relationship">Relationship</label>
+                          <select id="npc-relationship" name="npc-relationship">
+                            <option value="Ally">Ally</option>
+                            <option value="Contact">Contact</option>
+                            <option value="Neutral" selected>Neutral</option>
+                            <option value="Rival">Rival</option>
+                            <option value="Enemy">Enemy</option>
+                          </select>
+                        </div>
+                      </div>
+                    </section>
+
+                    <!-- Mechanical snapshot keeps combat-relevant stats together. -->
+                    <section class="npc-form-section" aria-labelledby="npc-section-combat">
+                      <header class="npc-form-section__header">
+                        <h4 class="npc-form-section__title" id="npc-section-combat">Combat Snapshot</h4>
+                        <p class="npc-form-section__hint">Summarize the numbers you reference during encounters.</p>
+                      </header>
+                      <div class="npc-section-grid">
+                        <div>
+                          <label for="npc-hp">Hit Points</label>
+                          <input
+                            id="npc-hp"
+                            name="npc-hp"
+                            type="number"
+                            min="0"
+                            step="1"
+                            placeholder="e.g. 44"
+                          />
+                        </div>
+                        <div>
+                          <label for="npc-ac">Armor Class</label>
+                          <input
+                            id="npc-ac"
+                            name="npc-ac"
+                            type="number"
+                            min="0"
+                            step="1"
+                            placeholder="e.g. 19"
+                          />
+                        </div>
+                        <div>
+                          <label for="npc-speed">Speed</label>
+                          <input
+                            id="npc-speed"
+                            name="npc-speed"
+                            type="text"
+                            placeholder="e.g. 25 ft."
+                          />
+                        </div>
+                        <div>
+                          <label for="npc-initiative">Initiative</label>
+                          <input
+                            id="npc-initiative"
+                            name="npc-initiative"
+                            type="number"
+                            step="1"
+                            placeholder="e.g. +7"
+                          />
+                        </div>
+                      </div>
+                    </section>
+
                     <!-- Attribute block keeps the classic six stats grouped. -->
-                    <div>
-                      <label for="npc-str">STR</label>
-                      <input id="npc-str" name="npc-str" type="number" step="1" placeholder="e.g. 16" />
-                    </div>
-                    <div>
-                      <label for="npc-dex">DEX</label>
-                      <input id="npc-dex" name="npc-dex" type="number" step="1" placeholder="e.g. 14" />
-                    </div>
-                    <div>
-                      <label for="npc-con">CON</label>
-                      <input id="npc-con" name="npc-con" type="number" step="1" placeholder="e.g. 12" />
-                    </div>
-                    <div>
-                      <label for="npc-int">INT</label>
-                      <input id="npc-int" name="npc-int" type="number" step="1" placeholder="e.g. 10" />
-                    </div>
-                    <div>
-                      <label for="npc-wis">WIS</label>
-                      <input id="npc-wis" name="npc-wis" type="number" step="1" placeholder="e.g. 13" />
-                    </div>
-                    <div>
-                      <label for="npc-cha">CHA</label>
-                      <input id="npc-cha" name="npc-cha" type="number" step="1" placeholder="e.g. 8" />
-                    </div>
-                    <!-- Saving throw references keep defensive numbers handy. -->
-                    <div>
-                      <label for="npc-fortitude">Fortitude</label>
-                      <input
-                        id="npc-fortitude"
-                        name="npc-fortitude"
-                        type="number"
-                        step="1"
-                        placeholder="e.g. +9"
-                      />
-                    </div>
-                    <div>
-                      <label for="npc-reflex">Reflex</label>
-                      <input
-                        id="npc-reflex"
-                        name="npc-reflex"
-                        type="number"
-                        step="1"
-                        placeholder="e.g. +6"
-                      />
-                    </div>
-                    <div>
-                      <label for="npc-will">Will</label>
-                      <input
-                        id="npc-will"
-                        name="npc-will"
-                        type="number"
-                        step="1"
-                        placeholder="e.g. +5"
-                      />
-                    </div>
-                    <div>
-                      <label for="npc-senses">Senses</label>
-                      <input
-                        id="npc-senses"
-                        name="npc-senses"
-                        type="text"
-                        placeholder="e.g. darkvision 60 ft."
-                      />
-                    </div>
-                    <div>
-                      <label for="npc-languages">Languages</label>
-                      <input
-                        id="npc-languages"
-                        name="npc-languages"
-                        type="text"
-                        placeholder="e.g. Common, Dwarven"
-                      />
-                    </div>
-                    <div>
-                      <label for="npc-hook">Story hook</label>
-                      <textarea
-                        id="npc-hook"
-                        name="npc-hook"
-                        placeholder="e.g. Wants the party to recover a lost logbook."
-                      ></textarea>
-                    </div>
-                    <div>
-                      <label for="npc-skills">Skills & Proficiencies</label>
-                      <textarea
-                        id="npc-skills"
-                        name="npc-skills"
-                        placeholder="e.g. Athletics +8, Intimidation +7, Sailing lore +6."
-                      ></textarea>
-                    </div>
-                    <div>
-                      <label for="npc-equipment">Equipment</label>
-                      <textarea
-                        id="npc-equipment"
-                        name="npc-equipment"
-                        placeholder="e.g. Boarding axe, breastplate, signal whistle."
-                      ></textarea>
-                    </div>
-                    <div>
-                      <label for="npc-abilities">Special Abilities</label>
-                      <textarea
-                        id="npc-abilities"
-                        name="npc-abilities"
-                        placeholder="e.g. Harpoon Strike, Commanding Presence."
-                      ></textarea>
-                    </div>
-                    <div>
-                      <label for="npc-notes">Roleplay notes</label>
-                      <textarea
-                        id="npc-notes"
-                        name="npc-notes"
-                        placeholder="e.g. Speaks in clipped sentences, always taps a brass ring."
-                      ></textarea>
-                    </div>
+                    <section class="npc-form-section" aria-labelledby="npc-section-attributes">
+                      <header class="npc-form-section__header">
+                        <h4 class="npc-form-section__title" id="npc-section-attributes">Ability Scores</h4>
+                        <p class="npc-form-section__hint">Record the core stats that influence checks and saves.</p>
+                      </header>
+                      <div class="npc-section-grid npc-section-grid--compact">
+                        <div>
+                          <label for="npc-str">STR</label>
+                          <input id="npc-str" name="npc-str" type="number" step="1" placeholder="e.g. 16" />
+                        </div>
+                        <div>
+                          <label for="npc-dex">DEX</label>
+                          <input id="npc-dex" name="npc-dex" type="number" step="1" placeholder="e.g. 14" />
+                        </div>
+                        <div>
+                          <label for="npc-con">CON</label>
+                          <input id="npc-con" name="npc-con" type="number" step="1" placeholder="e.g. 12" />
+                        </div>
+                        <div>
+                          <label for="npc-int">INT</label>
+                          <input id="npc-int" name="npc-int" type="number" step="1" placeholder="e.g. 10" />
+                        </div>
+                        <div>
+                          <label for="npc-wis">WIS</label>
+                          <input id="npc-wis" name="npc-wis" type="number" step="1" placeholder="e.g. 13" />
+                        </div>
+                        <div>
+                          <label for="npc-cha">CHA</label>
+                          <input id="npc-cha" name="npc-cha" type="number" step="1" placeholder="e.g. 8" />
+                        </div>
+                      </div>
+                    </section>
+
+                    <!-- Defensive and sensory references keep checks adjacent. -->
+                    <section class="npc-form-section" aria-labelledby="npc-section-defenses">
+                      <header class="npc-form-section__header">
+                        <h4 class="npc-form-section__title" id="npc-section-defenses">Defenses & Senses</h4>
+                        <p class="npc-form-section__hint">Track saving throws, senses, and language notes.</p>
+                      </header>
+                      <div class="npc-section-grid">
+                        <div>
+                          <label for="npc-fortitude">Fortitude</label>
+                          <input
+                            id="npc-fortitude"
+                            name="npc-fortitude"
+                            type="number"
+                            step="1"
+                            placeholder="e.g. +9"
+                          />
+                        </div>
+                        <div>
+                          <label for="npc-reflex">Reflex</label>
+                          <input
+                            id="npc-reflex"
+                            name="npc-reflex"
+                            type="number"
+                            step="1"
+                            placeholder="e.g. +6"
+                          />
+                        </div>
+                        <div>
+                          <label for="npc-will">Will</label>
+                          <input
+                            id="npc-will"
+                            name="npc-will"
+                            type="number"
+                            step="1"
+                            placeholder="e.g. +5"
+                          />
+                        </div>
+                        <div>
+                          <label for="npc-senses">Senses</label>
+                          <input
+                            id="npc-senses"
+                            name="npc-senses"
+                            type="text"
+                            placeholder="e.g. darkvision 60 ft."
+                          />
+                        </div>
+                        <div>
+                          <label for="npc-languages">Languages</label>
+                          <input
+                            id="npc-languages"
+                            name="npc-languages"
+                            type="text"
+                            placeholder="e.g. Common, Dwarven"
+                          />
+                        </div>
+                      </div>
+                    </section>
+
+                    <!-- Narrative details live at the end for deeper prep work. -->
+                    <section class="npc-form-section" aria-labelledby="npc-section-notes">
+                      <header class="npc-form-section__header">
+                        <h4 class="npc-form-section__title" id="npc-section-notes">Story Hooks & Notes</h4>
+                        <p class="npc-form-section__hint">
+                          Add equipment, abilities, and roleplay cues for fast recall.
+                        </p>
+                      </header>
+                      <div class="npc-section-grid npc-section-grid--full">
+                        <div>
+                          <label for="npc-hook">Story hook</label>
+                          <textarea
+                            id="npc-hook"
+                            name="npc-hook"
+                            placeholder="e.g. Wants the party to recover a lost logbook."
+                          ></textarea>
+                        </div>
+                        <div>
+                          <label for="npc-skills">Skills & Proficiencies</label>
+                          <textarea
+                            id="npc-skills"
+                            name="npc-skills"
+                            placeholder="e.g. Athletics +8, Intimidation +7, Sailing lore +6."
+                          ></textarea>
+                        </div>
+                        <div>
+                          <label for="npc-equipment">Equipment</label>
+                          <textarea
+                            id="npc-equipment"
+                            name="npc-equipment"
+                            placeholder="e.g. Boarding axe, breastplate, signal whistle."
+                          ></textarea>
+                        </div>
+                        <div>
+                          <label for="npc-abilities">Special Abilities</label>
+                          <textarea
+                            id="npc-abilities"
+                            name="npc-abilities"
+                            placeholder="e.g. Harpoon Strike, Commanding Presence."
+                          ></textarea>
+                        </div>
+                        <div>
+                          <label for="npc-notes">Roleplay notes</label>
+                          <textarea
+                            id="npc-notes"
+                            name="npc-notes"
+                            placeholder="e.g. Speaks in clipped sentences, always taps a brass ring."
+                          ></textarea>
+                        </div>
+                      </div>
+                    </section>
                   </div>
                   <div class="npc-form-actions">
                     <button id="npc-submit" type="submit">Add NPC</button>
