@@ -597,6 +597,171 @@
         margin-bottom: 0.8rem;
       }
 
+      /* Creature library module aligns roster management with printable stat cards. */
+      .creature-module {
+        padding: 1.1rem 0 2.2rem;
+      }
+
+      .creature-layout {
+        display: grid;
+        gap: 1.4rem;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+        align-items: start;
+      }
+
+      .creature-column {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+      }
+
+      .creature-list {
+        display: grid;
+        gap: 0.8rem;
+      }
+
+      .creature-card {
+        background: rgba(24, 18, 13, 0.92);
+        border-radius: 12px;
+        padding: 0.75rem 0.85rem;
+        border: 1px solid rgba(201, 162, 74, 0.45);
+        display: grid;
+        gap: 0.45rem;
+      }
+
+      .creature-card.is-active {
+        border-color: var(--gold-bright);
+        box-shadow: 0 0 0 1px rgba(232, 200, 119, 0.25);
+      }
+
+      .creature-card__title {
+        font-weight: 600;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.6rem;
+      }
+
+      .creature-card__meta {
+        color: var(--ink-muted);
+        font-size: 0.85rem;
+      }
+
+      .creature-card__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+
+      .creature-form {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .creature-form-sections {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .creature-form-section {
+        background: rgba(18, 14, 10, 0.82);
+        border-radius: 14px;
+        padding: 0.85rem;
+        border: 1px solid rgba(201, 162, 74, 0.35);
+        box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.25);
+      }
+
+      .creature-form-section__header {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        margin-bottom: 0.65rem;
+      }
+
+      .creature-form-section__title {
+        font-family: var(--serif);
+        color: var(--gold-bright);
+        font-size: 1rem;
+      }
+
+      .creature-section-grid {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+
+      .creature-section-grid--compact {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      }
+
+      .creature-section-grid--full {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .creature-section-grid textarea {
+        min-height: 90px;
+      }
+
+      .creature-export-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+      }
+
+      .creature-selection-count {
+        font-size: 0.9rem;
+        color: var(--ink-muted);
+      }
+
+      /* Stat card print layout uses fixed card sizing for 63mm x 88mm prints. */
+      .stat-card {
+        width: 63mm;
+        height: 88mm;
+        padding: 4mm;
+        box-sizing: border-box;
+        border: 1px solid #2a2218;
+        display: flex;
+        flex-direction: column;
+        gap: 2mm;
+        font-family: var(--sans);
+        color: #14100c;
+        background: #f9f4e8;
+      }
+
+      .stat-card__header {
+        border-bottom: 1px solid #3b2f21;
+        padding-bottom: 1mm;
+        display: grid;
+        gap: 0.8mm;
+      }
+
+      .stat-card__name {
+        font-weight: 700;
+        font-size: 11pt;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .stat-card__meta {
+        font-size: 8.5pt;
+        color: #4c3d2a;
+      }
+
+      .stat-card__body {
+        display: grid;
+        gap: 1mm;
+        font-size: 8pt;
+        line-height: 1.2;
+      }
+
+      .stat-card__line--title {
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-top: 0.6mm;
+      }
+
       .npc-progress {
         background: rgba(20, 16, 12, 0.7);
         border-radius: 999px;
@@ -1261,6 +1426,20 @@
                 <span class="tool-tag">Lore</span>
               </div>
               <span class="tool-launch">Open Vault →</span>
+            </button>
+            <button
+              class="tool-card tool-card--action"
+              type="button"
+              id="creature-launch"
+              aria-label="Open Creature Library module"
+            >
+              <h3>Creature Library</h3>
+              <p>Capture combat-ready stat cards and export printable creature decks.</p>
+              <div class="tool-meta">
+                <span class="tool-tag">Bestiary</span>
+                <span class="tool-tag">Print</span>
+              </div>
+              <span class="tool-launch">Open Library →</span>
             </button>
             <article class="tool-card">
               <h3>Treasure Generator</h3>
@@ -1937,6 +2116,235 @@
       </div>
     </section>
 
+    <!-- Creature library module (opens from the dashboard tool card) -->
+    <section
+      class="creature-module is-hidden"
+      id="creature-module"
+      aria-label="Creature library module"
+    >
+      <div class="container">
+        <!-- Module actions stay in the body so the header stays minimal. -->
+        <div class="module-actions">
+          <button id="creature-back" class="ghost" type="button">
+            ← Back to Dashboard
+          </button>
+          <button id="creature-new" type="button">Add Creature</button>
+          <button id="creature-export" class="secondary" type="button">Export Selected to PDF</button>
+        </div>
+
+        <section class="creature-library" aria-label="Creature library workspace">
+          <p class="helper-text">
+            Build combat-ready creature cards, parse quick statblocks, and export printable decks
+            for the table.
+          </p>
+          <div class="creature-layout">
+            <div class="creature-column">
+              <div class="tracker-panel creature-list-panel">
+                <div class="npc-gallery-panel__header">
+                  <div>
+                    <h3>Creature Library</h3>
+                    <p class="helper-text">
+                      Select creatures for export or open an entry to edit combat stats.
+                    </p>
+                  </div>
+                  <div class="npc-gallery-panel__actions">
+                    <button id="creature-select-all" class="secondary" type="button">Select All</button>
+                    <button id="creature-clear-selection" class="ghost" type="button">Clear</button>
+                  </div>
+                </div>
+                <div id="creature-list" class="creature-list" aria-label="Saved creatures"></div>
+                <p class="helper-text" id="creature-empty-state">
+                  No creatures saved yet. Add a creature to start building your combat library.
+                </p>
+              </div>
+
+              <div class="tracker-panel creature-export-panel" aria-label="Creature export options">
+                <h3>Export Stat Cards</h3>
+                <p class="helper-text">
+                  Generate 63mm × 88mm cards with only combat essentials. Longer entries split into
+                  multiple cards automatically.
+                </p>
+                <p class="creature-selection-count" id="creature-selection-count">
+                  0 creatures selected.
+                </p>
+                <div class="creature-export-actions">
+                  <button id="creature-export-selected" type="button">Export Selected to PDF</button>
+                </div>
+              </div>
+            </div>
+
+            <aside class="tracker-panel creature-form-panel" aria-label="Creature form">
+              <h3 id="creature-form-title">Create Creature</h3>
+              <form id="creature-form" class="creature-form">
+                <div class="creature-form-sections">
+                  <section class="creature-form-section">
+                    <div class="creature-form-section__header">
+                      <span class="creature-form-section__title">Quick Statblock Parser</span>
+                      <span class="helper-text">
+                        Paste a formatted statblock to prefill combat stats, then refine as needed.
+                      </span>
+                    </div>
+                    <div class="creature-section-grid creature-section-grid--full">
+                      <div>
+                        <label for="creature-statblock">Statblock text</label>
+                        <textarea
+                          id="creature-statblock"
+                          name="creature-statblock"
+                          placeholder="Paste a creature statblock here."
+                        ></textarea>
+                      </div>
+                    </div>
+                    <div class="npc-form-actions">
+                      <button id="creature-parse" class="secondary" type="button">Parse Statblock</button>
+                      <button id="creature-clear-statblock" class="ghost" type="button">Clear</button>
+                    </div>
+                  </section>
+
+                  <section class="creature-form-section">
+                    <div class="creature-form-section__header">
+                      <span class="creature-form-section__title">Creature Identity</span>
+                      <span class="helper-text">Name, role, and quick descriptors for sorting.</span>
+                    </div>
+                    <div class="creature-section-grid">
+                      <div>
+                        <label for="creature-name">Creature name</label>
+                        <input id="creature-name" name="creature-name" type="text" />
+                      </div>
+                      <div>
+                        <label for="creature-level">Level / CR</label>
+                        <input id="creature-level" name="creature-level" type="text" />
+                      </div>
+                      <div>
+                        <label for="creature-role">Role</label>
+                        <input id="creature-role" name="creature-role" type="text" />
+                      </div>
+                      <div>
+                        <label for="creature-traits">Traits</label>
+                        <input id="creature-traits" name="creature-traits" type="text" />
+                      </div>
+                      <div>
+                        <label for="creature-alignment">Alignment</label>
+                        <input id="creature-alignment" name="creature-alignment" type="text" />
+                      </div>
+                      <div>
+                        <label for="creature-size">Size</label>
+                        <input id="creature-size" name="creature-size" type="text" />
+                      </div>
+                      <div>
+                        <label for="creature-perception">Perception</label>
+                        <input id="creature-perception" name="creature-perception" type="text" />
+                      </div>
+                      <div>
+                        <label for="creature-senses">Senses</label>
+                        <input id="creature-senses" name="creature-senses" type="text" />
+                      </div>
+                      <div>
+                        <label for="creature-languages">Languages</label>
+                        <input id="creature-languages" name="creature-languages" type="text" />
+                      </div>
+                    </div>
+                  </section>
+
+                  <section class="creature-form-section">
+                    <div class="creature-form-section__header">
+                      <span class="creature-form-section__title">Defenses</span>
+                      <span class="helper-text">Core stats for managing combat durability.</span>
+                    </div>
+                    <div class="creature-section-grid creature-section-grid--compact">
+                      <div>
+                        <label for="creature-ac">AC</label>
+                        <input id="creature-ac" name="creature-ac" type="text" />
+                      </div>
+                      <div>
+                        <label for="creature-hp">HP</label>
+                        <input id="creature-hp" name="creature-hp" type="text" />
+                      </div>
+                      <div>
+                        <label for="creature-fortitude">Fort</label>
+                        <input id="creature-fortitude" name="creature-fortitude" type="text" />
+                      </div>
+                      <div>
+                        <label for="creature-reflex">Ref</label>
+                        <input id="creature-reflex" name="creature-reflex" type="text" />
+                      </div>
+                      <div>
+                        <label for="creature-will">Will</label>
+                        <input id="creature-will" name="creature-will" type="text" />
+                      </div>
+                      <div>
+                        <label for="creature-resistances">Resistances</label>
+                        <input id="creature-resistances" name="creature-resistances" type="text" />
+                      </div>
+                      <div>
+                        <label for="creature-weaknesses">Weaknesses</label>
+                        <input id="creature-weaknesses" name="creature-weaknesses" type="text" />
+                      </div>
+                      <div>
+                        <label for="creature-immunities">Immunities</label>
+                        <input id="creature-immunities" name="creature-immunities" type="text" />
+                      </div>
+                    </div>
+                  </section>
+
+                  <section class="creature-form-section">
+                    <div class="creature-form-section__header">
+                      <span class="creature-form-section__title">Offenses & Mobility</span>
+                      <span class="helper-text">Movement speeds, strikes, and special actions.</span>
+                    </div>
+                    <div class="creature-section-grid">
+                      <div>
+                        <label for="creature-speed">Speed</label>
+                        <input id="creature-speed" name="creature-speed" type="text" />
+                      </div>
+                      <div>
+                        <label for="creature-melee">Melee</label>
+                        <textarea id="creature-melee" name="creature-melee"></textarea>
+                      </div>
+                      <div>
+                        <label for="creature-ranged">Ranged</label>
+                        <textarea id="creature-ranged" name="creature-ranged"></textarea>
+                      </div>
+                      <div>
+                        <label for="creature-abilities">Special abilities</label>
+                        <textarea id="creature-abilities" name="creature-abilities"></textarea>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section class="creature-form-section">
+                    <div class="creature-form-section__header">
+                      <span class="creature-form-section__title">Combat Notes</span>
+                      <span class="helper-text">
+                        Skills, tactics, and reminders needed during an encounter.
+                      </span>
+                    </div>
+                    <div class="creature-section-grid">
+                      <div>
+                        <label for="creature-skills">Skills & modifiers</label>
+                        <textarea id="creature-skills" name="creature-skills"></textarea>
+                      </div>
+                      <div>
+                        <label for="creature-notes">Combat notes</label>
+                        <textarea id="creature-notes" name="creature-notes"></textarea>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+
+                <div class="npc-form-actions">
+                  <button id="creature-save" type="submit">Save Creature</button>
+                  <button id="creature-reset" class="secondary" type="button">Reset Form</button>
+                </div>
+                <p class="helper-text" id="creature-form-note">
+                  Keep entries focused on combat essentials; spellcasting can stay in campaign notes.
+                </p>
+              </form>
+            </aside>
+          </div>
+        </section>
+      </div>
+    </section>
+
     <!-- Session notes module (opens from the dashboard tool card) -->
     <section class="session-module is-hidden" id="session-module" aria-label="Session notes module">
       <div class="container">
@@ -2588,6 +2996,14 @@
         editingNpcId: null,
       };
 
+      // Creature library state keeps roster data and export selections together.
+      const creatureState = {
+        roster: [],
+        activeCreatureId: null,
+        editingCreatureId: null,
+        selectedCreatureIds: new Set(),
+      };
+
       // NPC wizard state keeps step navigation aligned with modal progress.
       const npcWizardState = {
         step: 1,
@@ -2716,6 +3132,50 @@
       const npcDetail = document.getElementById("npc-detail");
       const npcSteps = Array.from(document.querySelectorAll(".npc-step"));
 
+      // Creature library elements manage stat card entry, selection, and export flows.
+      const creatureModule = document.getElementById("creature-module");
+      const creatureLaunch = document.getElementById("creature-launch");
+      const creatureBack = document.getElementById("creature-back");
+      const creatureNew = document.getElementById("creature-new");
+      const creatureExport = document.getElementById("creature-export");
+      const creatureExportSelected = document.getElementById("creature-export-selected");
+      const creatureSelectAll = document.getElementById("creature-select-all");
+      const creatureClearSelection = document.getElementById("creature-clear-selection");
+      const creatureList = document.getElementById("creature-list");
+      const creatureEmptyState = document.getElementById("creature-empty-state");
+      const creatureSelectionCount = document.getElementById("creature-selection-count");
+      const creatureFormTitle = document.getElementById("creature-form-title");
+      const creatureForm = document.getElementById("creature-form");
+      const creatureFormNote = document.getElementById("creature-form-note");
+      const creatureStatblock = document.getElementById("creature-statblock");
+      const creatureParse = document.getElementById("creature-parse");
+      const creatureClearStatblock = document.getElementById("creature-clear-statblock");
+      const creatureName = document.getElementById("creature-name");
+      const creatureLevel = document.getElementById("creature-level");
+      const creatureRole = document.getElementById("creature-role");
+      const creatureTraits = document.getElementById("creature-traits");
+      const creatureAlignment = document.getElementById("creature-alignment");
+      const creatureSize = document.getElementById("creature-size");
+      const creaturePerception = document.getElementById("creature-perception");
+      const creatureSenses = document.getElementById("creature-senses");
+      const creatureLanguages = document.getElementById("creature-languages");
+      const creatureAc = document.getElementById("creature-ac");
+      const creatureHp = document.getElementById("creature-hp");
+      const creatureFortitude = document.getElementById("creature-fortitude");
+      const creatureReflex = document.getElementById("creature-reflex");
+      const creatureWill = document.getElementById("creature-will");
+      const creatureResistances = document.getElementById("creature-resistances");
+      const creatureWeaknesses = document.getElementById("creature-weaknesses");
+      const creatureImmunities = document.getElementById("creature-immunities");
+      const creatureSpeed = document.getElementById("creature-speed");
+      const creatureMelee = document.getElementById("creature-melee");
+      const creatureRanged = document.getElementById("creature-ranged");
+      const creatureAbilities = document.getElementById("creature-abilities");
+      const creatureSkills = document.getElementById("creature-skills");
+      const creatureNotes = document.getElementById("creature-notes");
+      const creatureSave = document.getElementById("creature-save");
+      const creatureReset = document.getElementById("creature-reset");
+
       // Session notes elements wire the MVP note capture form.
       const sessionModule = document.getElementById("session-module");
       const sessionLaunch = document.getElementById("session-launch");
@@ -2791,6 +3251,10 @@
         npc: {
           module: "NPC Vault",
           description: "Capture NPC profiles, relationship cues, and story hooks in a fast-access roster.",
+        },
+        creature: {
+          module: "Creature Library",
+          description: "Build combat-ready creature cards and export printable stat decks on demand.",
         },
         session: {
           module: "Session Notes",
@@ -3432,6 +3896,500 @@
         renderNpcList();
       };
 
+      // Creature memory helpers persist roster data between sessions.
+      const getCreatureMemory = () => {
+        const stored = localStorage.getItem("pf-creature-library-v1");
+        if (!stored) {
+          return { roster: [], activeCreatureId: null };
+        }
+        try {
+          return JSON.parse(stored);
+        } catch (error) {
+          console.warn("Creature library data was malformed, clearing storage.", error);
+          return { roster: [], activeCreatureId: null };
+        }
+      };
+
+      const persistCreatureLibrary = () => {
+        localStorage.setItem(
+          "pf-creature-library-v1",
+          JSON.stringify({
+            roster: creatureState.roster,
+            activeCreatureId: creatureState.activeCreatureId,
+          })
+        );
+      };
+
+      // Provide consistent fallback formatting for creature stat blocks.
+      const formatCreatureField = (value, fallback = "—") => (value && value.trim() ? value.trim() : fallback);
+
+      const getCreatureById = (creatureId) =>
+        creatureState.roster.find((creature) => creature.id === creatureId) ?? null;
+
+      const buildCreaturePayload = (overrides = {}) => ({
+        id: overrides.id ?? generateId(),
+        name: creatureName.value.trim(),
+        level: creatureLevel.value.trim(),
+        role: creatureRole.value.trim(),
+        traits: creatureTraits.value.trim(),
+        alignment: creatureAlignment.value.trim(),
+        size: creatureSize.value.trim(),
+        perception: creaturePerception.value.trim(),
+        senses: creatureSenses.value.trim(),
+        languages: creatureLanguages.value.trim(),
+        ac: creatureAc.value.trim(),
+        hp: creatureHp.value.trim(),
+        fortitude: creatureFortitude.value.trim(),
+        reflex: creatureReflex.value.trim(),
+        will: creatureWill.value.trim(),
+        resistances: creatureResistances.value.trim(),
+        weaknesses: creatureWeaknesses.value.trim(),
+        immunities: creatureImmunities.value.trim(),
+        speed: creatureSpeed.value.trim(),
+        melee: creatureMelee.value.trim(),
+        ranged: creatureRanged.value.trim(),
+        abilities: creatureAbilities.value.trim(),
+        skills: creatureSkills.value.trim(),
+        notes: creatureNotes.value.trim(),
+        updatedAt: new Date().toISOString(),
+        ...overrides,
+      });
+
+      // Clear the creature form while providing an optional status message.
+      const resetCreatureForm = (message = "Ready to capture a new creature profile.") => {
+        creatureForm.reset();
+        creatureState.editingCreatureId = null;
+        creatureFormTitle.textContent = "Create Creature";
+        creatureFormNote.textContent = message;
+      };
+
+      // Fill the creature form with data when editing an existing entry.
+      const hydrateCreatureForm = (creature) => {
+        creatureName.value = creature.name ?? "";
+        creatureLevel.value = creature.level ?? "";
+        creatureRole.value = creature.role ?? "";
+        creatureTraits.value = creature.traits ?? "";
+        creatureAlignment.value = creature.alignment ?? "";
+        creatureSize.value = creature.size ?? "";
+        creaturePerception.value = creature.perception ?? "";
+        creatureSenses.value = creature.senses ?? "";
+        creatureLanguages.value = creature.languages ?? "";
+        creatureAc.value = creature.ac ?? "";
+        creatureHp.value = creature.hp ?? "";
+        creatureFortitude.value = creature.fortitude ?? "";
+        creatureReflex.value = creature.reflex ?? "";
+        creatureWill.value = creature.will ?? "";
+        creatureResistances.value = creature.resistances ?? "";
+        creatureWeaknesses.value = creature.weaknesses ?? "";
+        creatureImmunities.value = creature.immunities ?? "";
+        creatureSpeed.value = creature.speed ?? "";
+        creatureMelee.value = creature.melee ?? "";
+        creatureRanged.value = creature.ranged ?? "";
+        creatureAbilities.value = creature.abilities ?? "";
+        creatureSkills.value = creature.skills ?? "";
+        creatureNotes.value = creature.notes ?? "";
+        creatureFormTitle.textContent = `Edit Creature: ${creature.name}`;
+        creatureFormNote.textContent = "Update combat essentials and save to refresh the stat cards.";
+      };
+
+      // Update the selection counter and export button state in the UI.
+      const updateCreatureSelectionCount = () => {
+        const count = creatureState.selectedCreatureIds.size;
+        creatureSelectionCount.textContent = `${count} creature${count === 1 ? "" : "s"} selected.`;
+        const hasSelection = count > 0;
+        creatureExportSelected.disabled = !hasSelection;
+        creatureExport.disabled = !hasSelection;
+      };
+
+      const renderCreatureList = () => {
+        if (!creatureState.roster.length) {
+          creatureList.innerHTML = "";
+          creatureEmptyState.classList.remove("is-hidden");
+          updateCreatureSelectionCount();
+          return;
+        }
+        creatureEmptyState.classList.add("is-hidden");
+        creatureList.innerHTML = creatureState.roster
+          .map((creature) => {
+            const isActive = creature.id === creatureState.activeCreatureId;
+            const isSelected = creatureState.selectedCreatureIds.has(creature.id);
+            const meta = [
+              formatCreatureField(creature.level, "Level —"),
+              formatCreatureField(creature.role, "Role —"),
+            ].join(" · ");
+            const descriptors = [
+              formatCreatureField(creature.size, "Size —"),
+              formatCreatureField(creature.traits, "Traits —"),
+            ].join(" · ");
+            return `
+              <article class="creature-card ${isActive ? "is-active" : ""}">
+                <div class="creature-card__title">
+                  <span>${creature.name || "Unnamed Creature"}</span>
+                  <label>
+                    <input
+                      type="checkbox"
+                      ${isSelected ? "checked" : ""}
+                      data-creature-select="${creature.id}"
+                    />
+                    Select
+                  </label>
+                </div>
+                <div class="creature-card__meta">${meta}</div>
+                <div class="creature-card__meta">${descriptors}</div>
+                <div class="creature-card__actions">
+                  <button type="button" class="secondary" data-creature-edit="${creature.id}">
+                    Edit
+                  </button>
+                  <button type="button" class="ghost" data-creature-duplicate="${creature.id}">
+                    Duplicate
+                  </button>
+                  <button type="button" data-creature-delete="${creature.id}">
+                    Delete
+                  </button>
+                </div>
+              </article>
+            `;
+          })
+          .join("");
+        updateCreatureSelectionCount();
+      };
+
+      // Provide a simple statblock parser for quick creature entry.
+      const parseCreatureStatblock = (text) => {
+        const lines = text
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter(Boolean);
+        const parsed = {};
+        if (lines.length) {
+          const nameMatch = lines[0].match(/^(.*?)(?:\s+(?:CR|Level)\s*([\d/+.]+))?$/i);
+          if (nameMatch) {
+            parsed.name = nameMatch[1]?.trim() ?? "";
+            if (nameMatch[2]) {
+              parsed.level = nameMatch[2].trim();
+            }
+          }
+        }
+
+        const findLine = (label) => lines.find((line) => new RegExp(`\\b${label}\\b`, "i").test(line));
+        const captureValue = (line, label) => {
+          if (!line) {
+            return "";
+          }
+          const match = line.match(new RegExp(`${label}\\s*([^;]+)`, "i"));
+          return match ? match[1].trim() : "";
+        };
+
+        const acLine = findLine("AC");
+        parsed.ac = captureValue(acLine, "AC");
+        parsed.fortitude = captureValue(acLine, "Fort");
+        parsed.reflex = captureValue(acLine, "Ref");
+        parsed.will = captureValue(acLine, "Will");
+
+        const hpLine = findLine("HP");
+        parsed.hp = captureValue(hpLine, "HP");
+
+        const perceptionLine = findLine("Perception");
+        parsed.perception = captureValue(perceptionLine, "Perception");
+        parsed.senses = captureValue(perceptionLine, "Senses");
+
+        const languagesLine = findLine("Languages");
+        parsed.languages = captureValue(languagesLine, "Languages");
+
+        const defenseLine = findLine("Resistances");
+        parsed.resistances = captureValue(defenseLine, "Resistances");
+        parsed.weaknesses = captureValue(defenseLine, "Weaknesses");
+        parsed.immunities = captureValue(defenseLine, "Immunities");
+
+        const speedLine = findLine("Speed");
+        parsed.speed = captureValue(speedLine, "Speed");
+
+        parsed.melee = captureValue(findLine("Melee"), "Melee");
+        parsed.ranged = captureValue(findLine("Ranged"), "Ranged");
+
+        const traitLine = findLine("Traits");
+        parsed.traits = captureValue(traitLine, "Traits");
+
+        const abilitiesLine = lines.find((line) => /Str\s*[+\-]?\d+/i.test(line));
+        if (abilitiesLine) {
+          parsed.skills = `Ability Scores: ${abilitiesLine}`;
+        }
+
+        return parsed;
+      };
+
+      // Apply parsed statblock data to the creature form fields.
+      const applyCreatureParse = (parsed) => {
+        creatureName.value = parsed.name ?? creatureName.value;
+        creatureLevel.value = parsed.level ?? creatureLevel.value;
+        creatureTraits.value = parsed.traits ?? creatureTraits.value;
+        creaturePerception.value = parsed.perception ?? creaturePerception.value;
+        creatureSenses.value = parsed.senses ?? creatureSenses.value;
+        creatureLanguages.value = parsed.languages ?? creatureLanguages.value;
+        creatureAc.value = parsed.ac ?? creatureAc.value;
+        creatureHp.value = parsed.hp ?? creatureHp.value;
+        creatureFortitude.value = parsed.fortitude ?? creatureFortitude.value;
+        creatureReflex.value = parsed.reflex ?? creatureReflex.value;
+        creatureWill.value = parsed.will ?? creatureWill.value;
+        creatureResistances.value = parsed.resistances ?? creatureResistances.value;
+        creatureWeaknesses.value = parsed.weaknesses ?? creatureWeaknesses.value;
+        creatureImmunities.value = parsed.immunities ?? creatureImmunities.value;
+        creatureSpeed.value = parsed.speed ?? creatureSpeed.value;
+        creatureMelee.value = parsed.melee ?? creatureMelee.value;
+        creatureRanged.value = parsed.ranged ?? creatureRanged.value;
+        creatureSkills.value = parsed.skills ?? creatureSkills.value;
+      };
+
+      // Wrap text at a rough character limit for card rendering.
+      const wrapCardText = (text, maxChars) => {
+        if (!text) {
+          return [];
+        }
+        const words = text.split(/\s+/).filter(Boolean);
+        const lines = [];
+        let current = "";
+        words.forEach((word) => {
+          if (`${current} ${word}`.trim().length > maxChars) {
+            if (current) {
+              lines.push(current);
+            }
+            current = word;
+            return;
+          }
+          current = `${current} ${word}`.trim();
+        });
+        if (current) {
+          lines.push(current);
+        }
+        return lines;
+      };
+
+      // Escape text for HTML injection safety in generated print windows.
+      const escapeHtml = (value) =>
+        value
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+
+      const buildCreatureCardLines = (creature, maxChars) => {
+        const sections = [];
+        const addSection = (title, content) => {
+          if (!content || !content.trim()) {
+            return;
+          }
+          sections.push({
+            title,
+            lines: wrapCardText(content, maxChars),
+          });
+        };
+
+        addSection(
+          "Defense",
+          [
+            creature.ac ? `AC ${creature.ac}` : "",
+            creature.hp ? `HP ${creature.hp}` : "",
+            creature.fortitude ? `Fort ${creature.fortitude}` : "",
+            creature.reflex ? `Ref ${creature.reflex}` : "",
+            creature.will ? `Will ${creature.will}` : "",
+            creature.resistances ? `Resist ${creature.resistances}` : "",
+            creature.weaknesses ? `Weak ${creature.weaknesses}` : "",
+            creature.immunities ? `Immune ${creature.immunities}` : "",
+          ]
+            .filter(Boolean)
+            .join("; ")
+        );
+
+        addSection(
+          "Offense",
+          [
+            creature.speed ? `Speed ${creature.speed}` : "",
+            creature.melee ? `Melee ${creature.melee}` : "",
+            creature.ranged ? `Ranged ${creature.ranged}` : "",
+          ]
+            .filter(Boolean)
+            .join("; ")
+        );
+
+        addSection("Special", creature.abilities);
+        addSection("Skills", creature.skills);
+        addSection("Notes", creature.notes);
+
+        return sections.flatMap((section) => [
+          { text: section.title, isTitle: true },
+          ...section.lines.map((line) => ({ text: line, isTitle: false })),
+        ]);
+      };
+
+      // Build printable HTML for a creature's stat cards, splitting into multiple cards as needed.
+      const buildCreatureCardHtml = (creature) => {
+        const maxChars = 36;
+        const maxLines = 18;
+        const headerLines = [
+          creature.name || "Unnamed Creature",
+          [
+            creature.level ? `Level/CR ${creature.level}` : "",
+            creature.role,
+            creature.traits,
+            creature.size,
+            creature.alignment,
+          ]
+            .filter((value) => value && value.trim())
+            .join(" · "),
+          [creature.perception ? `Perception ${creature.perception}` : "", creature.senses]
+            .filter((value) => value && value.trim())
+            .join(" · "),
+        ].filter((line) => line && line.trim());
+
+        const lines = buildCreatureCardLines(creature, maxChars);
+        const cards = [];
+        let index = 0;
+
+        if (!lines.length) {
+          cards.push({
+            headerLines,
+            lines: [{ text: "No combat data provided.", isTitle: false }],
+          });
+        }
+
+        while (index < lines.length) {
+          const available = maxLines - headerLines.length;
+          const pageLines = [];
+          while (pageLines.length < available && index < lines.length) {
+            const current = lines[index];
+            const remainingSlots = available - pageLines.length;
+            if (current.isTitle && remainingSlots === 1 && index + 1 < lines.length) {
+              break;
+            }
+            pageLines.push(current);
+            index += 1;
+          }
+          cards.push({ headerLines, lines: pageLines });
+        }
+
+        return cards
+          .map(
+            (card) => `
+              <div class="stat-card">
+                <div class="stat-card__header">
+                  ${card.headerLines
+                    .map((line, lineIndex) =>
+                      lineIndex === 0
+                        ? `<div class="stat-card__name">${escapeHtml(line)}</div>`
+                        : `<div class="stat-card__meta">${escapeHtml(line)}</div>`
+                    )
+                    .join("")}
+                </div>
+                <div class="stat-card__body">
+                  ${card.lines
+                    .map((line) =>
+                      line.isTitle
+                        ? `<div class="stat-card__line stat-card__line--title">${escapeHtml(
+                            line.text
+                          )}</div>`
+                        : `<div class="stat-card__line">${escapeHtml(line.text)}</div>`
+                    )
+                    .join("")}
+                </div>
+              </div>
+            `
+          )
+          .join("");
+      };
+
+      // Open a print window with card-sized pages so browsers can export PDF.
+      const exportCreatureCards = (creatures) => {
+        const cardMarkup = creatures.map((creature) => buildCreatureCardHtml(creature)).join("");
+        const printWindow = window.open("", "_blank");
+        if (!printWindow) {
+          creatureFormNote.textContent = "Pop-up blocked. Allow pop-ups to export cards to PDF.";
+          return;
+        }
+        printWindow.document.write(`
+          <!DOCTYPE html>
+          <html lang="en">
+            <head>
+              <meta charset="UTF-8" />
+              <title>Creature Stat Cards</title>
+              <style>
+                @page {
+                  size: 63mm 88mm;
+                  margin: 0;
+                }
+                * {
+                  box-sizing: border-box;
+                }
+                body {
+                  margin: 0;
+                  padding: 0;
+                  display: grid;
+                  gap: 0;
+                  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+                }
+                .stat-card {
+                  width: 63mm;
+                  height: 88mm;
+                  padding: 4mm;
+                  border: 1px solid #2a2218;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 2mm;
+                  background: #f9f4e8;
+                  page-break-after: always;
+                }
+                .stat-card__header {
+                  border-bottom: 1px solid #3b2f21;
+                  padding-bottom: 1mm;
+                  display: grid;
+                  gap: 0.8mm;
+                }
+                .stat-card__name {
+                  font-weight: 700;
+                  font-size: 11pt;
+                  text-transform: uppercase;
+                  letter-spacing: 0.08em;
+                }
+                .stat-card__meta {
+                  font-size: 8.5pt;
+                  color: #4c3d2a;
+                }
+                .stat-card__body {
+                  display: grid;
+                  gap: 1mm;
+                  font-size: 8pt;
+                  line-height: 1.2;
+                  color: #14100c;
+                }
+                .stat-card__line--title {
+                  font-weight: 700;
+                  text-transform: uppercase;
+                  letter-spacing: 0.06em;
+                  margin-top: 0.6mm;
+                }
+              </style>
+            </head>
+            <body>
+              ${cardMarkup}
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+      };
+
+      // Render creature roster data into the module view on entry.
+      const renderCreatureModule = () => {
+        const creatureMemory = getCreatureMemory();
+        creatureState.roster = creatureMemory.roster ?? [];
+        creatureState.activeCreatureId = creatureMemory.activeCreatureId ?? creatureState.roster[0]?.id ?? null;
+        creatureState.editingCreatureId = null;
+        creatureState.selectedCreatureIds = new Set();
+        resetCreatureForm();
+        renderCreatureList();
+      };
+
       // Format timestamps for human-friendly session status updates.
       const formatSessionTimestamp = (timestamp) => {
         if (!timestamp) {
@@ -3736,6 +4694,7 @@
       const hideModules = () => {
         initiativeModule.classList.add("is-hidden");
         npcModule.classList.add("is-hidden");
+        creatureModule.classList.add("is-hidden");
         sessionModule.classList.add("is-hidden");
       };
 
@@ -3765,6 +4724,22 @@
 
       const closeNpcModule = () => {
         npcModule.classList.add("is-hidden");
+        dashboardView.classList.remove("is-hidden");
+        updateHeader("dashboard");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+
+      const openCreatureModule = () => {
+        hideModules();
+        dashboardView.classList.add("is-hidden");
+        creatureModule.classList.remove("is-hidden");
+        updateHeader("creature");
+        renderCreatureModule();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+
+      const closeCreatureModule = () => {
+        creatureModule.classList.add("is-hidden");
         dashboardView.classList.remove("is-hidden");
         updateHeader("dashboard");
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -4035,6 +5010,8 @@
       initiativeBack.addEventListener("click", closeInitiativeModule);
       npcLaunch.addEventListener("click", openNpcModule);
       npcBack.addEventListener("click", closeNpcModule);
+      creatureLaunch.addEventListener("click", openCreatureModule);
+      creatureBack.addEventListener("click", closeCreatureModule);
       sessionLaunch.addEventListener("click", openSessionModule);
       sessionBack.addEventListener("click", closeSessionModule);
       // NPC wizard entry points keep the gallery as the default screen.
@@ -4111,6 +5088,155 @@
       npcReset.addEventListener("click", () => {
         resetNpcForm();
         setNpcWizardStep(1);
+      });
+
+      // Creature library controls support roster creation, editing, and export.
+      creatureNew.addEventListener("click", () => {
+        resetCreatureForm("Ready to capture a new creature profile.");
+        creatureState.activeCreatureId = null;
+        renderCreatureList();
+      });
+
+      creatureSelectAll.addEventListener("click", () => {
+        creatureState.selectedCreatureIds = new Set(creatureState.roster.map((creature) => creature.id));
+        renderCreatureList();
+      });
+
+      creatureClearSelection.addEventListener("click", () => {
+        creatureState.selectedCreatureIds.clear();
+        renderCreatureList();
+      });
+
+      creatureExport.addEventListener("click", () => {
+        const selected = creatureState.roster.filter((creature) =>
+          creatureState.selectedCreatureIds.has(creature.id)
+        );
+        if (!selected.length) {
+          creatureFormNote.textContent = "Select at least one creature before exporting cards.";
+          return;
+        }
+        exportCreatureCards(selected);
+      });
+
+      creatureExportSelected.addEventListener("click", () => {
+        const selected = creatureState.roster.filter((creature) =>
+          creatureState.selectedCreatureIds.has(creature.id)
+        );
+        if (!selected.length) {
+          creatureFormNote.textContent = "Select at least one creature before exporting cards.";
+          return;
+        }
+        exportCreatureCards(selected);
+      });
+
+      creatureParse.addEventListener("click", () => {
+        const text = creatureStatblock.value.trim();
+        if (!text) {
+          creatureFormNote.textContent = "Paste a statblock before parsing.";
+          return;
+        }
+        const parsed = parseCreatureStatblock(text);
+        applyCreatureParse(parsed);
+        creatureFormNote.textContent = "Statblock parsed. Review and adjust before saving.";
+      });
+
+      creatureClearStatblock.addEventListener("click", () => {
+        creatureStatblock.value = "";
+        creatureFormNote.textContent = "Statblock field cleared.";
+      });
+
+      creatureReset.addEventListener("click", () => {
+        resetCreatureForm("Form reset. Ready for a fresh creature entry.");
+      });
+
+      creatureForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const name = creatureName.value.trim();
+        if (!name) {
+          creatureFormNote.textContent = "Creature name is required before saving.";
+          return;
+        }
+        if (creatureState.editingCreatureId) {
+          creatureState.roster = creatureState.roster.map((creature) =>
+            creature.id === creatureState.editingCreatureId
+              ? buildCreaturePayload({ id: creature.id })
+              : creature
+          );
+          creatureState.activeCreatureId = creatureState.editingCreatureId;
+        } else {
+          const newCreature = buildCreaturePayload();
+          creatureState.roster = [...creatureState.roster, newCreature];
+          creatureState.activeCreatureId = newCreature.id;
+        }
+        persistCreatureLibrary();
+        renderCreatureList();
+        resetCreatureForm(`Saved "${name}" to the creature library.`);
+      });
+
+      creatureList.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) {
+          return;
+        }
+        const editId = target.getAttribute("data-creature-edit");
+        const deleteId = target.getAttribute("data-creature-delete");
+        const duplicateId = target.getAttribute("data-creature-duplicate");
+
+        if (editId) {
+          const creature = getCreatureById(editId);
+          if (creature) {
+            creatureState.activeCreatureId = editId;
+            creatureState.editingCreatureId = editId;
+            hydrateCreatureForm(creature);
+            renderCreatureList();
+          }
+          return;
+        }
+
+        if (duplicateId) {
+          const creature = getCreatureById(duplicateId);
+          if (creature) {
+            const copy = {
+              ...creature,
+              id: generateId(),
+              name: `${creature.name} (Copy)`,
+              updatedAt: new Date().toISOString(),
+            };
+            creatureState.roster = [...creatureState.roster, copy];
+            creatureState.activeCreatureId = copy.id;
+            persistCreatureLibrary();
+            renderCreatureList();
+            creatureFormNote.textContent = `Duplicated "${creature.name}".`;
+          }
+          return;
+        }
+
+        if (deleteId) {
+          creatureState.roster = creatureState.roster.filter((creature) => creature.id !== deleteId);
+          creatureState.selectedCreatureIds.delete(deleteId);
+          if (creatureState.activeCreatureId === deleteId) {
+            creatureState.activeCreatureId = creatureState.roster[0]?.id ?? null;
+          }
+          persistCreatureLibrary();
+          renderCreatureList();
+        }
+      });
+
+      creatureList.addEventListener("change", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLInputElement)) {
+          return;
+        }
+        const selectionId = target.getAttribute("data-creature-select");
+        if (!selectionId) {
+          return;
+        }
+        if (target.checked) {
+          creatureState.selectedCreatureIds.add(selectionId);
+        } else {
+          creatureState.selectedCreatureIds.delete(selectionId);
+        }
+        updateCreatureSelectionCount();
       });
 
       // NPC roster actions support view, edit, and archive behaviors.
