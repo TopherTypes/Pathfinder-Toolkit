@@ -420,6 +420,106 @@
         margin-top: 0.6rem;
       }
 
+      /* NPC gallery highlights existing profiles as the module landing view. */
+      .npc-gallery-panel__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .npc-gallery-panel__actions {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+
+      .npc-gallery-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      .npc-gallery-card {
+        background: rgba(24, 18, 13, 0.92);
+        border-radius: 14px;
+        padding: 0.85rem 0.95rem;
+        border: 1px solid rgba(201, 162, 74, 0.45);
+        display: grid;
+        gap: 0.5rem;
+        box-shadow: 0 12px 20px var(--shadow);
+      }
+
+      .npc-gallery-card.is-active {
+        border-color: var(--gold-bright);
+        box-shadow: 0 0 0 1px rgba(232, 200, 119, 0.35);
+      }
+
+      .npc-gallery-card__meta {
+        color: var(--ink-muted);
+        font-size: 0.82rem;
+      }
+
+      .npc-gallery-card__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+
+      .npc-gallery-card__actions {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+      }
+
+      /* NPC creation wizard styling keeps the modal guided and scannable. */
+      .modal--wide {
+        max-width: 860px;
+      }
+
+      .npc-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .npc-progress {
+        background: rgba(20, 16, 12, 0.7);
+        border-radius: 999px;
+        height: 10px;
+        overflow: hidden;
+        margin-bottom: 1.2rem;
+        border: 1px solid rgba(201, 162, 74, 0.4);
+      }
+
+      .npc-progress__bar {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, rgba(201, 162, 74, 0.5), var(--gold-bright));
+        transition: width 0.3s ease;
+      }
+
+      .npc-step {
+        display: none;
+      }
+
+      .npc-step.is-active {
+        display: block;
+      }
+
+      .npc-step__header {
+        margin-bottom: 0.6rem;
+      }
+
+      .npc-step__title {
+        font-family: var(--serif);
+        color: var(--gold-bright);
+        margin-bottom: 0.25rem;
+      }
+
       .initiative-tracker {
         margin: 0.9rem 0 0;
         background: rgba(28, 22, 16, 0.92);
@@ -1314,6 +1414,366 @@
       </div>
     </section>
 
+    <!-- NPC creation wizard lightbox -->
+    <div id="npc-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal modal--wide">
+        <div class="npc-modal-header">
+          <div>
+            <h3 id="npc-modal-title">Create NPC</h3>
+            <p id="npc-modal-step" class="helper-text">Step 1 of 6: Identity & Role</p>
+          </div>
+          <button id="npc-modal-close" class="ghost" type="button">Close</button>
+        </div>
+        <div
+          class="npc-progress"
+          role="progressbar"
+          aria-valuemin="1"
+          aria-valuemax="6"
+          aria-valuenow="1"
+        >
+          <div class="npc-progress__bar" id="npc-progress-bar"></div>
+        </div>
+        <form id="npc-form">
+          <!-- Step 1: Identity & Role -->
+          <section class="npc-step is-active" data-step="1" data-title="Identity & Role">
+            <div class="npc-step__header">
+              <h4 class="npc-step__title">Identity & Role</h4>
+              <p class="helper-text">Capture the quick reference details used during play.</p>
+            </div>
+            <div class="npc-section-grid">
+              <div>
+                <label for="npc-name">Name</label>
+                <input
+                  id="npc-name"
+                  name="npc-name"
+                  type="text"
+                  placeholder="e.g. Captain Vale"
+                  required
+                />
+              </div>
+              <div>
+                <label for="npc-role">Role</label>
+                <input
+                  id="npc-role"
+                  name="npc-role"
+                  type="text"
+                  placeholder="e.g. Harbor Master"
+                />
+              </div>
+              <div>
+                <label for="npc-faction">Faction</label>
+                <input
+                  id="npc-faction"
+                  name="npc-faction"
+                  type="text"
+                  placeholder="e.g. Crimson Fleet"
+                />
+              </div>
+              <div>
+                <label for="npc-location">Location</label>
+                <input
+                  id="npc-location"
+                  name="npc-location"
+                  type="text"
+                  placeholder="e.g. Dockside"
+                />
+              </div>
+              <div>
+                <label for="npc-tags">Tags (comma-separated)</label>
+                <input
+                  id="npc-tags"
+                  name="npc-tags"
+                  type="text"
+                  placeholder="e.g. smuggler, swordmaster"
+                />
+              </div>
+            </div>
+          </section>
+
+          <!-- Step 2: Background & Demeanor -->
+          <section class="npc-step" data-step="2" data-title="Background & Demeanor">
+            <div class="npc-step__header">
+              <h4 class="npc-step__title">Background & Demeanor</h4>
+              <p class="helper-text">Define lineage, role, and how the NPC engages the party.</p>
+            </div>
+            <div class="npc-section-grid">
+              <div>
+                <label for="npc-ancestry">Ancestry</label>
+                <input
+                  id="npc-ancestry"
+                  name="npc-ancestry"
+                  type="text"
+                  placeholder="e.g. Human"
+                />
+              </div>
+              <div>
+                <label for="npc-class">Class</label>
+                <input
+                  id="npc-class"
+                  name="npc-class"
+                  type="text"
+                  placeholder="e.g. Fighter"
+                />
+              </div>
+              <div>
+                <label for="npc-level">Level</label>
+                <input
+                  id="npc-level"
+                  name="npc-level"
+                  type="number"
+                  min="0"
+                  step="1"
+                  placeholder="e.g. 4"
+                />
+              </div>
+              <div>
+                <label for="npc-alignment">Alignment</label>
+                <input
+                  id="npc-alignment"
+                  name="npc-alignment"
+                  type="text"
+                  placeholder="e.g. Lawful Neutral"
+                />
+              </div>
+              <div>
+                <label for="npc-size">Size</label>
+                <select id="npc-size" name="npc-size">
+                  <option value="Tiny">Tiny</option>
+                  <option value="Small">Small</option>
+                  <option value="Medium" selected>Medium</option>
+                  <option value="Large">Large</option>
+                  <option value="Huge">Huge</option>
+                  <option value="Gargantuan">Gargantuan</option>
+                </select>
+              </div>
+              <div>
+                <label for="npc-disposition">Disposition</label>
+                <select id="npc-disposition" name="npc-disposition">
+                  <option value="Friendly">Friendly</option>
+                  <option value="Neutral">Neutral</option>
+                  <option value="Wary">Wary</option>
+                  <option value="Hostile">Hostile</option>
+                </select>
+              </div>
+              <div>
+                <label for="npc-relationship">Relationship</label>
+                <select id="npc-relationship" name="npc-relationship">
+                  <option value="Ally">Ally</option>
+                  <option value="Contact">Contact</option>
+                  <option value="Neutral" selected>Neutral</option>
+                  <option value="Rival">Rival</option>
+                  <option value="Enemy">Enemy</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <!-- Step 3: Combat Snapshot -->
+          <section class="npc-step" data-step="3" data-title="Combat Snapshot">
+            <div class="npc-step__header">
+              <h4 class="npc-step__title">Combat Snapshot</h4>
+              <p class="helper-text">Summarize the numbers you reference during encounters.</p>
+            </div>
+            <div class="npc-section-grid">
+              <div>
+                <label for="npc-hp">Hit Points</label>
+                <input
+                  id="npc-hp"
+                  name="npc-hp"
+                  type="number"
+                  min="0"
+                  step="1"
+                  placeholder="e.g. 44"
+                />
+              </div>
+              <div>
+                <label for="npc-ac">Armor Class</label>
+                <input
+                  id="npc-ac"
+                  name="npc-ac"
+                  type="number"
+                  min="0"
+                  step="1"
+                  placeholder="e.g. 19"
+                />
+              </div>
+              <div>
+                <label for="npc-speed">Speed</label>
+                <input
+                  id="npc-speed"
+                  name="npc-speed"
+                  type="text"
+                  placeholder="e.g. 25 ft."
+                />
+              </div>
+              <div>
+                <label for="npc-initiative">Initiative</label>
+                <input
+                  id="npc-initiative"
+                  name="npc-initiative"
+                  type="number"
+                  step="1"
+                  placeholder="e.g. +7"
+                />
+              </div>
+            </div>
+          </section>
+
+          <!-- Step 4: Ability Scores -->
+          <section class="npc-step" data-step="4" data-title="Ability Scores">
+            <div class="npc-step__header">
+              <h4 class="npc-step__title">Ability Scores</h4>
+              <p class="helper-text">Record the core stats that influence checks and saves.</p>
+            </div>
+            <div class="npc-section-grid npc-section-grid--compact">
+              <div>
+                <label for="npc-str">STR</label>
+                <input id="npc-str" name="npc-str" type="number" step="1" placeholder="e.g. 16" />
+              </div>
+              <div>
+                <label for="npc-dex">DEX</label>
+                <input id="npc-dex" name="npc-dex" type="number" step="1" placeholder="e.g. 14" />
+              </div>
+              <div>
+                <label for="npc-con">CON</label>
+                <input id="npc-con" name="npc-con" type="number" step="1" placeholder="e.g. 12" />
+              </div>
+              <div>
+                <label for="npc-int">INT</label>
+                <input id="npc-int" name="npc-int" type="number" step="1" placeholder="e.g. 10" />
+              </div>
+              <div>
+                <label for="npc-wis">WIS</label>
+                <input id="npc-wis" name="npc-wis" type="number" step="1" placeholder="e.g. 13" />
+              </div>
+              <div>
+                <label for="npc-cha">CHA</label>
+                <input id="npc-cha" name="npc-cha" type="number" step="1" placeholder="e.g. 8" />
+              </div>
+            </div>
+          </section>
+
+          <!-- Step 5: Defenses & Senses -->
+          <section class="npc-step" data-step="5" data-title="Defenses & Senses">
+            <div class="npc-step__header">
+              <h4 class="npc-step__title">Defenses & Senses</h4>
+              <p class="helper-text">Track saving throws, senses, and language notes.</p>
+            </div>
+            <div class="npc-section-grid">
+              <div>
+                <label for="npc-fortitude">Fortitude</label>
+                <input
+                  id="npc-fortitude"
+                  name="npc-fortitude"
+                  type="number"
+                  step="1"
+                  placeholder="e.g. +9"
+                />
+              </div>
+              <div>
+                <label for="npc-reflex">Reflex</label>
+                <input
+                  id="npc-reflex"
+                  name="npc-reflex"
+                  type="number"
+                  step="1"
+                  placeholder="e.g. +6"
+                />
+              </div>
+              <div>
+                <label for="npc-will">Will</label>
+                <input
+                  id="npc-will"
+                  name="npc-will"
+                  type="number"
+                  step="1"
+                  placeholder="e.g. +5"
+                />
+              </div>
+              <div>
+                <label for="npc-senses">Senses</label>
+                <input
+                  id="npc-senses"
+                  name="npc-senses"
+                  type="text"
+                  placeholder="e.g. darkvision 60 ft."
+                />
+              </div>
+              <div>
+                <label for="npc-languages">Languages</label>
+                <input
+                  id="npc-languages"
+                  name="npc-languages"
+                  type="text"
+                  placeholder="e.g. Common, Dwarven"
+                />
+              </div>
+            </div>
+          </section>
+
+          <!-- Step 6: Story Hooks & Notes -->
+          <section class="npc-step" data-step="6" data-title="Story Hooks & Notes">
+            <div class="npc-step__header">
+              <h4 class="npc-step__title">Story Hooks & Notes</h4>
+              <p class="helper-text">Add equipment, abilities, and roleplay cues for fast recall.</p>
+            </div>
+            <div class="npc-section-grid npc-section-grid--full">
+              <div>
+                <label for="npc-hook">Story hook</label>
+                <textarea
+                  id="npc-hook"
+                  name="npc-hook"
+                  placeholder="e.g. Wants the party to recover a lost logbook."
+                ></textarea>
+              </div>
+              <div>
+                <label for="npc-skills">Skills & Proficiencies</label>
+                <textarea
+                  id="npc-skills"
+                  name="npc-skills"
+                  placeholder="e.g. Athletics +8, Intimidation +7, Sailing lore +6."
+                ></textarea>
+              </div>
+              <div>
+                <label for="npc-equipment">Equipment</label>
+                <textarea
+                  id="npc-equipment"
+                  name="npc-equipment"
+                  placeholder="e.g. Boarding axe, breastplate, signal whistle."
+                ></textarea>
+              </div>
+              <div>
+                <label for="npc-abilities">Special Abilities</label>
+                <textarea
+                  id="npc-abilities"
+                  name="npc-abilities"
+                  placeholder="e.g. Harpoon Strike, Commanding Presence."
+                ></textarea>
+              </div>
+              <div>
+                <label for="npc-notes">Roleplay notes</label>
+                <textarea
+                  id="npc-notes"
+                  name="npc-notes"
+                  placeholder="e.g. Speaks in clipped sentences, always taps a brass ring."
+                ></textarea>
+              </div>
+            </div>
+          </section>
+
+          <div class="modal-actions">
+            <button id="npc-step-back" class="ghost" type="button">Back</button>
+            <button id="npc-step-next" type="button">Next</button>
+            <button id="npc-submit" type="submit">Create NPC</button>
+            <button id="npc-reset" class="secondary" type="button">Reset</button>
+          </div>
+        </form>
+        <p class="helper-text" id="npc-form-note">
+          Use the gallery to revisit NPCs and update their relationship status.
+        </p>
+      </div>
+    </div>
+
     <!-- NPC vault module (opens from the dashboard tool card) -->
     <section class="npc-module is-hidden" id="npc-module" aria-label="NPC vault module">
       <div class="container">
@@ -1322,6 +1782,7 @@
           <button id="npc-back" class="ghost" type="button">
             ← Back to Dashboard
           </button>
+          <button id="npc-create" type="button">Create New</button>
         </div>
 
         <section class="npc-vault" aria-label="NPC vault workspace">
@@ -1330,354 +1791,21 @@
           </p>
           <div class="npc-layout">
             <div class="npc-column">
-              <div class="tracker-panel npc-form-panel">
-                <h3>NPC Profile Builder</h3>
-                <form id="npc-form">
-                  <div class="npc-form-sections">
-                    <!-- Identity basics keep naming and quick descriptors close together. -->
-                    <section class="npc-form-section" aria-labelledby="npc-section-identity">
-                      <header class="npc-form-section__header">
-                        <h4 class="npc-form-section__title" id="npc-section-identity">Identity & Role</h4>
-                        <p class="npc-form-section__hint">Capture the quick reference details used during play.</p>
-                      </header>
-                      <div class="npc-section-grid">
-                        <div>
-                          <label for="npc-name">Name</label>
-                          <input
-                            id="npc-name"
-                            name="npc-name"
-                            type="text"
-                            placeholder="e.g. Captain Vale"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <label for="npc-role">Role</label>
-                          <input
-                            id="npc-role"
-                            name="npc-role"
-                            type="text"
-                            placeholder="e.g. Harbor Master"
-                          />
-                        </div>
-                        <div>
-                          <label for="npc-faction">Faction</label>
-                          <input
-                            id="npc-faction"
-                            name="npc-faction"
-                            type="text"
-                            placeholder="e.g. Crimson Fleet"
-                          />
-                        </div>
-                        <div>
-                          <label for="npc-location">Location</label>
-                          <input
-                            id="npc-location"
-                            name="npc-location"
-                            type="text"
-                            placeholder="e.g. Dockside"
-                          />
-                        </div>
-                        <div>
-                          <label for="npc-tags">Tags (comma-separated)</label>
-                          <input
-                            id="npc-tags"
-                            name="npc-tags"
-                            type="text"
-                            placeholder="e.g. smuggler, swordmaster"
-                          />
-                        </div>
-                      </div>
-                    </section>
-
-                    <!-- Core lore and social tone keep alignment and relationship fields aligned. -->
-                    <section class="npc-form-section" aria-labelledby="npc-section-background">
-                      <header class="npc-form-section__header">
-                        <h4 class="npc-form-section__title" id="npc-section-background">Background & Demeanor</h4>
-                        <p class="npc-form-section__hint">Define lineage, role, and how the NPC engages the party.</p>
-                      </header>
-                      <div class="npc-section-grid">
-                        <div>
-                          <label for="npc-ancestry">Ancestry</label>
-                          <input
-                            id="npc-ancestry"
-                            name="npc-ancestry"
-                            type="text"
-                            placeholder="e.g. Human"
-                          />
-                        </div>
-                        <div>
-                          <label for="npc-class">Class</label>
-                          <input
-                            id="npc-class"
-                            name="npc-class"
-                            type="text"
-                            placeholder="e.g. Fighter"
-                          />
-                        </div>
-                        <div>
-                          <label for="npc-level">Level</label>
-                          <input
-                            id="npc-level"
-                            name="npc-level"
-                            type="number"
-                            min="0"
-                            step="1"
-                            placeholder="e.g. 4"
-                          />
-                        </div>
-                        <div>
-                          <label for="npc-alignment">Alignment</label>
-                          <input
-                            id="npc-alignment"
-                            name="npc-alignment"
-                            type="text"
-                            placeholder="e.g. Lawful Neutral"
-                          />
-                        </div>
-                        <div>
-                          <label for="npc-size">Size</label>
-                          <select id="npc-size" name="npc-size">
-                            <option value="Tiny">Tiny</option>
-                            <option value="Small">Small</option>
-                            <option value="Medium" selected>Medium</option>
-                            <option value="Large">Large</option>
-                            <option value="Huge">Huge</option>
-                            <option value="Gargantuan">Gargantuan</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label for="npc-disposition">Disposition</label>
-                          <select id="npc-disposition" name="npc-disposition">
-                            <option value="Friendly">Friendly</option>
-                            <option value="Neutral">Neutral</option>
-                            <option value="Wary">Wary</option>
-                            <option value="Hostile">Hostile</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label for="npc-relationship">Relationship</label>
-                          <select id="npc-relationship" name="npc-relationship">
-                            <option value="Ally">Ally</option>
-                            <option value="Contact">Contact</option>
-                            <option value="Neutral" selected>Neutral</option>
-                            <option value="Rival">Rival</option>
-                            <option value="Enemy">Enemy</option>
-                          </select>
-                        </div>
-                      </div>
-                    </section>
-
-                    <!-- Mechanical snapshot keeps combat-relevant stats together. -->
-                    <section class="npc-form-section" aria-labelledby="npc-section-combat">
-                      <header class="npc-form-section__header">
-                        <h4 class="npc-form-section__title" id="npc-section-combat">Combat Snapshot</h4>
-                        <p class="npc-form-section__hint">Summarize the numbers you reference during encounters.</p>
-                      </header>
-                      <div class="npc-section-grid">
-                        <div>
-                          <label for="npc-hp">Hit Points</label>
-                          <input
-                            id="npc-hp"
-                            name="npc-hp"
-                            type="number"
-                            min="0"
-                            step="1"
-                            placeholder="e.g. 44"
-                          />
-                        </div>
-                        <div>
-                          <label for="npc-ac">Armor Class</label>
-                          <input
-                            id="npc-ac"
-                            name="npc-ac"
-                            type="number"
-                            min="0"
-                            step="1"
-                            placeholder="e.g. 19"
-                          />
-                        </div>
-                        <div>
-                          <label for="npc-speed">Speed</label>
-                          <input
-                            id="npc-speed"
-                            name="npc-speed"
-                            type="text"
-                            placeholder="e.g. 25 ft."
-                          />
-                        </div>
-                        <div>
-                          <label for="npc-initiative">Initiative</label>
-                          <input
-                            id="npc-initiative"
-                            name="npc-initiative"
-                            type="number"
-                            step="1"
-                            placeholder="e.g. +7"
-                          />
-                        </div>
-                      </div>
-                    </section>
-
-                    <!-- Attribute block keeps the classic six stats grouped. -->
-                    <section class="npc-form-section" aria-labelledby="npc-section-attributes">
-                      <header class="npc-form-section__header">
-                        <h4 class="npc-form-section__title" id="npc-section-attributes">Ability Scores</h4>
-                        <p class="npc-form-section__hint">Record the core stats that influence checks and saves.</p>
-                      </header>
-                      <div class="npc-section-grid npc-section-grid--compact">
-                        <div>
-                          <label for="npc-str">STR</label>
-                          <input id="npc-str" name="npc-str" type="number" step="1" placeholder="e.g. 16" />
-                        </div>
-                        <div>
-                          <label for="npc-dex">DEX</label>
-                          <input id="npc-dex" name="npc-dex" type="number" step="1" placeholder="e.g. 14" />
-                        </div>
-                        <div>
-                          <label for="npc-con">CON</label>
-                          <input id="npc-con" name="npc-con" type="number" step="1" placeholder="e.g. 12" />
-                        </div>
-                        <div>
-                          <label for="npc-int">INT</label>
-                          <input id="npc-int" name="npc-int" type="number" step="1" placeholder="e.g. 10" />
-                        </div>
-                        <div>
-                          <label for="npc-wis">WIS</label>
-                          <input id="npc-wis" name="npc-wis" type="number" step="1" placeholder="e.g. 13" />
-                        </div>
-                        <div>
-                          <label for="npc-cha">CHA</label>
-                          <input id="npc-cha" name="npc-cha" type="number" step="1" placeholder="e.g. 8" />
-                        </div>
-                      </div>
-                    </section>
-
-                    <!-- Defensive and sensory references keep checks adjacent. -->
-                    <section class="npc-form-section" aria-labelledby="npc-section-defenses">
-                      <header class="npc-form-section__header">
-                        <h4 class="npc-form-section__title" id="npc-section-defenses">Defenses & Senses</h4>
-                        <p class="npc-form-section__hint">Track saving throws, senses, and language notes.</p>
-                      </header>
-                      <div class="npc-section-grid">
-                        <div>
-                          <label for="npc-fortitude">Fortitude</label>
-                          <input
-                            id="npc-fortitude"
-                            name="npc-fortitude"
-                            type="number"
-                            step="1"
-                            placeholder="e.g. +9"
-                          />
-                        </div>
-                        <div>
-                          <label for="npc-reflex">Reflex</label>
-                          <input
-                            id="npc-reflex"
-                            name="npc-reflex"
-                            type="number"
-                            step="1"
-                            placeholder="e.g. +6"
-                          />
-                        </div>
-                        <div>
-                          <label for="npc-will">Will</label>
-                          <input
-                            id="npc-will"
-                            name="npc-will"
-                            type="number"
-                            step="1"
-                            placeholder="e.g. +5"
-                          />
-                        </div>
-                        <div>
-                          <label for="npc-senses">Senses</label>
-                          <input
-                            id="npc-senses"
-                            name="npc-senses"
-                            type="text"
-                            placeholder="e.g. darkvision 60 ft."
-                          />
-                        </div>
-                        <div>
-                          <label for="npc-languages">Languages</label>
-                          <input
-                            id="npc-languages"
-                            name="npc-languages"
-                            type="text"
-                            placeholder="e.g. Common, Dwarven"
-                          />
-                        </div>
-                      </div>
-                    </section>
-
-                    <!-- Narrative details live at the end for deeper prep work. -->
-                    <section class="npc-form-section" aria-labelledby="npc-section-notes">
-                      <header class="npc-form-section__header">
-                        <h4 class="npc-form-section__title" id="npc-section-notes">Story Hooks & Notes</h4>
-                        <p class="npc-form-section__hint">
-                          Add equipment, abilities, and roleplay cues for fast recall.
-                        </p>
-                      </header>
-                      <div class="npc-section-grid npc-section-grid--full">
-                        <div>
-                          <label for="npc-hook">Story hook</label>
-                          <textarea
-                            id="npc-hook"
-                            name="npc-hook"
-                            placeholder="e.g. Wants the party to recover a lost logbook."
-                          ></textarea>
-                        </div>
-                        <div>
-                          <label for="npc-skills">Skills & Proficiencies</label>
-                          <textarea
-                            id="npc-skills"
-                            name="npc-skills"
-                            placeholder="e.g. Athletics +8, Intimidation +7, Sailing lore +6."
-                          ></textarea>
-                        </div>
-                        <div>
-                          <label for="npc-equipment">Equipment</label>
-                          <textarea
-                            id="npc-equipment"
-                            name="npc-equipment"
-                            placeholder="e.g. Boarding axe, breastplate, signal whistle."
-                          ></textarea>
-                        </div>
-                        <div>
-                          <label for="npc-abilities">Special Abilities</label>
-                          <textarea
-                            id="npc-abilities"
-                            name="npc-abilities"
-                            placeholder="e.g. Harpoon Strike, Commanding Presence."
-                          ></textarea>
-                        </div>
-                        <div>
-                          <label for="npc-notes">Roleplay notes</label>
-                          <textarea
-                            id="npc-notes"
-                            name="npc-notes"
-                            placeholder="e.g. Speaks in clipped sentences, always taps a brass ring."
-                          ></textarea>
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                  <div class="npc-form-actions">
-                    <button id="npc-submit" type="submit">Add NPC</button>
-                    <button id="npc-reset" class="secondary" type="button">Reset Form</button>
-                  </div>
-                </form>
-                <p class="helper-text" id="npc-form-note">
-                  Use the roster list to revisit NPCs and update their relationship status.
-                </p>
-              </div>
-
               <div class="tracker-panel npc-list-panel">
-                <h3>Roster</h3>
-                <ul id="npc-list" class="npc-list" aria-label="Saved NPCs"></ul>
+                <div class="npc-gallery-panel__header">
+                  <div>
+                    <h3>NPC Gallery</h3>
+                    <p class="helper-text">
+                      Select a card to review details or open the wizard to add a new profile.
+                    </p>
+                  </div>
+                  <div class="npc-gallery-panel__actions">
+                    <button id="npc-create-inline" class="secondary" type="button">Create New</button>
+                  </div>
+                </div>
+                <div id="npc-list" class="npc-gallery-grid" aria-label="Saved NPCs"></div>
                 <p class="helper-text" id="npc-empty-state">
-                  No NPCs saved yet. Add your first profile to begin a roster.
+                  No NPCs saved yet. Create a new profile to start your gallery.
                 </p>
               </div>
             </div>
@@ -2134,6 +2262,12 @@
         editingNpcId: null,
       };
 
+      // NPC wizard state keeps step navigation aligned with modal progress.
+      const npcWizardState = {
+        step: 1,
+        total: 6,
+      };
+
       // Session notes state tracks the current working note plus auto-save timing.
       const sessionState = {
         note: defaultSessionNote(),
@@ -2203,6 +2337,16 @@
       const npcModule = document.getElementById("npc-module");
       const npcLaunch = document.getElementById("npc-launch");
       const npcBack = document.getElementById("npc-back");
+      const npcCreate = document.getElementById("npc-create");
+      const npcCreateInline = document.getElementById("npc-create-inline");
+      const npcModal = document.getElementById("npc-modal");
+      const npcModalClose = document.getElementById("npc-modal-close");
+      const npcModalTitle = document.getElementById("npc-modal-title");
+      const npcModalStep = document.getElementById("npc-modal-step");
+      const npcProgress = document.querySelector(".npc-progress");
+      const npcProgressBar = document.getElementById("npc-progress-bar");
+      const npcStepBack = document.getElementById("npc-step-back");
+      const npcStepNext = document.getElementById("npc-step-next");
       const npcForm = document.getElementById("npc-form");
       const npcName = document.getElementById("npc-name");
       const npcRole = document.getElementById("npc-role");
@@ -2242,6 +2386,7 @@
       const npcList = document.getElementById("npc-list");
       const npcEmptyState = document.getElementById("npc-empty-state");
       const npcDetail = document.getElementById("npc-detail");
+      const npcSteps = Array.from(document.querySelectorAll(".npc-step"));
 
       // Session notes elements wire the MVP note capture form.
       const sessionModule = document.getElementById("session-module");
@@ -2587,14 +2732,57 @@
         updatedAt: overrides.updatedAt ?? new Date().toISOString(),
       });
 
-      const resetNpcForm = (note = "Use the roster list to revisit NPCs and update their relationship status.") => {
+      // Update the NPC wizard UI to reflect the current step.
+      const updateNpcWizardView = () => {
+        const totalSteps = npcSteps.length || npcWizardState.total;
+        npcWizardState.total = totalSteps;
+        npcSteps.forEach((stepSection) => {
+          const stepNumber = Number(stepSection.dataset.step);
+          stepSection.classList.toggle("is-active", stepNumber === npcWizardState.step);
+        });
+        const activeStep = npcSteps.find(
+          (stepSection) => Number(stepSection.dataset.step) === npcWizardState.step
+        );
+        const stepTitle = activeStep?.dataset.title ?? "NPC Details";
+        npcModalStep.textContent = `Step ${npcWizardState.step} of ${totalSteps}: ${stepTitle}`;
+        npcProgressBar.style.width = `${(npcWizardState.step / totalSteps) * 100}%`;
+        npcProgress?.setAttribute("aria-valuenow", String(npcWizardState.step));
+        npcStepBack.disabled = npcWizardState.step <= 1;
+        npcStepNext.classList.toggle("is-hidden", npcWizardState.step >= totalSteps);
+        npcSubmit.classList.toggle("is-hidden", npcWizardState.step < totalSteps);
+      };
+
+      // Move the wizard to a specific step, clamping within the step range.
+      const setNpcWizardStep = (step) => {
+        const totalSteps = npcSteps.length || npcWizardState.total;
+        npcWizardState.step = Math.min(Math.max(step, 1), totalSteps);
+        updateNpcWizardView();
+      };
+
+      // Open the NPC wizard in create or edit mode and reset step navigation.
+      const openNpcWizard = ({ mode, npc = null } = {}) => {
+        npcWizardState.step = 1;
+        if (mode === "edit" && npc) {
+          populateNpcForm(npc);
+          npcModalTitle.textContent = "Edit NPC";
+        } else {
+          resetNpcForm("Add details for your new NPC, then confirm on the final step.");
+          npcModalTitle.textContent = "Create NPC";
+        }
+        updateNpcWizardView();
+        openModal(npcModal);
+      };
+
+      const resetNpcForm = (
+        note = "Use the gallery to revisit NPCs and update their relationship status."
+      ) => {
         npcForm.reset();
         // Restore select defaults that may not reset to desired gameplay-friendly values.
         npcRelationship.value = "Neutral";
         npcDisposition.value = "Neutral";
         npcSize.value = "Medium";
         npcState.editingNpcId = null;
-        npcSubmit.textContent = "Add NPC";
+        npcSubmit.textContent = "Create NPC";
         setNpcFormNote(note);
       };
 
@@ -2746,19 +2934,21 @@
               ? npc.tags.map((tag) => `<span class="tool-tag">${tag}</span>`).join("")
               : '<span class="tool-tag">Un-tagged</span>';
             return `
-              <li class="npc-card ${isActive ? "is-active" : ""}">
+              <article class="npc-gallery-card ${isActive ? "is-active" : ""}">
                 <div class="npc-card__title">${npc.name}</div>
-                <div class="npc-card__meta">${formatNpcField(npc.role, "No role")} · ${formatNpcField(
-              npc.relationship,
-              "Neutral"
-            )}</div>
-                <div class="tool-meta">${tags}</div>
-                <div class="npc-card__actions">
+                <div class="npc-gallery-card__meta">
+                  ${formatNpcField(npc.role, "No role")} · ${formatNpcField(npc.relationship, "Neutral")}
+                </div>
+                <div class="npc-gallery-card__meta">
+                  ${formatNpcField(npc.location, "No location")} · ${formatNpcField(npc.faction, "No faction")}
+                </div>
+                <div class="npc-gallery-card__tags">${tags}</div>
+                <div class="npc-gallery-card__actions">
                   <button type="button" class="secondary" data-npc-view="${npc.id}">View</button>
                   <button type="button" class="ghost" data-npc-edit="${npc.id}">Edit</button>
                   <button type="button" data-npc-delete="${npc.id}">Archive</button>
                 </div>
-              </li>
+              </article>
             `;
           })
           .join("");
@@ -2771,6 +2961,7 @@
         npcState.activeNpcId = npcMemory.activeNpcId ?? npcState.roster[0]?.id ?? null;
         npcState.editingNpcId = null;
         resetNpcForm();
+        setNpcWizardStep(1);
         renderNpcList();
       };
 
@@ -3200,6 +3391,12 @@
       npcBack.addEventListener("click", closeNpcModule);
       sessionLaunch.addEventListener("click", openSessionModule);
       sessionBack.addEventListener("click", closeSessionModule);
+      // NPC wizard entry points keep the gallery as the default screen.
+      npcCreate.addEventListener("click", () => openNpcWizard({ mode: "create" }));
+      npcCreateInline.addEventListener("click", () => openNpcWizard({ mode: "create" }));
+      npcModalClose.addEventListener("click", () => closeModal(npcModal));
+      npcStepBack.addEventListener("click", () => setNpcWizardStep(npcWizardState.step - 1));
+      npcStepNext.addEventListener("click", () => setNpcWizardStep(npcWizardState.step + 1));
       // Shared toggle keeps both expanded and collapsed controls in sync.
       const toggleEncounterPanel = () => {
         const isExpanded = encounterPanelToggle.getAttribute("aria-expanded") === "true";
@@ -3229,6 +3426,7 @@
         persistNpcRoster();
         renderNpcList();
         resetNpcForm(`Saved "${name}" to the NPC roster.`);
+        closeModal(npcModal);
       });
 
       // Session notes form handler captures manual saves and reset requests.
@@ -3249,6 +3447,7 @@
 
       npcReset.addEventListener("click", () => {
         resetNpcForm();
+        setNpcWizardStep(1);
       });
 
       // NPC roster actions support view, edit, and archive behaviors.
@@ -3270,7 +3469,7 @@
         if (editId) {
           const npc = getNpcById(editId);
           if (npc) {
-            populateNpcForm(npc);
+            openNpcWizard({ mode: "edit", npc });
           }
           return;
         }
