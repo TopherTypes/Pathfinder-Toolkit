@@ -1,0 +1,89 @@
+/*
+ * Base UI styles for Table-Ready.
+ * Keeps screen presentation simple and readable while prioritizing print workflows.
+ */
+
+:root {
+  --sidebar-bg: #f8f9fa;
+  --print-surface-bg: #ffffff;
+  --cut-line-color: #999;
+}
+
+body {
+  min-height: 100vh;
+  background: #eef1f4;
+}
+
+.sidebar {
+  background: var(--sidebar-bg);
+  border-right: 1px solid #d9dee3;
+  min-height: calc(100vh - 56px);
+}
+
+#main-view {
+  max-width: 1000px;
+}
+
+.checklist {
+  list-style: none;
+  padding-left: 0;
+}
+
+.checklist li {
+  margin-bottom: 0.35rem;
+}
+
+.print-surface {
+  background: var(--print-surface-bg);
+  border: 1px solid #d9dee3;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.print-card,
+.session-print-page {
+  background: #fff;
+  border: 1px dashed var(--cut-line-color);
+  border-radius: 6px;
+  padding: 10mm;
+  position: relative;
+}
+
+body.hide-cut-lines .print-card,
+body.hide-cut-lines .session-print-page {
+  border-style: solid;
+  border-color: #ced4da;
+}
+
+.print-card-header h3,
+.session-print-page h2 {
+  margin-top: 0;
+}
+
+.key-stats {
+  font-weight: 600;
+}
+
+.statblock {
+  white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  max-height: 30vh;
+  overflow: auto;
+}
+
+.session-sections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.session-sections > div {
+  border: 1px solid #d9dee3;
+  border-radius: 6px;
+  min-height: 70px;
+  padding: 0.5rem;
+}
