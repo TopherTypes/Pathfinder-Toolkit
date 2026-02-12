@@ -21,6 +21,16 @@ python3 -m http.server 8000
 
 Then open `http://localhost:8000/app/`.
 
+
+## GitHub Pages deployment
+
+This repository is compatible with GitHub Pages without a build step:
+- publish from the repository root (for example: `main`/`docs` or `main`/`root` depending on your Pages setting)
+- root `index.html` redirects to `app/index.html`
+- the app itself remains organized under `app/`
+
+If you prefer, you can also make `app/index.html` the direct entry point later, but it is **not required** for GitHub Pages compatibility.
+
 ## Data storage
 
 - App state is stored in `localStorage` under `pf_toolkit_state_v1`.
