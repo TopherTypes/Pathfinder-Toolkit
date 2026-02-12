@@ -47,14 +47,17 @@ export function renderRoute(route) {
     case 'sessions':
       main.innerHTML = renderSessionsView();
       bindSessionForm();
+      bindSessionListActions();
       break;
     case 'creatures':
       main.innerHTML = renderCreaturesView();
       bindCreatureForm();
+      bindCreatureListActions();
       break;
     case 'items':
       main.innerHTML = renderItemsView();
       bindItemForm();
+      bindItemListActions();
       break;
     case 'print-queue':
       main.innerHTML = renderPrintQueueView();
@@ -117,6 +120,34 @@ function renderCampaignView() {
 
 function renderSessionsView() {
   const state = appContext.getState();
+  const sessionRows = state.sessions
+    .map(
+      (session) => `
+        <div class="list-group-item" data-session-id="${session.id}">
+          <div class="d-flex justify-content-between align-items-start gap-3">
+            <div>
+              <strong>${session.title}</strong> <span class="text-muted">(${session.date})</span>
+              ${session.notes ? `<p class="mb-0 small text-muted">${session.notes}</p>` : ''}
+            </div>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-sm btn-outline-primary" data-session-edit-toggle>Edit</button>
+              <button type="button" class="btn btn-sm btn-outline-danger" data-session-delete>Delete</button>
+            </div>
+          </div>
+          <form class="mt-3 d-none" data-session-edit-form>
+            <label class="form-label">Title<input required name="title" class="form-control" value="${session.title}" /></label>
+            <label class="form-label">Date<input type="date" required name="date" class="form-control" value="${session.date}" /></label>
+            <label class="form-label">Notes<textarea name="notes" class="form-control" rows="3">${session.notes || ''}</textarea></label>
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-sm btn-primary">Save Changes</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" data-session-edit-cancel>Cancel</button>
+            </div>
+          </form>
+        </div>
+      `
+    )
+    .join('');
+
   return `
     <section>
       <h2>Sessions</h2>
@@ -128,12 +159,7 @@ function renderSessionsView() {
         <button class="btn btn-success" type="submit">Save Session</button>
       </form>
       <div class="list-group">
-        ${state.sessions
-          .map(
-            (session) =>
-              `<div class="list-group-item"><strong>${session.title}</strong> <span class="text-muted">(${session.date})</span></div>`
-          )
-          .join('')}
+        ${sessionRows || '<div class="list-group-item text-muted">No sessions yet. Add one to begin planning your next game.</div>'}
       </div>
     </section>
   `;
@@ -141,6 +167,44 @@ function renderSessionsView() {
 
 function renderCreaturesView() {
   const state = appContext.getState();
+  const creatureRows = state.creatures
+    .map(
+      (creature) => `
+        <div class="list-group-item" data-creature-id="${creature.id}">
+          <div class="d-flex justify-content-between align-items-start gap-3">
+            <div>
+              ${creature.name} <small class="text-muted">(${creature.sourceType})</small>
+            </div>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-sm btn-outline-primary" data-creature-edit-toggle>Edit</button>
+              <button type="button" class="btn btn-sm btn-outline-danger" data-creature-delete>Delete</button>
+            </div>
+          </div>
+          <form class="mt-3 d-none" data-creature-edit-form>
+            <label class="form-label">Name<input required name="name" class="form-control" value="${creature.name}" /></label>
+            <label class="form-label">Source Type
+              <select name="sourceType" class="form-select" data-creature-edit-source-type>
+                <option value="paste" ${creature.sourceType === 'paste' ? 'selected' : ''}>Paste</option>
+                <option value="manual" ${creature.sourceType === 'manual' ? 'selected' : ''}>Manual</option>
+                <option value="aon_url" ${creature.sourceType === 'aon_url' ? 'selected' : ''}>AoN URL (placeholder)</option>
+              </select>
+            </label>
+            <div data-creature-edit-paste-wrap class="${creature.sourceType === 'aon_url' ? 'd-none' : ''}">
+              <label class="form-label">Pasted Statblock<textarea name="sourceText" class="form-control" rows="4">${creature.sourceText || ''}</textarea></label>
+            </div>
+            <div data-creature-edit-url-wrap class="${creature.sourceType === 'aon_url' ? '' : 'd-none'}">
+              <label class="form-label">AoN URL<input type="url" name="aonUrl" class="form-control" value="${creature.aonUrl || ''}" /></label>
+            </div>
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-sm btn-primary">Save Changes</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" data-creature-edit-cancel>Cancel</button>
+            </div>
+          </form>
+        </div>
+      `
+    )
+    .join('');
+
   return `
     <section>
       <h2>Creatures</h2>
@@ -163,7 +227,7 @@ function renderCreaturesView() {
         <button class="btn btn-success" type="submit">Save Creature</button>
       </form>
       <div class="list-group">
-        ${state.creatures.map((creature) => `<div class="list-group-item">${creature.name} <small class="text-muted">(${creature.sourceType})</small></div>`).join('')}
+        ${creatureRows || '<div class="list-group-item text-muted">No creatures yet. Add creatures to prepare encounter cards.</div>'}
       </div>
     </section>
   `;
@@ -171,6 +235,34 @@ function renderCreaturesView() {
 
 function renderItemsView() {
   const state = appContext.getState();
+  const itemRows = state.items
+    .map(
+      (item) => `
+        <div class="list-group-item" data-item-id="${item.id}">
+          <div class="d-flex justify-content-between align-items-start gap-3">
+            <div>
+              ${item.name} <small class="text-muted">${item.type || 'Unspecified type'}</small>
+            </div>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-sm btn-outline-primary" data-item-edit-toggle>Edit</button>
+              <button type="button" class="btn btn-sm btn-outline-danger" data-item-delete>Delete</button>
+            </div>
+          </div>
+          <form class="mt-3 d-none" data-item-edit-form>
+            <label class="form-label">Name<input required name="name" class="form-control" value="${item.name}" /></label>
+            <label class="form-label">Type<input name="type" class="form-control" value="${item.type || ''}" /></label>
+            <label class="form-label">Description<textarea name="description" class="form-control" rows="3">${item.description || ''}</textarea></label>
+            <label class="form-label">Mechanics<textarea name="mechanics" class="form-control" rows="3">${item.mechanics || ''}</textarea></label>
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-sm btn-primary">Save Changes</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" data-item-edit-cancel>Cancel</button>
+            </div>
+          </form>
+        </div>
+      `
+    )
+    .join('');
+
   return `
     <section>
       <h2>Items</h2>
@@ -183,7 +275,7 @@ function renderItemsView() {
         <button class="btn btn-success" type="submit">Save Item</button>
       </form>
       <div class="list-group">
-        ${state.items.map((item) => `<div class="list-group-item">${item.name} <small class="text-muted">${item.type}</small></div>`).join('')}
+        ${itemRows || '<div class="list-group-item text-muted">No items yet. Add loot and handouts for your print packet.</div>'}
       </div>
     </section>
   `;
@@ -380,6 +472,170 @@ function bindItemForm() {
 
     appContext.setState(state);
     renderRoute('items');
+  });
+}
+
+
+/**
+ * Removes every print-queue entry that references a specific record ID.
+ * This keeps printable output in sync after deleting sessions, creatures, or items.
+ * @param {object} state
+ * @param {string} refId
+ */
+function removePrintQueueEntriesByRefId(state, refId) {
+  state.printQueue = state.printQueue.filter((entry) => entry.refId !== refId);
+}
+
+/**
+ * Removes a deleted record ID from the active campaign relationship array.
+ * @param {object} state
+ * @param {'sessions' | 'creatures' | 'items'} key
+ * @param {string} recordId
+ */
+function removeCampaignReference(state, key, recordId) {
+  const campaign = state.campaigns.find((entry) => entry.id === state.activeCampaignId);
+  if (!campaign || !Array.isArray(campaign[key])) return;
+  campaign[key] = campaign[key].filter((id) => id !== recordId);
+}
+
+function bindSessionListActions() {
+  document.querySelectorAll('[data-session-id]').forEach((row) => {
+    const editForm = row.querySelector('[data-session-edit-form]');
+    const toggleBtn = row.querySelector('[data-session-edit-toggle]');
+    const cancelBtn = row.querySelector('[data-session-edit-cancel]');
+    const deleteBtn = row.querySelector('[data-session-delete]');
+    if (!editForm || !toggleBtn || !cancelBtn || !deleteBtn) return;
+
+    // Toggle the inline editor so users can update a session in-context.
+    toggleBtn.addEventListener('click', () => editForm.classList.toggle('d-none'));
+    cancelBtn.addEventListener('click', () => editForm.classList.add('d-none'));
+
+    editForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const formData = new FormData(editForm);
+      const sessionId = row.getAttribute('data-session-id');
+
+      const state = appContext.getState();
+      const session = state.sessions.find((entry) => entry.id === sessionId);
+      if (!session) return;
+
+      session.title = String(formData.get('title') || '').trim();
+      session.date = String(formData.get('date') || '');
+      session.notes = String(formData.get('notes') || '').trim();
+
+      appContext.setState(state);
+      renderRoute('sessions');
+    });
+
+    deleteBtn.addEventListener('click', () => {
+      const sessionId = row.getAttribute('data-session-id');
+      const state = appContext.getState();
+
+      state.sessions = state.sessions.filter((entry) => entry.id !== sessionId);
+      removeCampaignReference(state, 'sessions', sessionId);
+      removePrintQueueEntriesByRefId(state, sessionId);
+
+      appContext.setState(state);
+      renderRoute('sessions');
+    });
+  });
+}
+
+function bindCreatureListActions() {
+  document.querySelectorAll('[data-creature-id]').forEach((row) => {
+    const editForm = row.querySelector('[data-creature-edit-form]');
+    const toggleBtn = row.querySelector('[data-creature-edit-toggle]');
+    const cancelBtn = row.querySelector('[data-creature-edit-cancel]');
+    const deleteBtn = row.querySelector('[data-creature-delete]');
+    const sourceType = row.querySelector('[data-creature-edit-source-type]');
+    const pasteWrap = row.querySelector('[data-creature-edit-paste-wrap]');
+    const urlWrap = row.querySelector('[data-creature-edit-url-wrap]');
+    if (!editForm || !toggleBtn || !cancelBtn || !deleteBtn || !sourceType || !pasteWrap || !urlWrap) return;
+
+    const syncSourceVisibility = () => {
+      const isUrl = sourceType.value === 'aon_url';
+      pasteWrap.classList.toggle('d-none', isUrl);
+      urlWrap.classList.toggle('d-none', !isUrl);
+    };
+
+    sourceType.addEventListener('change', syncSourceVisibility);
+    syncSourceVisibility();
+
+    toggleBtn.addEventListener('click', () => editForm.classList.toggle('d-none'));
+    cancelBtn.addEventListener('click', () => editForm.classList.add('d-none'));
+
+    editForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const formData = new FormData(editForm);
+      const creatureId = row.getAttribute('data-creature-id');
+
+      const state = appContext.getState();
+      const creature = state.creatures.find((entry) => entry.id === creatureId);
+      if (!creature) return;
+
+      creature.name = String(formData.get('name') || '').trim();
+      creature.sourceType = String(formData.get('sourceType') || 'paste');
+      creature.sourceText = String(formData.get('sourceText') || '').trim();
+      creature.aonUrl = String(formData.get('aonUrl') || '').trim();
+
+      appContext.setState(state);
+      renderRoute('creatures');
+    });
+
+    deleteBtn.addEventListener('click', () => {
+      const creatureId = row.getAttribute('data-creature-id');
+      const state = appContext.getState();
+
+      state.creatures = state.creatures.filter((entry) => entry.id !== creatureId);
+      removeCampaignReference(state, 'creatures', creatureId);
+      removePrintQueueEntriesByRefId(state, creatureId);
+
+      appContext.setState(state);
+      renderRoute('creatures');
+    });
+  });
+}
+
+function bindItemListActions() {
+  document.querySelectorAll('[data-item-id]').forEach((row) => {
+    const editForm = row.querySelector('[data-item-edit-form]');
+    const toggleBtn = row.querySelector('[data-item-edit-toggle]');
+    const cancelBtn = row.querySelector('[data-item-edit-cancel]');
+    const deleteBtn = row.querySelector('[data-item-delete]');
+    if (!editForm || !toggleBtn || !cancelBtn || !deleteBtn) return;
+
+    toggleBtn.addEventListener('click', () => editForm.classList.toggle('d-none'));
+    cancelBtn.addEventListener('click', () => editForm.classList.add('d-none'));
+
+    editForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const formData = new FormData(editForm);
+      const itemId = row.getAttribute('data-item-id');
+
+      const state = appContext.getState();
+      const item = state.items.find((entry) => entry.id === itemId);
+      if (!item) return;
+
+      item.name = String(formData.get('name') || '').trim();
+      item.type = String(formData.get('type') || '').trim();
+      item.description = String(formData.get('description') || '').trim();
+      item.mechanics = String(formData.get('mechanics') || '').trim();
+
+      appContext.setState(state);
+      renderRoute('items');
+    });
+
+    deleteBtn.addEventListener('click', () => {
+      const itemId = row.getAttribute('data-item-id');
+      const state = appContext.getState();
+
+      state.items = state.items.filter((entry) => entry.id !== itemId);
+      removeCampaignReference(state, 'items', itemId);
+      removePrintQueueEntriesByRefId(state, itemId);
+
+      appContext.setState(state);
+      renderRoute('items');
+    });
   });
 }
 
