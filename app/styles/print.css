@@ -1,0 +1,103 @@
+/*
+ * Print-focused layout for A4 output.
+ * Includes cut line visuals designed for physical card trimming.
+ */
+
+@page {
+  size: A4 portrait;
+  margin: 10mm;
+}
+
+@media print {
+  body {
+    background: #fff;
+    margin: 0;
+  }
+
+  header,
+  nav,
+  .btn,
+  .navbar,
+  .sidebar,
+  h2,
+  h3,
+  .list-group,
+  .d-flex,
+  .card:not(.print-card):not(.session-print-page),
+  #toggle-cut-lines-btn,
+  #print-btn {
+    display: none !important;
+  }
+
+  main,
+  #main-view,
+  .print-surface {
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: #fff;
+  }
+
+  .print-surface {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8mm;
+  }
+
+  .print-card,
+  .session-print-page {
+    break-inside: avoid;
+    border: 0.25mm dashed #666;
+    border-radius: 0;
+    min-height: 84mm;
+    position: relative;
+    padding: 8mm;
+  }
+
+  .session-print-page {
+    grid-column: 1 / -1;
+    min-height: 180mm;
+  }
+
+  /* Corner crop/cut markers for physical trimming. */
+  .print-card::before,
+  .print-card::after,
+  .session-print-page::before,
+  .session-print-page::after {
+    content: '';
+    position: absolute;
+    width: 6mm;
+    height: 6mm;
+    pointer-events: none;
+  }
+
+  .print-card::before,
+  .session-print-page::before {
+    top: -1mm;
+    left: -1mm;
+    border-top: 0.3mm solid #111;
+    border-left: 0.3mm solid #111;
+  }
+
+  .print-card::after,
+  .session-print-page::after {
+    bottom: -1mm;
+    right: -1mm;
+    border-bottom: 0.3mm solid #111;
+    border-right: 0.3mm solid #111;
+  }
+
+  body.hide-cut-lines .print-card,
+  body.hide-cut-lines .session-print-page {
+    border: 0.25mm solid #222;
+  }
+
+  body.hide-cut-lines .print-card::before,
+  body.hide-cut-lines .print-card::after,
+  body.hide-cut-lines .session-print-page::before,
+  body.hide-cut-lines .session-print-page::after {
+    display: none;
+  }
+}

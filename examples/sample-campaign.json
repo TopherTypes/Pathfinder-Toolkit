@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "settings": {
+    "appName": "Table-Ready",
+    "showCutLines": true
+  },
+  "activeCampaignId": "camp-sample-001",
+  "campaigns": [
+    {
+      "id": "camp-sample-001",
+      "name": "Crown & Catacombs",
+      "system": "PF1e",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "sessions": ["session-sample-001"],
+      "creatures": ["creature-sample-001"],
+      "items": ["item-sample-001"]
+    }
+  ],
+  "sessions": [
+    {
+      "id": "session-sample-001",
+      "campaignId": "camp-sample-001",
+      "title": "Session 1: Road to Blackhill",
+      "date": "2026-01-08",
+      "notes": "Opening recap and scene setup notes.",
+      "encounters": []
+    }
+  ],
+  "creatures": [
+    {
+      "id": "creature-sample-001",
+      "name": "Goblin Raider",
+      "sourceType": "paste",
+      "sourceText": "Goblin Raider CR 1/3...",
+      "aonUrl": "",
+      "extracted": { "ac": "16", "hp": "6", "speed": "30 ft." },
+      "tags": ["goblin"]
+    }
+  ],
+  "items": [
+    {
+      "id": "item-sample-001",
+      "name": "Potion of Cure Light Wounds",
+      "type": "Potion",
+      "description": "A red vial.",
+      "mechanics": "Restore 1d8+1 HP.",
+      "tags": ["healing"]
+    }
+  ],
+  "printQueue": [
+    { "id": "pq-1", "type": "creature_card", "refId": "creature-sample-001", "options": {} },
+    { "id": "pq-2", "type": "item_card", "refId": "item-sample-001", "options": {} },
+    { "id": "pq-3", "type": "session_notes", "refId": "session-sample-001", "options": {} }
+  ]
+}
